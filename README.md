@@ -18,3 +18,7 @@ To get notifications for Discourse, enter the 'Chat ID' 1234567 in your user pre
 ```
 2. Visit your user preferences, and paste the number in the `Telegram Notifications` box
 3. You should now receive notifications by telegram message!
+
+# Issues and PRs
+
+Please report any issues and feature requessts [on Discourse Meta](https://meta.discourse.org/t/60483)
