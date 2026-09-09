@@ -1,12 +1,12 @@
 plugins:
-  telegram_notifications_enabled:
+  bale_notifications_enabled:
     default: false
-  telegram_access_token:
+  bale_access_token:
     default: ''
-  telegram_secret:
+  bale_secret:
     default: ''
     hidden: true
-  telegram_enabled_notification_types:
+  bale_enabled_notification_types:
     type: list
     default: mentioned|replied|quoted|posted|linked|private_message|group_mentioned|watching_first_post|event_reminder|event_invitation|following_replied|following_posted
     client: false

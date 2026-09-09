@@ -1,9 +1,9 @@
 en:
   site_settings:
-    telegram_notifications_enabled: Enable telegram notifications?
-    telegram_access_token: Obtain your bot's access token from the telegram botfather
-    telegram_enabled_notification_types: Limit notifications sent to Telegram by this selection of types
-  discourse_telegram_notifications:
+    bale_notifications_enabled: Enable Bale notifications?
+    bale_access_token: Obtain your bot's access token from the Bale botfather (@botfather)
+    bale_enabled_notification_types: Limit notifications sent to Bale by this selection of types
+  discourse_bale_notifications:
     initial-contact: "To get notifications for %{site_title}, enter the 'Chat ID' %{chat_id} in your user preferences"
     known-user: |-
      Hi %{username}, I'll message you when you have new notifications on %{site_title}. 
