@@ -1,0 +1,74 @@
+fa:
+  site_settings:
+    bale_notifications_enabled: "فعال‌سازی اعلان‌های بله؟"
+    bale_access_token: "توکن دسترسی ربات خود را از BotFather بله (@botfather) دریافت کنید"
+    bale_enabled_notification_types: "نوع اعلان‌هایی که به بله ارسال می‌شوند را با این انتخاب محدود کنید"
+  discourse_bale_notifications:
+    initial-contact: "برای دریافت اعلان‌های %{site_title}، شناسه‌ی گفت‌وگو (Chat ID) %{chat_id} را در تنظیمات کاربری خود در انجمن وارد کنید"
+    known-user: |-
+     سلام %{username}، هر زمان اعلان جدیدی در %{site_title} داشته باشید به شما پیام خواهم داد.
+     پاسخ دادن به یک اعلان، به‌عنوان پاسخ در %{site_title} ارسال می‌شود.
+     برای غیرفعال‌سازی، به تنظیمات کاربری خود در انجمن بروید.
+    view_online: "مشاهده آنلاین"
+    like: "❤️ پسندیدن"
+    unlike: "❤️ لغو پسندیدن"
+    already-liked: "شما قبلاً این پست را پسندیده‌اید"
+    like-failed: "پسندیدن این پست ناموفق بود"
+    like-success: "پسند ثبت شد"
+    unlike-failed: "لغو پسند این پست با خطا مواجه شد"
+    unlike-success: "لغو پسند انجام شد"
+    reply-error: "❌ خطایی هنگام پردازش پاسخ رخ داد"
+    reply-failed: "❌ ارسال پاسخ ناموفق بود: \n\n %{errors}"
+    reply-success: "✅ پاسخ با موفقیت ارسال شد - آن را <a href='%{post_url}'>اینجا</a> ببینید"
+    message:
+      mentioned: |-
+                💬 <a href="%{user_url}">@%{username}</a> شما را <b>منشن</b> کرد
+                در <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>
+      group_mentioned: |-
+                💬 <a href="%{user_url}">@%{username}</a> شما را <b>منشن</b> کرد
+                در <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>
+      quoted: |-
+                💬 <a href="%{user_url}">@%{username}</a> از شما <b>نقل‌قول</b> کرد
+                در <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>
+      replied: |-
+                ↩️ <a href="%{user_url}">@%{username}</a> به شما <b>پاسخ</b> داد
+                در <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>
+      posted: |-
+                💬 <a href="%{user_url}">@%{username}</a> <b>مطلبی منتشر کرد</b>
+                در <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>
+      private_message: |-
+                ✉️ <a href="%{user_url}">@%{username}</a> برای شما یک <b>پیام خصوصی</b> فرستاد
+                در <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>
+      linked: |-
+                🔗 <a href="%{user_url}">@%{username}</a> به پست شما <b>لینک داد</b>
+                در <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>
+      watching_first_post: |-
+                💬 <a href="%{user_url}">@%{username}</a> <b>پستی ارسال کرد</b>
+                در <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>
+      following_replied: |-
+                ↩️👥 <a href="%{user_url}">@%{username}</a> <b>پاسخ داد</b>
+                در <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>
+      following_posted: |-
+                💬👥 <a href="%{user_url}">@%{username}</a> <b>پستی ارسال کرد</b>
+                در <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>
+
