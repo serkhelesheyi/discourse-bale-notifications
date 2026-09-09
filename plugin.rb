@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 # name: discourse-bale-notifications
-# about: A plugin which posts all user notifications to a Bale message
+# about: A plugin which posts all user notifications to a bale message
 # version: 0.1
 # authors: Mohammad Tazari
 # url: https://github.com/serkhelesheyi/discourse-bale-notifications
@@ -10,7 +10,7 @@ enabled_site_setting :bale_notifications_enabled
 
 after_initialize do
   module ::DiscourseBaleNotifications
-    PLUGIN_NAME ||= "discourse_bale_notifications".freeze
+    PLUGIN_NAME ||= "discourse-bale-notifications".freeze
     autoload :BaleNotifier, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/bale-notifier"
     
     class Engine < ::Rails::Engine
