@@ -1,4 +1,4 @@
-fa:
+fa_IR:
   site_settings:
     bale_notifications_enabled: "فعال‌سازی اعلان‌های بله؟"
     bale_access_token: "توکن دسترسی ربات خود را از BotFather بله (@botfather) دریافت کنید"
