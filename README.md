@@ -1,7 +1,7 @@
 # discourse-bale-notifications
 یک افزونه برای Discourse که به کاربران اجازه می‌دهد اعلان‌های خود را از طریق پیام بله دریافت کنند
 
-# Getting setup
+# نصب کردن
 1. افزونه را با استفاده از دستورالعمل‌های اینجا نصب کنید: [How to install a plugin](https://meta.discourse.org/t/install-a-plugin/19157)
 2. با صحبت کردن با [BotFather](https://ble.ir/botfather) یک ربات بله بسازید.
 3. «توکن» را در تنظیمات سایت در بخش «bale access token» قرار دهید
@@ -11,7 +11,7 @@
 
 می‌توانید نام/تصویر/توضیحات ربات خود را تنظیم کنید.
 
-# For users to receive notifications
+# دستور العمل دریافت اعلان
 1. یک پیام به ربات ارسال کنید، سپس پیامی مشابه زیر دریافت خواهید کرد:
 ```
 To get notifications for Discourse, enter the 'Chat ID' 1234567 in your user preferences
