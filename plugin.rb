@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-name: discourse-bale-notifications
-about: A plugin which posts all user notifications to a Bale message
-version: 0.1
-authors: Mohammad Tazari
-url: https://github.com/serkhelesheyi/discourse-bale-notifications
+# name: discourse-bale-notifications
+# about: A plugin which posts all user notifications to a Bale message
+# version: 0.1
+# authors: Mohammad Tazari
+# url: https://github.com/serkhelesheyi/discourse-bale-notifications
 require 'cgi'
 
 enabled_site_setting :bale_notifications_enabled
