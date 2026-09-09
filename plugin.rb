@@ -2,8 +2,8 @@
 name: discourse-bale-notifications
 about: A plugin which posts all user notifications to a Bale message
 version: 0.1
-authors: Your Name
-url: https://github.com/your-repo/discourse-bale-notifications
+authors: Mohammad Tazari
+url: https://github.com/serkhelesheyi/discourse-bale-notifications
 require 'cgi'
 
 enabled_site_setting :bale_notifications_enabled

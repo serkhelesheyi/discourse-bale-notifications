@@ -1,24 +1,21 @@
-# discourse-telegram-notifications
-A plugin for Discourse which allows users to receive their notifications by telegram message
+# discourse-bale-notifications
+یک افزونه برای Discourse که به کاربران اجازه می‌دهد اعلان‌های خود را از طریق پیام بله دریافت کنند
 
 # Getting setup
-1. Install the plugin using the instructions here: [How to install a plugin](https://meta.discourse.org/t/install-a-plugin/19157)
-2. Create a telegram by talking to the [BotFather](https://telegram.me/botfather) (instructions [here](https://core.telegram.org/bots#6-botfather)
-3. Paste the "token" into the site setting "telegram access token"
-4. Tick "telegram notifications enabled"
+1. افزونه را با استفاده از دستورالعمل‌های اینجا نصب کنید: [How to install a plugin](https://meta.discourse.org/t/install-a-plugin/19157)
+2. با صحبت کردن با [BotFather](https://ble.ir/botfather) یک ربات بله بسازید.
+3. «توکن» را در تنظیمات سایت در بخش «bale access token» قرار دهید
+4. گزینهٔ «bale notifications enabled» را فعال کنید
 
-I strongly recommend you use the `/setjoingroups` command to disable the bot being used for group chats. It is not designed for it, and risks leaking information that users are not supposed to be able to access (e.g. you don't want private messages being sent to a group chat).
+به‌شدت توصیه می‌کنم از دستور `/setjoingroups` استفاده کنید تا امکان استفاده از ربات در چت‌های گروهی غیرفعال شود. این ربات برای استفاده در گروه‌ها طراحی نشده و ممکن است اطلاعاتی را که کاربران نباید به آن دسترسی داشته باشند، افشا کند (مثلاً نمی‌خواهید پیام‌های خصوصی به یک چت گروهی ارسال شوند).
 
-You can set the name/picture/description of your bot using the instructions [here](https://core.telegram.org/bots#botfather-commands)
+می‌توانید نام/تصویر/توضیحات ربات خود را تنظیم کنید.
 
 # For users to receive notifications
-1. Send a message to the bot, you'll recieve a message back that looks like
+1. یک پیام به ربات ارسال کنید، سپس پیامی مشابه زیر دریافت خواهید کرد:
 ```
 To get notifications for Discourse, enter the 'Chat ID' 1234567 in your user preferences
 ```
-2. Visit your user preferences, and paste the number in the `Telegram Notifications` box
-3. You should now receive notifications by telegram message!
+2. به تنظیمات کاربری خود بروید و عدد دریافت‌شده را در بخش `Bale Notifications` وارد کنید
+3. اکنون باید اعلان‌ها را از طریق پیام بله دریافت کنید!
 
-# Issues and PRs
-
-Please report any issues and feature requessts [on Discourse Meta](https://meta.discourse.org/t/60483)
