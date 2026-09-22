@@ -38,7 +38,16 @@ after_initialize do
         return
       end
 
-      if not (defined? params['key'] && (params['key'] == SiteSetting.bale_secret))
+      # توجه (فاز صفر - اصلاح بحرانی #۴):
+      # `defined? params['key']` تقریباً همیشه truthy است (چون params['key'] همواره
+      # "تعریف‌شده" محسوب می‌شود، حتی اگر nil باشد)، پس آن بخش عملاً کد مرده بود.
+      # مقایسه هم از `==` معمولی (غیر constant-time) به secure_compare تغییر کرد
+      # تا در برابر timing attack مقاوم باشد. همچنین صراحتاً بررسی می‌شود که
+      # bale_secret خالی نباشد، تا در صورت خالی‌ماندن اتفاقی تنظیمات، هیچ درخواستی
+      # (حتی با کلید خالی/نامعتبر) پذیرفته نشود.
+      key = params['key'].to_s
+      secret = SiteSetting.bale_secret.to_s
+      if secret.blank? || !ActiveSupport::SecurityUtils.secure_compare(key, secret)
         Rails.logger.error("Bale hook called with incorrect key")
         render status: 403
         return
@@ -69,7 +78,12 @@ after_initialize do
         if known_user && params['message'].key?('reply_to_message')
           begin
             reply_to_message_id = params['message']['reply_to_message']['message_id']
-            post_id = PluginStore.get("bale-notifications", "message_#{reply_to_message_id}")
+            # توجه (فاز صفر - اصلاح بحرانی #۲):
+            # message_id در APIهای سازگار با تلگرام/بله فقط در محدوده‌ی هر چت
+            # یکتاست، نه به‌صورت سراسری. کلید ذخیره‌سازی باید حتماً با chat_id
+            # namespace شود، وگرنه پیام شماره N در چت یک کاربر با پیام شماره N
+            # در چت کاربر دیگر تصادم می‌کند و ممکن است پاسخ روی پست اشتباه پست شود.
+            post_id = PluginStore.get("bale-notifications", "message_#{chat_id}_#{reply_to_message_id}")
             reply_to = Post.find(post_id)
             found_post = true
           rescue ActiveRecord::RecordNotFound
@@ -112,10 +126,32 @@ after_initialize do
 
       elsif params.key?('callback_query')
         chat_id = params['callback_query']['message']['chat']['id']
-        user_id = UserCustomField.where(name: "bale_chat_id", value: chat_id).first.user_id
-        user = User.find(user_id)
-        data = params['callback_query']['data'].split(":")
-        post = Post.find(data[1])
+        callback_id = params['callback_query']['id']
+
+        # توجه (فاز صفر - اصلاح بحرانی #۳):
+        # قبلاً این بلوک هیچ rescue‌ای نداشت: اگر chat_id ناشناس بود
+        # (UserCustomField پیدا نمی‌شد) یک NoMethodError روی `.user_id` روی nil،
+        # و اگر پست حذف شده بود یک ActiveRecord::RecordNotFound رها می‌شد که
+        # هیچ‌کدام گرفته نمی‌شدند => پاسخ ۵۰۰ بدون هیچ پاسخی به بله، و دکمه‌ی
+        # کاربر در بله در حالت خطا/بارگذاری می‌ماند. اکنون هر دو حالت با یک
+        # پیام قابل‌فهم به کاربر و بازگشت موفق (success: true) به بله مدیریت می‌شوند.
+        begin
+          user_custom_field = UserCustomField.find_by!(name: "bale_chat_id", value: chat_id)
+          user = User.find(user_custom_field.user_id)
+          data = params['callback_query']['data'].to_s.split(":")
+          post = Post.find(data[1])
+        rescue ActiveRecord::RecordNotFound
+          DiscourseBaleNotifications::BaleNotifier.answerCallback(
+            callback_id,
+            I18n.t(
+              "discourse_bale_notifications.action-unavailable",
+              default: "❌ This action is no longer available."
+            )
+          )
+          render json: { success: true }
+          return
+        end
+
         string = I18n.t("discourse_bale_notifications.error-unknown-action")
 
         if data[0] == "like"
@@ -127,8 +163,7 @@ after_initialize do
           rescue Discourse::InvalidAccess
             string = I18n.t("discourse_bale_notifications.like-fail")
           end
-          DiscourseBaleNotifications::BaleNotifier.answerCallback(params['callback_query']['id'], string)
-          
+
         elsif data[0] == 'unlike'
           begin
             guardian = Guardian.new(user)
@@ -142,9 +177,13 @@ after_initialize do
             string = I18n.t("discourse_bale_notifications.unlike-failed")
           end
         end
-        
-        DiscourseBaleNotifications::BaleNotifier.answerCallback(params['callback_query']['id'], string)
-        
+
+        # توجه: قبلاً در شاخه‌ی "like" این متد یک‌بار اینجا و یک‌بار دوباره
+        # بعد از if/elsif فراخوانی می‌شد (فراخوانی دوگانه‌ی answerCallback
+        # برای بله)؛ اکنون فقط یک‌بار و به‌صورت یکنواخت برای هر سه حالت
+        # (like/unlike/نامعتبر) صدا زده می‌شود.
+        DiscourseBaleNotifications::BaleNotifier.answerCallback(callback_id, string)
+
         message = {
           chat_id: chat_id,
           message_id: params['callback_query']['message']['message_id'],
@@ -163,7 +202,14 @@ after_initialize do
   User.register_custom_field_type('bale_chat_id', :text)
   register_editable_user_custom_field :bale_chat_id
 
-  DiscourseEvent.on(:post_notification_alert) do |user, payload|
+  # توجه (فاز صفر - اصلاح بحرانی #۱):
+  # رویداد `:post_notification_alert` از نسخه 3.2.0.beta1 دیسکورس منسوخ (deprecated)
+  # اعلام شده و قرار است کاملاً حذف شود. جایگزین رسمی آن `:push_notification` است
+  # که با همان امضا (user, payload) و همان ساختار payload فراخوانی می‌شود.
+  # تفاوت رفتاری آگاهانه: بر خلاف رویداد قبلی، `:push_notification` وقتی کاربر
+  # در حالت «مزاحم نشوید» (Do Not Disturb) باشد trigger نمی‌شود - این رفتار عمداً
+  # حفظ شده چون با انتظار منطقی کاربر از یک اعلان push همخوانی دارد.
+  DiscourseEvent.on(:push_notification) do |user, payload|
     if SiteSetting.bale_notifications_enabled?
       Jobs.enqueue(:send_bale_notifications, user_id: user.id, payload: payload)
     end
@@ -216,7 +262,8 @@ after_initialize do
         
         if response
           message_id = response['result']['message_id']
-          PluginStore.set("bale-notifications", "message_#{message_id}", post.id)
+          # مطابق اصلاح بحرانی #۲: کلید بر اساس chat_id هم namespace شده است.
+          PluginStore.set("bale-notifications", "message_#{chat_id}_#{message_id}", post.id)
         end
       end
     end

@@ -17,6 +17,7 @@ en:
     like-success: "Like successful"
     unlike-failed: "Unliking that post failed"
     unlike-success: "Unlike successful"
+    action-unavailable: "❌ This action is no longer available (the post may have been deleted or your account link removed)"
     reply-error: "❌ An error occured while processing your reply"
     reply-failed: "❌ Reply failed: \n\n %{errors}"
     reply-success: "✅ Reply successful - view it <a href='%{post_url}'>here</a>"
