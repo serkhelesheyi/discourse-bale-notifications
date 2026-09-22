@@ -2,4 +2,9 @@ en:
   js:
     bale-notifications:
       preferences-title: "Bale Notifications"
-      instructions: "Enter the 'Chat ID' you were given by the Bale bot to enable notifications. Empty the box to disable."
+      instructions: "Click the button to get a linking code, then send that code to the Bale bot to enable notifications."
+      get-code: "Get linking code"
+      get-new-code: "Get a new code"
+      send-code-instructions: "Send this code to the Bale bot within %{minutes} minutes to finish connecting your account."
+      status-connected: "✅ Connected to Bale"
+      disconnect: "Disconnect"

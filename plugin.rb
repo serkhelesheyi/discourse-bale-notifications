@@ -8,10 +8,13 @@ require 'cgi'
 
 enabled_site_setting :bale_notifications_enabled
 
+register_asset "stylesheets/common.scss"
+
 after_initialize do
   module ::DiscourseBaleNotifications
     PLUGIN_NAME ||= "discourse-bale-notifications".freeze
     autoload :BaleNotifier, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/bale-notifier"
+    autoload :LinkCode, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/link_code"
     
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
@@ -22,6 +25,9 @@ after_initialize do
   DiscourseBaleNotifications::Engine.routes.draw do
     # تغییر مسیر وب‌هوک از /telegram به /bale
     post "/hook/:key" => "bale#hook"
+    # فاز یک - اصلاح #۸: تولید/حذف کد اتصال یک‌بارمصرف (نیازمند ورود به حساب)
+    post "/link" => "link#create"
+    delete "/link" => "link#destroy"
   end
 
   Discourse::Application.routes.append do
@@ -45,10 +51,21 @@ after_initialize do
       # تا در برابر timing attack مقاوم باشد. همچنین صراحتاً بررسی می‌شود که
       # bale_secret خالی نباشد، تا در صورت خالی‌ماندن اتفاقی تنظیمات، هیچ درخواستی
       # (حتی با کلید خالی/نامعتبر) پذیرفته نشود.
+      # فاز یک - اصلاح #۷ (بخش اول): محدودسازی نرخ تلاش‌های ناموفق برای حدس
+      # سکرت، بر اساس IP. توجه: این محدودکننده فقط در شاخه‌ی «کلید نادرست»
+      # مصرف (performed!) می‌شود، پس ترافیک معتبر با کلید درست هرگز محدود
+      # نمی‌شود؛ can_perform? هم یک بررسی بدون مصرف (peek) است.
+      auth_fail_limiter = RateLimiter.new(nil, "bale-hook-auth-fail-#{request.remote_ip}", 20, 1.minute)
+      if !auth_fail_limiter.can_perform?
+        render status: 429
+        return
+      end
+
       key = params['key'].to_s
       secret = SiteSetting.bale_secret.to_s
       if secret.blank? || !ActiveSupport::SecurityUtils.secure_compare(key, secret)
-        Rails.logger.error("Bale hook called with incorrect key")
+        auth_fail_limiter.performed!(raise_error: false)
+        Rails.logger.error("Bale hook called with incorrect key from #{request.remote_ip}")
         render status: 403
         return
       end
@@ -56,10 +73,28 @@ after_initialize do
       # پردازش پیام‌های دریافتی (ساختار JSON بله دقیقاً مشابه تلگرام است)
       if params.key?('message')
         chat_id = params['message']['chat']['id']
+        chat_type = params['message']['chat']['type']
+
+        # فاز یک - اصلاح #۹: دفاع در عمق در برابر گروه‌ها/کانال‌ها. حتی اگر
+        # ادمین طبق توصیه‌ی README دستور /setjoingroups را نزده باشد، پیام‌های
+        # غیرخصوصی به‌صورت برنامه‌نویسی‌شده و بی‌صدا نادیده گرفته می‌شوند
+        # (نه فقط یک توصیه‌ی بیرونی در مستندات).
+        if chat_type.present? && chat_type != 'private'
+          render json: { success: true }
+          return
+        end
+
+        # فاز یک - اصلاح #۷ (بخش دوم): محدودسازی نرخ اقدامات هر چت، تا حتی در
+        # صورت درز سکرت، یک چت نتواند حجم زیادی از پاسخ/عملیات ایجاد کند.
+        if rate_limited_chat?(chat_id)
+          render json: { success: true }
+          return
+        end
+
         known_user = false
-        
+
         begin
-          user_custom_field = UserCustomField.find_by(name: "bale_chat_id", value: chat_id)
+          user_custom_field = UserCustomField.find_by(name: "bale_chat_id", value: chat_id.to_s)
           user = User.find(user_custom_field.user_id)
           message_text = I18n.t(
             "discourse_bale_notifications.known-user",
@@ -68,11 +103,32 @@ after_initialize do
           )
           known_user = true
         rescue Discourse::NotFound, NoMethodError
-          message_text = I18n.t(
-            "discourse_bale_notifications.initial-contact",
-            site_title: CGI::escapeHTML(SiteSetting.title),
-            chat_id: chat_id,
-          )
+          # فاز یک - اصلاح #۸: به‌جای اتکای مستقیم و یک‌طرفه به chat_id خام
+          # (که کاربر آن را دستی در پروفایل کپی می‌کرد)، اتصال اکنون نیازمند
+          # یک کد یک‌بارمصرف کوتاه‌مدت است که فقط از داخل تنظیمات کاربری
+          # دیسکورس (پس از ورود به حساب) قابل دریافت است. این یعنی برای
+          # اتصال موفق، هم باید به حساب دیسکورس دسترسی داشت و هم به همین چت
+          # بله - نه فقط دانستن یک عدد.
+          incoming_text = params['message']['text'].to_s.strip
+          linked_user_id = DiscourseBaleNotifications::LinkCode.consume(incoming_text)
+          linked_user = linked_user_id ? User.find_by(id: linked_user_id) : nil
+
+          if linked_user
+            linked_user.custom_fields["bale_chat_id"] = chat_id.to_s
+            linked_user.save_custom_fields
+            user = linked_user
+            known_user = true
+            message_text = I18n.t(
+              "discourse_bale_notifications.link-success",
+              site_title: CGI::escapeHTML(SiteSetting.title),
+              username: linked_user.username
+            )
+          else
+            message_text = I18n.t(
+              "discourse_bale_notifications.initial-contact",
+              site_title: CGI::escapeHTML(SiteSetting.title)
+            )
+          end
         end
 
         if known_user && params['message'].key?('reply_to_message')
@@ -126,7 +182,20 @@ after_initialize do
 
       elsif params.key?('callback_query')
         chat_id = params['callback_query']['message']['chat']['id']
+        chat_type = params['callback_query']['message']['chat']['type']
         callback_id = params['callback_query']['id']
+
+        # فاز یک - اصلاح #۹: دفاع در عمق، مشابه بخش پیام‌های معمولی.
+        if chat_type.present? && chat_type != 'private'
+          render json: { success: true }
+          return
+        end
+
+        # فاز یک - اصلاح #۷ (بخش دوم): محدودسازی نرخ اقدامات هر چت.
+        if rate_limited_chat?(chat_id)
+          render json: { success: true }
+          return
+        end
 
         # توجه (فاز صفر - اصلاح بحرانی #۳):
         # قبلاً این بلوک هیچ rescue‌ای نداشت: اگر chat_id ناشناس بود
@@ -136,7 +205,7 @@ after_initialize do
         # کاربر در بله در حالت خطا/بارگذاری می‌ماند. اکنون هر دو حالت با یک
         # پیام قابل‌فهم به کاربر و بازگشت موفق (success: true) به بله مدیریت می‌شوند.
         begin
-          user_custom_field = UserCustomField.find_by!(name: "bale_chat_id", value: chat_id)
+          user_custom_field = UserCustomField.find_by!(name: "bale_chat_id", value: chat_id.to_s)
           user = User.find(user_custom_field.user_id)
           data = params['callback_query']['data'].to_s.split(":")
           post = Post.find(data[1])
@@ -196,11 +265,46 @@ after_initialize do
       data = { success: true }
       render json: data
     end
+
+    private
+
+    # فاز یک - اصلاح #۷: محدودکننده‌ی نرخ اقدامات هر چت (پیام/کلیک دکمه).
+    # عمداً روی chat_id محدود می‌شود، نه IP، چون همه‌ی درخواست‌ها از سرور بله
+    # با IPهای مشترک می‌آیند و محدودسازی بر اساس IP همه‌ی کاربران را باهم
+    # محدود می‌کرد.
+    def rate_limited_chat?(chat_id)
+      limiter = RateLimiter.new(nil, "bale-hook-chat-#{chat_id}", 20, 1.minute)
+      !limiter.performed!(raise_error: false)
+    end
+  end
+
+  # فاز یک - اصلاح #۸: کنترلر جداگانه برای اقدامات نیازمند ورود به حساب
+  # دیسکورس (تولید/حذف کد اتصال). برخلاف BaleController که یک وب‌هوک عمومی
+  # است، این کنترلر از رفتار پیش‌فرض احراز هویت دیسکورس استفاده می‌کند.
+  class DiscourseBaleNotifications::LinkController < ::ApplicationController
+    requires_plugin DiscourseBaleNotifications::PLUGIN_NAME
+    before_action :ensure_logged_in
+
+    def create
+      RateLimiter.new(current_user, "bale-link-code-generate", 5, 10.minutes).performed!
+      code = DiscourseBaleNotifications::LinkCode.generate_for(current_user)
+      render json: { code: code, expires_in: DiscourseBaleNotifications::LinkCode::TTL_SECONDS }
+    rescue RateLimiter::LimitExceeded => e
+      render_json_error(e.description, status: 429)
+    end
+
+    def destroy
+      UserCustomField.where(user_id: current_user.id, name: "bale_chat_id").delete_all
+      render json: success_json
+    end
   end
 
   DiscoursePluginRegistry.serialized_current_user_fields << "bale_chat_id"
   User.register_custom_field_type('bale_chat_id', :text)
-  register_editable_user_custom_field :bale_chat_id
+  # توجه (فاز یک - اصلاح #۸): این فیلد دیگر مستقیماً توسط کاربر از طریق API
+  # به‌روزرسانی پروفایل قابل‌نوشتن نیست (خط register_editable_user_custom_field
+  # حذف شد). مقداردهی آن اکنون فقط از مسیر تایید دوطرفه‌ی کد اتصال (بالا) یا
+  # از طریق LinkController#destroy برای حذف اتصال انجام می‌شود.
 
   # توجه (فاز صفر - اصلاح بحرانی #۱):
   # رویداد `:post_notification_alert` از نسخه 3.2.0.beta1 دیسکورس منسوخ (deprecated)
@@ -270,10 +374,16 @@ after_initialize do
 
     class SetupBaleWebhook < ::Jobs::Base
       def execute(args)
-        return if !SiteSetting.bale_notifications_enabled?
-        
-        SiteSetting.bale_secret = SecureRandom.hex
-        DiscourseBaleNotifications::BaleNotifier.setupWebhook(SiteSetting.bale_secret)
+        if SiteSetting.bale_notifications_enabled?
+          SiteSetting.bale_secret = SecureRandom.hex
+          DiscourseBaleNotifications::BaleNotifier.setupWebhook(SiteSetting.bale_secret)
+        else
+          # فاز یک - اصلاح #۱۰: قبلاً هنگام غیرفعال‌سازی افزونه هیچ اقدامی
+          # انجام نمی‌شد و وب‌هوک نزد بله ثبت‌شده باقی می‌ماند؛ بله تا ابد
+          # سعی در ارسال درخواست به endpointِ اکنون ۴۰۴ می‌کرد. اکنون هنگام
+          # غیرفعال‌سازی، وب‌هوک صراحتاً از سمت بله حذف می‌شود.
+          DiscourseBaleNotifications::BaleNotifier.deleteWebhook
+        end
       end
     end
   end

@@ -1,0 +1,25 @@
+.bale-notifications-preferences {
+  .bale-status {
+    font-weight: bold;
+
+    &--connected {
+      color: var(--success);
+    }
+  }
+
+  .bale-link-code {
+    display: inline-block;
+    font-size: 1.5em;
+    font-weight: bold;
+    letter-spacing: 0.15em;
+    padding: 0.4em 0.8em;
+    margin-bottom: 0.5em;
+    border: 1px solid var(--primary-low);
+    border-radius: 4px;
+    background: var(--primary-very-low);
+  }
+
+  .bale-new-code-btn {
+    margin-inline-start: 0.5em;
+  }
+}
