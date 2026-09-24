@@ -73,4 +73,15 @@ fa_IR:
                 در <a href="%{post_url}">%{topic}</a>
 
                 <pre>%{post_excerpt}</pre>
+      # افزونه Discourse Calendar - طبق NOTIFICATION_COVERAGE.md، مشخص نیست این دو
+      # نوع در این محیط واقعاً به این تمپلیت می‌رسند یا خیر؛ نیاز به تست عملی دارد.
+      event_reminder: |-
+                📅 <b>یادآوری:</b> رویدادی در <a href="%{post_url}">%{topic}</a> نزدیک است
+
+                <pre>%{post_excerpt}</pre>
+      event_invitation: |-
+                🗓️ <a href="%{user_url}">@%{username}</a> شما را به یک رویداد <b>دعوت</b> کرد
+                در <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>
 

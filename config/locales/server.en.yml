@@ -74,3 +74,14 @@ en:
                 in <a href="%{post_url}">%{topic}</a>
 
                 <pre>%{post_excerpt}</pre>
+      # Discourse Calendar plugin - see NOTIFICATION_COVERAGE.md: whether these
+      # two ever actually reach this template is unverified in this environment.
+      event_reminder: |-
+                📅 <b>Reminder:</b> an event in <a href="%{post_url}">%{topic}</a> is coming up
+
+                <pre>%{post_excerpt}</pre>
+      event_invitation: |-
+                🗓️ <a href="%{user_url}">@%{username}</a> <b>invited</b> you to an event
+                in <a href="%{post_url}">%{topic}</a>
+
+                <pre>%{post_excerpt}</pre>

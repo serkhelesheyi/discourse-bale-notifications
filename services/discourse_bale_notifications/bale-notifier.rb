@@ -86,9 +86,40 @@ module DiscourseBaleNotifications
           "http_status=#{response.code}, error_code=#{responseData['error_code']}, " \
           "description=#{responseData['description']})"
         )
+
+        # فاز دو - اصلاح #۱۴: اگر بله اعلام کند کاربر ربات را بلاک کرده یا چت
+        # دیگر معتبر نیست، تلاش مکرر و بی‌نتیجه برای ارسال پیام به آن چت
+        # فایده‌ای ندارد؛ اتصال به‌صورت خودکار قطع می‌شود تا هم لاگ تمیز بماند
+        # و هم کاربر (در صورت بازگشت) بداند باید دوباره اتصال را برقرار کند.
+        unlink_chat_if_unreachable(chat_id_for_log, responseData)
+
         return false
       end
       return responseData
+    end
+
+    # فاز دو - اصلاح #۱۴: خطاهای استاندارد APIهای سازگار با تلگرام برای
+    # «ربات بلاک شده» (error_code 403) یا «چت دیگر وجود ندارد» (error_code 400
+    # با توضیح «chat not found») را تشخیص می‌دهد.
+    def self.bot_unreachable?(responseData)
+      code = responseData['error_code']
+      description = responseData['description'].to_s
+      return true if code == 403
+      return true if code == 400 && description.match?(/chat not found/i)
+      false
+    end
+
+    def self.unlink_chat_if_unreachable(chat_id, responseData)
+      return if chat_id.blank?
+      return unless bot_unreachable?(responseData)
+
+      removed = UserCustomField.where(name: "bale_chat_id", value: chat_id.to_s).delete_all
+      if removed > 0
+        Rails.logger.info(
+          "Bale notifications: automatically unlinked chat_id=#{chat_id} " \
+          "after Bale reported it as blocked/unreachable"
+        )
+      end
     end
 
     def self.generateReplyMarkup(post, user)

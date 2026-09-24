@@ -6,6 +6,14 @@ plugins:
   bale_secret:
     default: ''
     hidden: true
+  # فاز دو - اصلاح #۱۲: این لیست، مطابق با NOTIFICATION_COVERAGE.md، فقط شامل
+  # انواعی است که واقعاً از طریق رویداد push_notification قابل‌دریافت هستند
+  # (۸ نوع اول، طبق ثابت NOTIFIABLE_TYPES در post_alerter.rb هسته‌ی دیسکورس)
+  # یا محتمل هستند (دو نوع مرتبط با افزونه‌ی discourse-calendar، نیازمند تایید
+  # عملی). عمداً هیچ نوعی مثل liked/granted_badge/bookmark_reminder به این
+  # لیست اضافه نشده، چون طبق بررسی سورس هسته، این‌ها هرگز از این رویداد رد
+  # نمی‌شوند و افزودنشان صرفاً یک گزینه‌ی ظاهراً کارآمد ولی عملاً بی‌اثر در
+  # تنظیمات سایت می‌ساخت. برای جزئیات کامل به NOTIFICATION_COVERAGE.md مراجعه کنید.
   bale_enabled_notification_types:
     type: list
     default: mentioned|replied|quoted|posted|linked|private_message|group_mentioned|watching_first_post|event_reminder|event_invitation|following_replied|following_posted

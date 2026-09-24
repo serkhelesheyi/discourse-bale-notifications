@@ -96,11 +96,15 @@ after_initialize do
         begin
           user_custom_field = UserCustomField.find_by(name: "bale_chat_id", value: chat_id.to_s)
           user = User.find(user_custom_field.user_id)
-          message_text = I18n.t(
-            "discourse_bale_notifications.known-user",
-            site_title: CGI::escapeHTML(SiteSetting.title),
-            username: user.username
-          )
+          # فاز دو - اصلاح #۱۳: پیام با زبان انتخابی خودِ کاربر ساخته می‌شود،
+          # نه لزوماً زبان پیش‌فرض سایت.
+          message_text = I18n.with_locale(user.effective_locale) do
+            I18n.t(
+              "discourse_bale_notifications.known-user",
+              site_title: CGI::escapeHTML(SiteSetting.title),
+              username: user.username
+            )
+          end
           known_user = true
         rescue Discourse::NotFound, NoMethodError
           # فاز یک - اصلاح #۸: به‌جای اتکای مستقیم و یک‌طرفه به chat_id خام
@@ -118,12 +122,17 @@ after_initialize do
             linked_user.save_custom_fields
             user = linked_user
             known_user = true
-            message_text = I18n.t(
-              "discourse_bale_notifications.link-success",
-              site_title: CGI::escapeHTML(SiteSetting.title),
-              username: linked_user.username
-            )
+            # فاز دو - اصلاح #۱۳: مطابق بالا.
+            message_text = I18n.with_locale(linked_user.effective_locale) do
+              I18n.t(
+                "discourse_bale_notifications.link-success",
+                site_title: CGI::escapeHTML(SiteSetting.title),
+                username: linked_user.username
+              )
+            end
           else
+            # اینجا هنوز کاربری شناخته نشده، پس زبان پیش‌فرض سایت به‌کار
+            # می‌رود (رفتار طبیعی بدون with_locale).
             message_text = I18n.t(
               "discourse_bale_notifications.initial-contact",
               site_title: CGI::escapeHTML(SiteSetting.title)
@@ -146,29 +155,26 @@ after_initialize do
             found_post = false
           end
 
-          if found_post
-            new_post = {
-              raw: params['message']['text'],
-              topic_id: reply_to.topic_id,
-              reply_to_post_number: reply_to.post_number,
-            }
-            manager = NewPostManager.new(user, new_post)
-            result = manager.perform
-            
-            if result.errors.any?
-              errors = result.errors.full_messages.join("\n")
-              message_text = I18n.t(
-                "discourse_bale_notifications.reply-failed",
-                errors: errors
-              )
+          # فاز دو - اصلاح #۱۳: پیام‌های نتیجه‌ی پاسخ هم با زبان کاربر ساخته می‌شوند.
+          message_text = I18n.with_locale(user.effective_locale) do
+            if found_post
+              new_post = {
+                raw: params['message']['text'],
+                topic_id: reply_to.topic_id,
+                reply_to_post_number: reply_to.post_number,
+              }
+              manager = NewPostManager.new(user, new_post)
+              result = manager.perform
+
+              if result.errors.any?
+                errors = result.errors.full_messages.join("\n")
+                I18n.t("discourse_bale_notifications.reply-failed", errors: errors)
+              else
+                I18n.t("discourse_bale_notifications.reply-success", post_url: result.post.full_url)
+              end
             else
-              message_text = I18n.t(
-                "discourse_bale_notifications.reply-success",
-                post_url: result.post.full_url
-              )
+              I18n.t("discourse_bale_notifications.reply-error")
             end
-          else
-            message_text = I18n.t("discourse_bale_notifications.reply-error")
           end
         end
 
@@ -221,29 +227,32 @@ after_initialize do
           return
         end
 
-        string = I18n.t("discourse_bale_notifications.error-unknown-action")
+        # فاز دو - اصلاح #۱۳: پیام‌های لایک/آنلایک هم با زبان کاربر ساخته می‌شوند.
+        string = I18n.with_locale(user.effective_locale) do
+          if data[0] == "like"
+            begin
+              PostActionCreator.create(user, post, :like)
+              I18n.t("discourse_bale_notifications.like-success")
+            rescue PostAction::AlreadyActed
+              I18n.t("discourse_bale_notifications.already-liked")
+            rescue Discourse::InvalidAccess
+              I18n.t("discourse_bale_notifications.like-fail")
+            end
 
-        if data[0] == "like"
-          begin
-            PostActionCreator.create(user, post, :like)
-            string = I18n.t("discourse_bale_notifications.like-success")
-          rescue PostAction::AlreadyActed
-            string = I18n.t("discourse_bale_notifications.already-liked")
-          rescue Discourse::InvalidAccess
-            string = I18n.t("discourse_bale_notifications.like-fail")
-          end
-
-        elsif data[0] == 'unlike'
-          begin
-            guardian = Guardian.new(user)
-            post_action_type_id = PostActionType.types[:like]
-            post_action = user.post_actions.find_by(post_id: post.id, post_action_type_id: post_action_type_id, deleted_at: nil)
-            raise Discourse::NotFound if post_action.blank?
-            guardian.ensure_can_delete!(post_action)
-            PostAction.remove_act(user, post, post_action_type_id)
-            string = I18n.t("discourse_bale_notifications.unlike-success")
-          rescue Discourse::NotFound, Discourse::InvalidAccess
-            string = I18n.t("discourse_bale_notifications.unlike-failed")
+          elsif data[0] == 'unlike'
+            begin
+              guardian = Guardian.new(user)
+              post_action_type_id = PostActionType.types[:like]
+              post_action = user.post_actions.find_by(post_id: post.id, post_action_type_id: post_action_type_id, deleted_at: nil)
+              raise Discourse::NotFound if post_action.blank?
+              guardian.ensure_can_delete!(post_action)
+              PostAction.remove_act(user, post, post_action_type_id)
+              I18n.t("discourse_bale_notifications.unlike-success")
+            rescue Discourse::NotFound, Discourse::InvalidAccess
+              I18n.t("discourse_bale_notifications.unlike-failed")
+            end
+          else
+            I18n.t("discourse_bale_notifications.error-unknown-action")
           end
         end
 
@@ -343,16 +352,24 @@ after_initialize do
         
         post = Post.where(post_number: payload[:post_number], topic_id: payload[:topic_id]).first
         
-        message_text = I18n.t(
-          "discourse_bale_notifications.message.#{Notification.types[payload[:notification_type]]}",
-          site_title: CGI::escapeHTML(SiteSetting.title),
-          site_url: Discourse.base_url,
-          post_url: Discourse.base_url + payload[:post_url],
-          post_excerpt: CGI::escapeHTML(payload[:excerpt]),
-          topic: CGI::escapeHTML(payload[:topic_title]),
-          username: CGI::escapeHTML(payload[:username]),
-          user_url: Discourse.base_url + "/u/" + payload[:username]
-        )
+        # فاز دو - اصلاح #۱۳: با وجود ۱۰ فایل ترجمه‌ی موجود در این افزونه، تا
+        # پیش از این اصلاح، I18n.t همیشه از زبان پیش‌فرض سایت استفاده می‌کرد
+        # (چون در Sidekiq، I18n.locale به‌طور پیش‌فرض روی SiteSetting.default_locale
+        # تنظیم می‌شود، مگر صراحتاً override شود) - نه زبانی که خودِ کاربر در
+        # پروفایلش انتخاب کرده. این همان الگویی است که خود هسته‌ی دیسکورس هم
+        # برای ایمیل‌های اعلان استفاده می‌کند.
+        message_text = I18n.with_locale(user.effective_locale) do
+          I18n.t(
+            "discourse_bale_notifications.message.#{Notification.types[payload[:notification_type]]}",
+            site_title: CGI::escapeHTML(SiteSetting.title),
+            site_url: Discourse.base_url,
+            post_url: Discourse.base_url + payload[:post_url],
+            post_excerpt: CGI::escapeHTML(payload[:excerpt]),
+            topic: CGI::escapeHTML(payload[:topic_title]),
+            username: CGI::escapeHTML(payload[:username]),
+            user_url: Discourse.base_url + "/u/" + payload[:username]
+          )
+        end
         
         message = {
           chat_id: chat_id,
