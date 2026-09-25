@@ -11,7 +11,7 @@ enabled_site_setting :bale_notifications_enabled
 register_asset "stylesheets/common.scss"
 
 # فاز سه - اصلاح #۱۵: افزودن لینک پنل مدیریتی به فهرست «Plugins» در ادمین.
-add_admin_route "bale_notifications.title", "bale-notifications"
+add_admin_route "bale_notifications.title", "bale-notifications", use_new_show_route: true
 
 after_initialize do
   module ::DiscourseBaleNotifications
