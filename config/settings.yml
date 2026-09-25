@@ -17,4 +17,25 @@ plugins:
   bale_enabled_notification_types:
     type: list
     default: mentioned|replied|quoted|posted|linked|private_message|group_mentioned|watching_first_post|event_reminder|event_invitation|following_replied|following_posted
-    client: false
+    # فاز سه - اصلاح #۱۸: باز شد تا رابط کاربری تنظیمات شخصی هر کاربر بتواند
+    # بداند سایت کدام انواع را اصلاً فعال کرده (برای ساخت چک‌باکس‌ها). این
+    # فقط اسامی انواع اعلان فعال را افشا می‌کند، نه هیچ داده‌ی حساسی.
+    client: true
+  # فاز سه - اصلاح #۱۷: ارسال آواتار کاربر عامل (کسی که اعلان را ایجاد کرده)
+  # به‌همراه متن اعلان، به‌صورت اختیاری (پیش‌فرض غیرفعال تا رفتار فعلی نصب‌های
+  # موجود بدون تغییر بماند).
+  bale_notifications_show_avatar:
+    default: false
+  # فاز سه - اصلاح #۱۹: «ساعات سکوت» - در این بازه، پیام‌ها همچنان کامل ارسال
+  # می‌شوند (چیزی گم نمی‌شود)، فقط با پرچم disable_notification به بله گفته
+  # می‌شود که بی‌صدا تحویل داده شوند (بدون لرزش/صدا روی گوشی کاربر).
+  bale_notifications_quiet_hours_enabled:
+    default: false
+  bale_notifications_quiet_hours_start:
+    default: 22
+    min: 0
+    max: 23
+  bale_notifications_quiet_hours_end:
+    default: 8
+    min: 0
+    max: 23

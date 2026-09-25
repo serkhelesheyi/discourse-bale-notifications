@@ -22,4 +22,94 @@
   .bale-new-code-btn {
     margin-inline-start: 0.5em;
   }
+
+  // فاز سه - اصلاح #۱۸: چک‌باکس‌های ترجیح شخصی نوع اعلان.
+  .bale-notification-types {
+    margin: 1em 0;
+    padding: 0.75em 1em;
+    border: 1px solid var(--primary-low);
+    border-radius: 4px;
+
+    .bale-notification-types-title {
+      font-weight: bold;
+      margin-bottom: 0.5em;
+    }
+
+    .bale-type-row {
+      display: block;
+      font-weight: normal;
+      padding: 0.25em 0;
+
+      input[type="checkbox"] {
+        margin-inline-end: 0.5em;
+      }
+    }
+  }
 }
+
+// فاز سه - اصلاح #۱۵: پنل وضعیت مدیریتی.
+.bale-notifications-admin {
+  .bale-admin-summary {
+    display: flex;
+    gap: 1.5em;
+    margin-bottom: 1.5em;
+  }
+
+  .bale-admin-stat {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75em 1.25em;
+    border: 1px solid var(--primary-low);
+    border-radius: 4px;
+    min-width: 8em;
+
+    .bale-admin-stat-number {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .bale-admin-stat-label {
+      color: var(--primary-medium);
+      font-size: 0.85em;
+    }
+  }
+
+  .bale-admin-warning {
+    color: var(--danger);
+  }
+
+  .bale-admin-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1.5em;
+
+    td,
+    th {
+      padding: 0.4em 0.75em;
+      border-bottom: 1px solid var(--primary-low);
+      text-align: start;
+    }
+  }
+
+  .bale-admin-activity {
+    tr.bale-activity-fail td {
+      color: var(--danger);
+    }
+  }
+
+  .bale-admin-test-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 1.5em;
+
+    .bale-admin-test-ok {
+      color: var(--success);
+    }
+
+    .bale-admin-test-fail {
+      color: var(--danger);
+    }
+  }
+}
+

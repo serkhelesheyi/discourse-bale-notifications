@@ -1,5 +1,9 @@
 en:
   js:
+    admin:
+      plugins:
+        bale_notifications:
+          title: "Bale Notifications"
     bale-notifications:
       preferences-title: "Bale Notifications"
       instructions: "Click the button to get a linking code, then send that code to the Bale bot to enable notifications."
@@ -8,3 +12,43 @@ en:
       send-code-instructions: "Send this code to the Bale bot within %{minutes} minutes to finish connecting your account."
       status-connected: "✅ Connected to Bale"
       disconnect: "Disconnect"
+      # فاز سه - اصلاح #۱۸: عنوان و لیبل چک‌باکس‌های ترجیح شخصی نوع اعلان.
+      types-title: "Which notifications should be sent to Bale?"
+      types:
+        mentioned: "Someone mentions you"
+        replied: "Someone replies to you"
+        quoted: "Someone quotes you"
+        posted: "New post in a topic you're watching"
+        linked: "Someone links to your post"
+        private_message: "Private messages"
+        group_mentioned: "Group mentions"
+        watching_first_post: "First post in a watched topic"
+        event_reminder: "Event reminders"
+        event_invitation: "Event invitations"
+        following_replied: "Replies from people you follow"
+        following_posted: "Posts from people you follow"
+      # فاز سه - اصلاح #۱۵: پنل وضعیت مدیریتی.
+      admin:
+        title: "Bale Notifications status"
+        linked_users: "Linked users"
+        status: "Status"
+        enabled: "Enabled"
+        disabled: "Disabled"
+        webhook_status: "Webhook status"
+        webhook_url: "Registered URL"
+        webhook_pending: "Pending updates"
+        webhook_last_error: "Last error from Bale"
+        webhook_unreachable: "Could not reach Bale's API to check the webhook status. Check the access token and site logs."
+        send_test: "Send a test message"
+        username_placeholder: "Discourse username"
+        send_test_button: "Send test"
+        test_sent: "✅ Test message sent"
+        test_failed_inline: "❌ Failed to send - see the error above"
+        recent_activity: "Recent activity"
+        activity_time: "Time (UTC)"
+        activity_user: "User"
+        activity_status: "Status"
+        activity_error: "Error"
+        ok: "Sent"
+        failed: "Failed"
+        no_activity: "No notifications have been sent yet."

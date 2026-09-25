@@ -10,6 +10,9 @@ enabled_site_setting :bale_notifications_enabled
 
 register_asset "stylesheets/common.scss"
 
+# فاز سه - اصلاح #۱۵: افزودن لینک پنل مدیریتی به فهرست «Plugins» در ادمین.
+add_admin_route "bale_notifications.title", "bale-notifications"
+
 after_initialize do
   module ::DiscourseBaleNotifications
     PLUGIN_NAME ||= "discourse-bale-notifications".freeze
@@ -28,6 +31,9 @@ after_initialize do
     # فاز یک - اصلاح #۸: تولید/حذف کد اتصال یک‌بارمصرف (نیازمند ورود به حساب)
     post "/link" => "link#create"
     delete "/link" => "link#destroy"
+    # فاز سه - اصلاح #۱۵: endpointهای JSON پنل مدیریتی (فقط ادمین)
+    get "/admin/status" => "admin#status"
+    post "/admin/test" => "admin#test"
   end
 
   Discourse::Application.routes.append do
@@ -308,12 +314,90 @@ after_initialize do
     end
   end
 
+  # فاز سه - اصلاح #۱۵: کنترلر پنل وضعیت مدیریتی. فقط برای ادمین (از طریق
+  # کلاس پایه‌ی استاندارد Admin::AdminController که بررسی ادمین‌بودن را خودش
+  # انجام می‌دهد، دقیقاً مثل بقیه‌ی صفحات /admin/* در دیسکورس).
+  class DiscourseBaleNotifications::AdminController < ::Admin::AdminController
+    requires_plugin DiscourseBaleNotifications::PLUGIN_NAME
+
+    def status
+      linked_count = UserCustomField.where(name: "bale_chat_id").count
+      activity = DiscourseBaleNotifications::BaleNotifier.recent_activity
+
+      chat_ids = activity.map { |entry| entry["chat_id"] }.compact.map(&:to_s).uniq
+      usernames_by_chat_id =
+        if chat_ids.present?
+          UserCustomField
+            .joins("INNER JOIN users ON users.id = user_custom_fields.user_id")
+            .where(name: "bale_chat_id", value: chat_ids)
+            .pluck("user_custom_fields.value", "users.username")
+            .to_h
+        else
+          {}
+        end
+
+      activity_with_usernames = activity.map do |entry|
+        entry.merge("username" => usernames_by_chat_id[entry["chat_id"].to_s])
+      end
+
+      # فراخوانی زنده‌ی getWebhookInfo تا ادمین وضعیت واقعی سمت بله را ببیند،
+      # نه فقط آن‌چه در دیتابیس محلی داریم.
+      webhook_info = DiscourseBaleNotifications::BaleNotifier.getWebhookInfo
+
+      render json: {
+        enabled: SiteSetting.bale_notifications_enabled?,
+        linked_users_count: linked_count,
+        recent_activity: activity_with_usernames,
+        webhook_info: webhook_info,
+      }
+    end
+
+    def test
+      username = params[:username].to_s.strip
+      target_user = username.present? ? User.find_by(username: username) : nil
+
+      if target_user.nil?
+        return render_json_error(I18n.t("discourse_bale_notifications.admin.user_not_found"), status: 404)
+      end
+
+      chat_id = target_user.custom_fields["bale_chat_id"]
+      if chat_id.blank?
+        return render_json_error(I18n.t("discourse_bale_notifications.admin.user_not_linked"), status: 422)
+      end
+
+      test_text = I18n.with_locale(target_user.effective_locale) do
+        I18n.t("discourse_bale_notifications.admin.test_message", site_title: CGI::escapeHTML(SiteSetting.title))
+      end
+
+      response = DiscourseBaleNotifications::BaleNotifier.sendMessage({
+        chat_id: chat_id,
+        text: test_text,
+        parse_mode: "html",
+      })
+
+      if response
+        render json: success_json
+      else
+        render_json_error(I18n.t("discourse_bale_notifications.admin.test_failed"), status: 502)
+      end
+    end
+  end
+
   DiscoursePluginRegistry.serialized_current_user_fields << "bale_chat_id"
   User.register_custom_field_type('bale_chat_id', :text)
   # توجه (فاز یک - اصلاح #۸): این فیلد دیگر مستقیماً توسط کاربر از طریق API
   # به‌روزرسانی پروفایل قابل‌نوشتن نیست (خط register_editable_user_custom_field
   # حذف شد). مقداردهی آن اکنون فقط از مسیر تایید دوطرفه‌ی کد اتصال (بالا) یا
   # از طریق LinkController#destroy برای حذف اتصال انجام می‌شود.
+
+  # فاز سه - اصلاح #۱۸: ترجیح شخصی هر کاربر از میان انواعی که سایت اصلاً فعال
+  # کرده (bale_enabled_notification_types سقف/فهرست مجاز است؛ این فیلد یک
+  # زیرمجموعه‌ی اختیاری از همان فهرست برای هر کاربر مشخص می‌کند). برخلاف
+  # bale_chat_id، این فیلد صرفاً یک سلیقه‌ی شخصی است، نه یک باند امنیتی، پس
+  # مشکلی ندارد که مستقیماً توسط خودِ کاربر قابل‌ویرایش باشد.
+  DiscoursePluginRegistry.serialized_current_user_fields << "bale_notification_types"
+  User.register_custom_field_type('bale_notification_types', :text)
+  register_editable_user_custom_field :bale_notification_types
 
   # توجه (فاز صفر - اصلاح بحرانی #۱):
   # رویداد `:post_notification_alert` از نسخه 3.2.0.beta1 دیسکورس منسوخ (deprecated)
@@ -341,13 +425,23 @@ after_initialize do
         return if !SiteSetting.bale_notifications_enabled?
         
         payload = args[:payload]
-        return unless SiteSetting.bale_enabled_notification_types.split("|").include?(Notification.types[payload[:notification_type]].to_s)
+        notification_type_name = Notification.types[payload[:notification_type]].to_s
+        return unless SiteSetting.bale_enabled_notification_types.split("|").include?(notification_type_name)
         
         user = User.find(args[:user_id])
         chat_id = user.custom_fields["bale_chat_id"]
         
         if (not chat_id.present?) || (chat_id.length < 1)
           return
+        end
+
+        # فاز سه - اصلاح #۱۸: اگر کاربر خودش ترجیحی برای زیرمجموعه‌ای از انواع
+        # ثبت کرده باشد، به آن احترام گذاشته می‌شود. اگر فیلد خالی/تنظیم‌نشده
+        # باشد (رفتار پیش‌فرض برای همه‌ی کاربران فعلی)، هیچ محدودیت اضافه‌ای
+        # اعمال نمی‌شود - یعنی رفتار قبلی (همه‌ی انواع فعال سایت) دقیقاً حفظ می‌شود.
+        user_type_prefs = user.custom_fields["bale_notification_types"]
+        if user_type_prefs.present?
+          return unless user_type_prefs.split("|").include?(notification_type_name)
         end
         
         post = Post.where(post_number: payload[:post_number], topic_id: payload[:topic_id]).first
@@ -360,7 +454,7 @@ after_initialize do
         # برای ایمیل‌های اعلان استفاده می‌کند.
         message_text = I18n.with_locale(user.effective_locale) do
           I18n.t(
-            "discourse_bale_notifications.message.#{Notification.types[payload[:notification_type]]}",
+            "discourse_bale_notifications.message.#{notification_type_name}",
             site_title: CGI::escapeHTML(SiteSetting.title),
             site_url: Discourse.base_url,
             post_url: Discourse.base_url + payload[:post_url],
@@ -370,16 +464,51 @@ after_initialize do
             user_url: Discourse.base_url + "/u/" + payload[:username]
           )
         end
+
+        # فاز سه - اصلاح #۱۷: آواتار کاربر عامل (کسی که اعلان را ایجاد کرده،
+        # نه لزوماً گیرنده) برای ارسال احتمالی به‌همراه پیام محاسبه می‌شود.
+        # منطق تصمیم‌گیری نهایی (آیا واقعاً به‌صورت عکس ارسال شود) داخل
+        # BaleNotifier.sendNotification است.
+        acting_user = User.find_by(username: payload[:username])
+        avatar_url =
+          if acting_user
+            Discourse.base_url + acting_user.avatar_template.gsub("{size}", "128")
+          end
+
+        # فاز سه - اصلاح #۱۹: «ساعات سکوت» - چیزی حذف/به‌تاخیر نمی‌افتد، فقط
+        # با پرچم disable_notification به بله گفته می‌شود پیام را بی‌صدا
+        # تحویل دهد. بر اساس منطقه‌ی زمانی خودِ گیرنده (در صورت تنظیم‌بودن در
+        # پروفایلش)، وگرنه منطقه‌ی زمانی پیش‌فرض سایت.
+        disable_notification = false
+        if SiteSetting.bale_notifications_quiet_hours_enabled?
+          begin
+            zone_name = user.user_option&.timezone.presence || Time.zone.name
+            hour = Time.find_zone!(zone_name).now.hour
+            start_hour = SiteSetting.bale_notifications_quiet_hours_start
+            end_hour = SiteSetting.bale_notifications_quiet_hours_end
+            disable_notification =
+              if start_hour == end_hour
+                false # بازه‌ی صفر یعنی عملاً ساعات سکوتی وجود ندارد
+              elsif start_hour < end_hour
+                hour >= start_hour && hour < end_hour
+              else
+                # بازه‌ای که از نیمه‌شب رد می‌شود، مثل ۲۲ تا ۸
+                hour >= start_hour || hour < end_hour
+              end
+          rescue ArgumentError
+            # منطقه‌ی زمانی نامعتبر/ناشناس در پروفایل کاربر؛ به‌صورت ایمن
+            # نادیده گرفته می‌شود و پیام عادی (با صدا) ارسال می‌شود.
+            disable_notification = false
+          end
+        end
         
-        message = {
-          chat_id: chat_id,
-          text: message_text,
-          parse_mode: "html",
-          disable_web_page_preview: true,
-          reply_markup: DiscourseBaleNotifications::BaleNotifier.generateReplyMarkup(post, user),
-        }
-        
-        response = DiscourseBaleNotifications::BaleNotifier.sendMessage(message)
+        response = DiscourseBaleNotifications::BaleNotifier.sendNotification(
+          message_text,
+          chat_id,
+          DiscourseBaleNotifications::BaleNotifier.generateReplyMarkup(post, user),
+          avatar_url: avatar_url,
+          disable_notification: disable_notification
+        )
         
         if response
           message_id = response['result']['message_id']

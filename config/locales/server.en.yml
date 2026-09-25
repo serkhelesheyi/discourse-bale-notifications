@@ -3,6 +3,10 @@ en:
     bale_notifications_enabled: Enable Bale notifications?
     bale_access_token: Obtain your bot's access token from the Bale botfather (@botfather)
     bale_enabled_notification_types: Limit notifications sent to Bale by this selection of types
+    bale_notifications_show_avatar: Send the notifying user's avatar as a photo alongside the message, when the resulting caption fits Bale's caption length limit
+    bale_notifications_quiet_hours_enabled: Deliver messages silently (no sound/vibration) during quiet hours, using the recipient's own timezone when set
+    bale_notifications_quiet_hours_start: Quiet hours start (0-23, recipient's local time)
+    bale_notifications_quiet_hours_end: Quiet hours end (0-23, recipient's local time)
   discourse_bale_notifications:
     initial-contact: "To get notifications for %{site_title}, open your user preferences on the forum, generate a linking code, and send that code to me here."
     link-success: "✅ Connected! Hi %{username}, I'll message you here when you have new notifications on %{site_title}."
@@ -22,6 +26,12 @@ en:
     reply-error: "❌ An error occured while processing your reply"
     reply-failed: "❌ Reply failed: \n\n %{errors}"
     reply-success: "✅ Reply successful - view it <a href='%{post_url}'>here</a>"
+    # فاز سه - اصلاح #۱۵: پیام‌های سمت سرور پنل مدیریتی.
+    admin:
+      user_not_found: "No user found with that username."
+      user_not_linked: "That user hasn't connected a Bale chat yet."
+      test_message: "🧪 This is a test message from %{site_title}. If you received this, your Bale notifications are working correctly."
+      test_failed: "Sending the test message failed. Check the site logs for details."
     message:
       mentioned: |-
                 💬 <a href="%{user_url}">@%{username}</a> <b>mentioned</b> you

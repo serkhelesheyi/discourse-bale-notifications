@@ -1,5 +1,9 @@
 fa_IR:
   js:
+    admin:
+      plugins:
+        bale_notifications:
+          title: "اعلان‌های بله"
     bale-notifications:
       preferences-title: "اعلان‌های بله"
       instructions: "برای فعال‌سازی اعلان‌های بله، روی دکمه بزنید تا یک «کد اتصال» بسازید، سپس همان کد را برای ربات بله ارسال کنید."
@@ -8,3 +12,43 @@ fa_IR:
       send-code-instructions: "این کد را ظرف %{minutes} دقیقه برای ربات بله ارسال کنید تا اتصال حساب شما کامل شود."
       status-connected: "✅ به بله متصل است"
       disconnect: "قطع اتصال"
+      # فاز سه - اصلاح #۱۸: عنوان و لیبل چک‌باکس‌های ترجیح شخصی نوع اعلان.
+      types-title: "کدام اعلان‌ها به بله ارسال شوند؟"
+      types:
+        mentioned: "وقتی کسی شما را منشن می‌کند"
+        replied: "وقتی کسی به شما پاسخ می‌دهد"
+        quoted: "وقتی کسی از شما نقل‌قول می‌کند"
+        posted: "پست جدید در تاپیکی که تحت‌نظر دارید"
+        linked: "وقتی کسی به پست شما لینک می‌دهد"
+        private_message: "پیام‌های خصوصی"
+        group_mentioned: "منشن‌شدن گروهی"
+        watching_first_post: "پست اول در تاپیک تحت‌نظر"
+        event_reminder: "یادآوری رویدادها"
+        event_invitation: "دعوت به رویدادها"
+        following_replied: "پاسخ از افرادی که دنبال می‌کنید"
+        following_posted: "پست از افرادی که دنبال می‌کنید"
+      # فاز سه - اصلاح #۱۵: پنل وضعیت مدیریتی.
+      admin:
+        title: "وضعیت اعلان‌های بله"
+        linked_users: "کاربران متصل"
+        status: "وضعیت"
+        enabled: "فعال"
+        disabled: "غیرفعال"
+        webhook_status: "وضعیت وب‌هوک"
+        webhook_url: "آدرس ثبت‌شده"
+        webhook_pending: "به‌روزرسانی‌های در انتظار"
+        webhook_last_error: "آخرین خطا از سمت بله"
+        webhook_unreachable: "امکان دسترسی به API بله برای بررسی وضعیت وب‌هوک نبود. توکن دسترسی و لاگ سرور را بررسی کنید."
+        send_test: "ارسال پیام آزمایشی"
+        username_placeholder: "نام کاربری دیسکورس"
+        send_test_button: "ارسال تست"
+        test_sent: "✅ پیام آزمایشی ارسال شد"
+        test_failed_inline: "❌ ارسال ناموفق بود - به خطای بالا نگاه کنید"
+        recent_activity: "فعالیت اخیر"
+        activity_time: "زمان (UTC)"
+        activity_user: "کاربر"
+        activity_status: "وضعیت"
+        activity_error: "خطا"
+        ok: "ارسال شد"
+        failed: "ناموفق"
+        no_activity: "هنوز هیچ اعلانی ارسال نشده است."
