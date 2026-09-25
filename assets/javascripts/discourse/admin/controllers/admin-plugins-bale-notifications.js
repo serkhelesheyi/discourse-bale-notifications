@@ -1,4 +1,5 @@
 import Controller from "@ember/controller";
+import { action } from "@ember/object";
 import { tracked } from "@glimmer/tracking";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -6,7 +7,6 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 export default class AdminPluginsBaleNotificationsController extends Controller {
   @tracked testUsername = "";
   @tracked testing = false;
-  // "idle" | "success" | "failure"
   @tracked testStatus = "idle";
 
   get testSucceeded() {
@@ -17,28 +17,34 @@ export default class AdminPluginsBaleNotificationsController extends Controller 
     return this.testStatus === "failure";
   }
 
-  // از یک شیء actions کلاسیک استفاده شده (به‌جای {{on}} روی دکمه) چون
-  // تمپلیت این کنترلر از {{action "sendTest"}} استفاده می‌کند - سازگارترین
-  // الگو با نسخه‌های مختلف Discourse برای صفحات ادمین.
-  actions = {
-    sendTest: async () => {
-      const username = (this.testUsername || "").trim();
-      if (!username) {
-        return;
-      }
+  @action
+  updateTestUsername(event) {
+    this.testUsername = event.target.value;
+  }
 
-      this.testing = true;
-      this.testStatus = "idle";
+  @action
+  async sendTest() {
+    const username = (this.testUsername || "").trim();
 
-      try {
-        await ajax("/bale/admin/test", { type: "POST", data: { username } });
-        this.testStatus = "success";
-      } catch (error) {
-        this.testStatus = "failure";
-        popupAjaxError(error);
-      } finally {
-        this.testing = false;
-      }
-    },
-  };
+    if (!username) {
+      return;
+    }
+
+    this.testing = true;
+    this.testStatus = "idle";
+
+    try {
+      await ajax("/bale/admin/test", {
+        type: "POST",
+        data: { username },
+      });
+
+      this.testStatus = "success";
+    } catch (error) {
+      this.testStatus = "failure";
+      popupAjaxError(error);
+    } finally {
+      this.testing = false;
+    }
+  }
 }
