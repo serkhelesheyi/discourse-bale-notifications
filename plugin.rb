@@ -38,6 +38,13 @@ after_initialize do
 
   Discourse::Application.routes.append do
     mount ::DiscourseBaleNotifications::Engine, at: "/bale"
+
+    scope "/admin/plugins/discourse-bale-notifications",
+          constraints: AdminConstraint.new do
+      scope format: false do
+        get "/bale-notifications" => "discourse_bale_notifications/admin#index"
+      end
+    end
   end
 
   class DiscourseBaleNotifications::BaleController < ::ApplicationController
@@ -319,6 +326,10 @@ after_initialize do
   # انجام می‌دهد، دقیقاً مثل بقیه‌ی صفحات /admin/* در دیسکورس).
   class DiscourseBaleNotifications::AdminController < ::Admin::AdminController
     requires_plugin DiscourseBaleNotifications::PLUGIN_NAME
+
+    def index
+      render html: "", layout: "admin"
+    end
 
     def status
       linked_count = UserCustomField.where(name: "bale_chat_id").count
