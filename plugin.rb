@@ -115,7 +115,7 @@ after_initialize do
             I18n.t(
               "discourse_bale_notifications.known-user",
               site_title: CGI::escapeHTML(SiteSetting.title),
-              username: user.username
+              username: CGI::escapeHTML(user.username)
             )
           end
           known_user = true
@@ -140,7 +140,7 @@ after_initialize do
               I18n.t(
                 "discourse_bale_notifications.link-success",
                 site_title: CGI::escapeHTML(SiteSetting.title),
-                username: linked_user.username
+                username: CGI::escapeHTML(linked_user.username)
               )
             end
           else
@@ -180,7 +180,9 @@ after_initialize do
               result = manager.perform
 
               if result.errors.any?
-                errors = result.errors.full_messages.join("\n")
+                # Validation messages may include user-controlled input; the
+                # translated reply-failed template is sent with parse_mode=HTML.
+                errors = CGI::escapeHTML(result.errors.full_messages.join("\n"))
                 I18n.t("discourse_bale_notifications.reply-failed", errors: errors)
               else
                 I18n.t("discourse_bale_notifications.reply-success", post_url: result.post.full_url)
