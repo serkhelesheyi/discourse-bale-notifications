@@ -12,7 +12,7 @@ module DiscourseBaleNotifications
         like_button_text = I18n.t('discourse_bale_notifications.like')
         like_button_action = "like:#{post.id}"
       end
-  
+
       post_url = "#{Discourse.base_url}#{post.url({ without_slug: true })}"
       {
         inline_keyboard: [
@@ -22,6 +22,6 @@ module DiscourseBaleNotifications
           ]
         ]
       }
-      end
+    end
   end
 end
