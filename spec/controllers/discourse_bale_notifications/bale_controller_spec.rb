@@ -3,14 +3,14 @@
 require 'rails_helper'
 
 RSpec.describe DiscourseBaleNotifications::BaleController do
-  describe "#escape_html" do
+  describe '#escape_html' do
     subject(:escape_html) { described_class.new.send(:escape_html, input) }
 
     context 'when text contains HTML metacharacters' do
       let(:input) { %(<b>name & 'value'</b>) }
 
       it 'escapes the text rather than treating it as markup' do
-        expect(escape_html).to eq('&lt;b&gt;name &amp; &quot;value&quot;&lt;/b&gt;')
+        expect(escape_html).to eq('&lt;b&gt;name &amp; &#39;value&#39;&lt;/b&gt;')
       end
     end
 

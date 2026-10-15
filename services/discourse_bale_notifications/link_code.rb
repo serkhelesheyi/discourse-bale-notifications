@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DiscourseBaleNotifications
   # کدهای اتصال یک‌بارمصرف و کوتاه‌مدت برای اتصال امن حساب دیسکورس به چت بله.
   #
@@ -45,7 +47,8 @@ module DiscourseBaleNotifications
         return candidate if created
       end
 
-      raise "DiscourseBaleNotifications::LinkCode could not generate a unique code after #{MAX_GENERATION_ATTEMPTS} attempts"
+      raise "DiscourseBaleNotifications::LinkCode could not generate a unique code " \
+            "after #{MAX_GENERATION_ATTEMPTS} attempts"
     end
 
     # اگر ورودی یک کد معتبر و هنوز منقضی‌نشده باشد، user_id مربوطه را
