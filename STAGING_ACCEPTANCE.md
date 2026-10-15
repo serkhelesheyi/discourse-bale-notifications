@@ -80,3 +80,13 @@ Do not perform these steps against production as part of this checklist. Product
 - GitHub CI on commit `97d19d10af37c9bfad1f436099e5882506360eeb` is successful for both workflows (see links in `ROADMAP.md`).
 - Staging acceptance has **not** been executed or verified by this document.
 - Production deployment has **not** been performed.
+
+## Latest automated verification — 16 October 2026
+
+Candidate documentation/code HEAD: `91fcbf657b45bbde017f8f01c6845adf3f15b080`.
+
+- [x] [Discourse Plugin CI run 38815756869](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38815756869) completed with `success`: `ci / linting`, `ci / check_for_tests`, and `ci / backend_tests` all succeeded. The backend job reports successful Zeitwerk eager-load/reloading checks, bootability, English locale lint, and plugin RSpec.
+- [x] [Plugin smoke tests run 38815756777](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38815756777) completed with `success`: Ruby syntax checks and standalone service tests succeeded.
+- [ ] Live staging acceptance: not evidenced by GitHub Actions and still requires execution on the actual staging instance.
+
+These CI results establish automated checks for the exact SHA above. They do not certify Bale API behavior, webhook configuration, privacy in a real forum, or rollback on a deployed instance.
