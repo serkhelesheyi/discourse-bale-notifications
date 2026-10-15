@@ -38,14 +38,19 @@ module DiscourseBaleNotifications
   autoload :WebhookMessageHandler, File.join(controllers_path, 'webhook_message_handler')
   autoload :WebhookCallbackHandler, File.join(controllers_path, 'webhook_callback_handler')
 
-  # Rails engine that owns this plugin's mounted routes.
-  class Engine < ::Rails::Engine
-    engine_name PLUGIN_NAME
-    isolate_namespace DiscourseBaleNotifications
-  end
 end
 
 after_initialize do
+  # Defer engine construction until after the host application's middleware stack
+  # has been initialized. This preserves the plugin's established initialization order.
+  DiscourseBaleNotifications.const_set(
+    :Engine,
+    Class.new(::Rails::Engine) do
+      engine_name DiscourseBaleNotifications::PLUGIN_NAME
+      isolate_namespace DiscourseBaleNotifications
+    end
+  )
+
   DiscourseBaleNotifications::PluginSetup.configure
   register_editable_user_custom_field :bale_notification_types
 end
