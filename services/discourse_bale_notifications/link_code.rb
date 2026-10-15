@@ -20,7 +20,7 @@ module DiscourseBaleNotifications
     # Redis Lua script makes read-and-delete a single atomic operation.
     # The key is namespaced explicitly because eval does not pass through
     # DiscourseRedis's per-command key namespacing wrappers.
-    CONSUME_SCRIPT = <<~LUA.freeze
+    CONSUME_SCRIPT = <<~LUA
       local user_id = redis.call('GET', KEYS[1])
       if user_id then
         redis.call('DEL', KEYS[1])
@@ -48,7 +48,7 @@ module DiscourseBaleNotifications
       end
 
       raise "DiscourseBaleNotifications::LinkCode could not generate a unique code " \
-            "after #{MAX_GENERATION_ATTEMPTS} attempts"
+            'after #{MAX_GENERATION_ATTEMPTS} attempts'
     end
 
     # اگر ورودی یک کد معتبر و هنوز منقضی‌نشده باشد، user_id مربوطه را

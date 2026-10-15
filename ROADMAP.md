@@ -435,3 +435,8 @@
 اجرای [38713002053](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38713002053) پس از commit پاک‌سازی اولیه کامل شد و شکست خورد. RuboCop از ۳۱۷ به ۱۶۷ تخلف رسیده است (۸۵ مورد قابل اصلاح خودکار)، اما موارد ساختاری مهمی همچنان باقی‌اند؛ از جمله طول/پیچیدگی زیاد `BaleController#hook` و `SendBaleNotifications#execute` و نام‌گذاری camelCase در wrapperهای داخلی API. این موارد نباید با disable کردن گستردهٔ copها پنهان شوند.
 
 آزمون RSpec در انتظار نادرست برای `CGI.escapeHTML` شکست خورد: ورودی شامل کوتیشن تکی بود و خروجی واقعی `&#39;` است، نه `&quot;`. انتظار آزمون با ورودی واقعی هماهنگ شد. همچنین برای `link_code.rb` هدر frozen string literal و شکست خط طولانی اضافه شد. اجرای CI پس از این اصلاحات باید دوباره تأیید شود.
+
+
+### نتیجهٔ CI و گام بعدی — ۱۵ اکتبر ۲۰۲۶
+
+اجرای [38713600491](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38713600491) با نتیجهٔ کلی failure پایان یافت: jobهای backend tests و Syntax Tree سبز و job lint قرمز بود. RuboCop تعداد ۱۶۶ تخلف در سه فایل گزارش کرد: `plugin.rb` (۷۱)، `services/discourse_bale_notifications/bale-notifier.rb` (۹۳) و `services/discourse_bale_notifications/link_code.rb` (۲). اصلاح مورد انتظار `CGI.escapeHTML` مشکل RSpec را برطرف کرده است. گام بعد، اصلاح‌های مکانیکی محدود و سپس بازبینی جداگانهٔ نام‌گذاری و ساختار است؛ تغییرات نام APIهای Ruby باید همراه با بررسی همهٔ callerها انجام شود. هیچ merge یا deployment انجام نشده است.
