@@ -113,7 +113,7 @@ module DiscourseBaleNotifications
         log = ([entry] + log).first(ACTIVITY_LOG_MAX_ENTRIES)
         PluginStore.set("bale-notifications", ACTIVITY_LOG_KEY, log)
       end
-    rescue => e
+    rescue StandardError => e
       # ثبت لاگ فعالیت (یک قابلیت صرفاً تشخیصی) هرگز نباید باعث شکست ارسال
       # واقعی پیام شود؛ به همین دلیل اینجا rescue عمومی توجیه‌پذیر است.
       Rails.logger.warn("Bale notifications: failed to record activity log entry: #{e.class}: #{e.message}")
