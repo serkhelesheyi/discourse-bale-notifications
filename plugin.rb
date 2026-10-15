@@ -52,8 +52,8 @@ after_initialize do
     skip_before_action :check_xhr, :preload_json, :verify_authenticity_token, :redirect_to_login_if_required
 
     def hook
-      if not SiteSetting.bale_notifications_enabled
-        render status: 404
+      unless SiteSetting.bale_notifications_enabled
+        render json: { error: "not_found" }, status: :not_found
         return
       end
 
@@ -70,7 +70,7 @@ after_initialize do
       # نمی‌شود؛ can_perform? هم یک بررسی بدون مصرف (peek) است.
       auth_fail_limiter = RateLimiter.new(nil, "bale-hook-auth-fail-#{request.remote_ip}", 20, 1.minute)
       if !auth_fail_limiter.can_perform?
-        render status: 429
+        render json: { error: "rate_limited" }, status: :too_many_requests
         return
       end
 
@@ -79,12 +79,17 @@ after_initialize do
       if secret.blank? || !ActiveSupport::SecurityUtils.secure_compare(key, secret)
         auth_fail_limiter.performed!(raise_error: false)
         Rails.logger.error("Bale hook called with incorrect key from #{request.remote_ip}")
-        render status: 403
+        render json: { error: "forbidden" }, status: :forbidden
         return
       end
 
       # پردازش پیام‌های دریافتی (ساختار JSON بله دقیقاً مشابه تلگرام است)
       if params.key?('message')
+        unless valid_message_payload?(params['message'])
+          render json: { success: true }
+          return
+        end
+
         chat_id = params['message']['chat']['id']
         chat_type = params['message']['chat']['type']
 
@@ -202,6 +207,22 @@ after_initialize do
         DiscourseBaleNotifications::BaleNotifier.sendMessage(message)
 
       elsif params.key?('callback_query')
+        callback_payload = params['callback_query']
+        unless valid_callback_payload?(callback_payload)
+          callback_id = callback_payload['id'] if webhook_object?(callback_payload)
+          if callback_id.present?
+            DiscourseBaleNotifications::BaleNotifier.answerCallback(
+              callback_id,
+              I18n.t(
+                "discourse_bale_notifications.action-unavailable",
+                default: "❌ This action is no longer available."
+              )
+            )
+          end
+          render json: { success: true }
+          return
+        end
+
         chat_id = params['callback_query']['message']['chat']['id']
         chat_type = params['callback_query']['message']['chat']['type']
         callback_id = params['callback_query']['id']
@@ -291,6 +312,34 @@ after_initialize do
     end
 
     private
+
+    # Webhook payloads originate outside the application and may be incomplete
+    # or structurally invalid. Validate nested objects before indexing into them.
+    def webhook_object?(value)
+      value.is_a?(Hash) || value.is_a?(ActionController::Parameters)
+    end
+
+    def valid_message_payload?(message)
+      return false unless webhook_object?(message)
+
+      chat = message["chat"]
+      webhook_object?(chat) && chat["id"].present? && chat["type"] == "private"
+    end
+
+    def valid_callback_payload?(callback)
+      return false unless webhook_object?(callback)
+
+      callback_message = callback["message"]
+      return false unless webhook_object?(callback_message)
+
+      chat = callback_message["chat"]
+      return false unless webhook_object?(chat) && chat["id"].present? && chat["type"] == "private"
+
+      callback["id"].present? &&
+        callback_message["message_id"].present? &&
+        callback["data"].is_a?(String) &&
+        callback["data"].match?(/\A(?:like|unlike):[1-9]\d*\z/)
+    end
 
     # Escape dynamic text before interpolating it into a message sent with
     # parse_mode=HTML. This also handles nil defensively.
