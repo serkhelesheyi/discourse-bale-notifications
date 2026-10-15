@@ -247,3 +247,8 @@
 
 
 پیگیری CI: اجرای [38758938533](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38758938533) نشان داد smoke tests و backend/RSpec موفق، اما lint به‌دلیل یک directive زائد RuboCop در آزمون مستقل ناموفق است. directive اصلاح شده و باید اجرای جدید روی commit تازه بررسی شود؛ تا آن زمان CI کامل موفق محسوب نمی‌شود.
+
+
+### پیگیری CI: اصلاح نهایی directive آزمون مستقل
+
+در اجرای [Discourse Plugin CI شمارهٔ 38806862001](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38806862001)، backend/RSpec و `check_for_tests` موفق بودند، اما RuboCop با `Lint/MissingCopEnableDirective` در `test/link_code_test.rb` شکست خورد. بررسی خود فایل نشان داد که directive هنوز به‌صورت خط جداگانه پیش از helper بود؛ بنابراین اصلاح قبلی در HEAD جاری اعمال نشده بود. directive اکنون روی خط تعریف همان helper قرار گرفته و در commit `5da56cbda6c8052b7d036573065a5aa67203e021` ثبت شده است. این اصلاح تا زمانی که هر دو workflow روی همین HEAD جدید سبز نشوند، تأیید نهایی CI محسوب نمی‌شود. [PR #1](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/1) همچنان draft است و هنوز ادغام نشده است.
