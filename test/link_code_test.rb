@@ -10,6 +10,12 @@ class String
   end unless method_defined?(:blank?)
 end
 
+class NilClass
+  def blank?
+    true
+  end unless method_defined?(:blank?)
+end
+
 module Discourse
   def self.redis
     @redis ||= FakeRedis.new
