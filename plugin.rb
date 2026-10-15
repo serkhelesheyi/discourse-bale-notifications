@@ -360,8 +360,10 @@ after_initialize do
       # قابل مشاهده برای مدیران نمایش داده شود.
       if webhook_info.is_a?(Hash) && webhook_info.dig("result", "url").present?
         webhook_info = webhook_info.deep_dup
+        registered_url = webhook_info["result"]["url"].to_s
+        redacted_url = registered_url.sub(%r{(/bale/hook/)[^/?#]+}, '\\1[REDACTED]')
         webhook_info["result"]["url"] =
-          webhook_info["result"]["url"].to_s.sub(%r{(/bale/hook/)[^/?#]+}, '\\1[REDACTED]')
+          redacted_url == registered_url ? "[URL hidden]" : redacted_url
       end
 
       render json: {
