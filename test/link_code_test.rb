@@ -117,8 +117,7 @@ class LinkCodeTest < Minitest::Test
 
   private
 
-  # rubocop:disable Metrics/MethodLength -- the stub setup and ensure restoration are one unit.
-  def with_stubbed_random_numbers(values)
+  def with_stubbed_random_numbers(values) # rubocop:disable Metrics/MethodLength -- the stub setup and ensure restoration are one unit.
     original_random_number = SecureRandom.method(:random_number)
     calls = 0
 
