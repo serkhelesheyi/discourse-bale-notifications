@@ -48,12 +48,12 @@ module DiscourseBaleNotifications
 
     def self.perform_request(http, request, method_name, chat_id)
       http.request(request)
-    rescue *NETWORK_ERRORS => error
+    rescue *NETWORK_ERRORS => e
       Rails.logger.error(
         'Bale API request failed before receiving a response ' \
-        "(method=#{method_name}, chat_id=#{chat_id}): #{error.class}: #{error.message}"
+        "(method=#{method_name}, chat_id=#{chat_id}): #{e.class}: #{e.message}"
       )
-      BaleActivityLog.record_activity(method_name, chat_id, false, nil, "#{error.class}: #{error.message}")
+      BaleActivityLog.record_activity(method_name, chat_id, false, nil, "#{e.class}: #{e.message}")
       false
     end
 
@@ -62,7 +62,7 @@ module DiscourseBaleNotifications
     rescue JSON::ParserError => error
       Rails.logger.error(
         'Bale API returned a non-JSON response ' \
-        "(method=#{method_name}, http_status=#{response.code}): #{error.message}"
+        "(method=#{method_name}, http_status=#{response.code}): #{e.message}"
       )
       BaleActivityLog.record_activity(method_name, chat_id, false, response.code, 'non-JSON response')
       :invalid_json
@@ -71,7 +71,13 @@ module DiscourseBaleNotifications
     def self.handle_api_failure(method_name, chat_id, response, response_data)
       log_api_failure(method_name, chat_id, response, response_data)
       unlink_chat_if_unreachable(chat_id, response_data)
-      BaleActivityLog.record_activity(method_name, chat_id, false, response_data['error_code'], response_data['description'])
+      BaleActivityLog.record_activity(
+        method_name,
+        chat_id,
+        false,
+        response_data['error_code'],
+        response_data['description']
+      )
       false
     end
 
