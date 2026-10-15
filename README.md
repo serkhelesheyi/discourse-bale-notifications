@@ -196,3 +196,10 @@
 ### دستهٔ نهم: جداسازی کنترلرها و jobها از initializer — ۱۵ اکتبر ۲۰۲۶
 
 اجرای [CI شمارهٔ 38720688542](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38720688542) کامل شد: `backend_tests` و `check_for_tests` موفق؛ RuboCop **۳۴ تخلف در ۱۱ فایل** (۶ مورد قابل اصلاح خودکار) گزارش کرد. این دسته سه کنترلر (`BaleController`، `LinkController`، `AdminController`) و دو job را از `plugin.rb` به فایل‌های جدا منتقل می‌کند و با autoload صریح ثبت می‌کند. هدف کاهش طول initializer و حذف هشدارهای تعریف کلاس داخل block، بدون تغییر مسیرها یا منطق endpointهاست. آزمون‌های Zeitwerk و backend باید این انتقال را تأیید کنند.
+
+
+### دستهٔ دهم: اصلاح خطاهای قطعی CI و مسیر بارگذاری — ۱۵ اکتبر ۲۰۲۶
+
+اجرای [CI شمارهٔ 38725027999](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38725027999) کامل شد و شکست خورد: `check_for_tests` موفق بود، اما `linting` با **۱۳ تخلف در ۱۹ فایل** و `backend_tests` در `zeitwerk:check` شکست خورد. خطای بارگذاری به پیدا نشدن `DiscourseBaleNotifications::PluginSetup` مربوط بود؛ همچنین i18n lint دو مقدار ترجمه را به‌علت عبارت ممنوع «private message» رد کرد.
+
+در commit اصلاحی بعدی، مسیر autoload به‌صورت plugin-relative و در سطح ماژول تعریف می‌شود تا بارگذاری `PluginSetup` به `require_dependency` داخل callback وابسته نباشد. متن نمایشی ترجمه از «Private messages» به «Personal messages» تغییر می‌کند، اما کلید فنی `private_message` حفظ می‌شود. اصلاح‌های سبک کم‌خطر نیز محدود به حذف `begin` زائد، `return` زائد و خط خالی اضافی است. این تغییرها هنوز منتظر اجرای CI هستند و نباید رفع‌شده تلقی شوند.

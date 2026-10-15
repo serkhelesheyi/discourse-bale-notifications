@@ -20,7 +20,7 @@ en:
         quoted: "Someone quotes you"
         posted: "New post in a topic you're watching"
         linked: "Someone links to your post"
-        private_message: "Private messages"
+        private_message: "Personal messages"
         group_mentioned: "Group mentions"
         watching_first_post: "First post in a watched topic"
         event_reminder: "Event reminders"

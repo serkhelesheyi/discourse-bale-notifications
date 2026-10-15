@@ -21,5 +21,4 @@ module DiscourseBaleNotifications
       render json: success_json
     end
   end
-
 end

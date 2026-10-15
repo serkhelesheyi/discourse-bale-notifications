@@ -19,37 +19,33 @@ register_asset 'stylesheets/common.scss'
 # فاز سه - اصلاح #۱۵: افزودن لینک پنل مدیریتی به فهرست «Plugins» در ادمین.
 add_admin_route 'bale_notifications.title', 'bale-notifications', use_new_show_route: true
 
-after_initialize do
-  module ::DiscourseBaleNotifications
-    services_path = "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications"
-    autoload :BaleNotifier, "#{services_path}/bale_notifier"
-    autoload :LinkCode, "#{services_path}/link_code"
-    autoload :BaleActivityLog, "#{services_path}/bale_activity_log"
-    autoload :BaleReplyMarkup, "#{services_path}/bale_reply_markup"
-    autoload :BaleApiClient, "#{services_path}/bale_api_client"
-    autoload :BaleNotificationPayload, "#{services_path}/bale_notification_payload"
+# Autoload plugin services and controllers from stable, plugin-relative paths.
+module DiscourseBaleNotifications
+  plugin_root = __dir__
+  services_path = File.join(plugin_root, 'services/discourse_bale_notifications')
+  autoload :BaleNotifier, File.join(services_path, 'bale_notifier')
+  autoload :LinkCode, File.join(services_path, 'link_code')
+  autoload :BaleActivityLog, File.join(services_path, 'bale_activity_log')
+  autoload :BaleReplyMarkup, File.join(services_path, 'bale_reply_markup')
+  autoload :BaleApiClient, File.join(services_path, 'bale_api_client')
+  autoload :BaleNotificationPayload, File.join(services_path, 'bale_notification_payload')
+  autoload :PluginSetup, File.join(services_path, 'plugin_setup')
 
-    controllers_path = File.join(
-      Rails.root,
-      'plugins/discourse-bale-notifications/controllers/discourse_bale_notifications'
-    )
-    autoload :BaleController, "#{controllers_path}/bale_controller"
-    autoload :LinkController, "#{controllers_path}/link_controller"
-    autoload :AdminController, "#{controllers_path}/admin_controller"
-    autoload :WebhookMessageHandler, "#{controllers_path}/webhook_message_handler"
-    autoload :WebhookCallbackHandler, "#{controllers_path}/webhook_callback_handler"
+  controllers_path = File.join(plugin_root, 'controllers/discourse_bale_notifications')
+  autoload :BaleController, File.join(controllers_path, 'bale_controller')
+  autoload :LinkController, File.join(controllers_path, 'link_controller')
+  autoload :AdminController, File.join(controllers_path, 'admin_controller')
+  autoload :WebhookMessageHandler, File.join(controllers_path, 'webhook_message_handler')
+  autoload :WebhookCallbackHandler, File.join(controllers_path, 'webhook_callback_handler')
 
-    # Rails engine that owns this plugin's mounted routes.
-    class Engine < ::Rails::Engine
-      engine_name DiscourseBaleNotifications::PLUGIN_NAME
-      isolate_namespace DiscourseBaleNotifications
-    end
+  # Rails engine that owns this plugin's mounted routes.
+  class Engine < ::Rails::Engine
+    engine_name PLUGIN_NAME
+    isolate_namespace DiscourseBaleNotifications
   end
+end
 
-  require_dependency File.join(
-    Rails.root,
-    'plugins/discourse-bale-notifications/services/discourse_bale_notifications/plugin_setup'
-  )
+after_initialize do
   DiscourseBaleNotifications::PluginSetup.configure
   register_editable_user_custom_field :bale_notification_types
 end

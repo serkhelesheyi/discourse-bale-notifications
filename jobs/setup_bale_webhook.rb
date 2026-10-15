@@ -3,6 +3,7 @@
 require_dependency 'jobs/base'
 
 module Jobs
+  # Registers or removes the Bale webhook when the plugin setting changes.
   class SetupBaleWebhook < ::Jobs::Base
     def execute(*)
       if SiteSetting.bale_notifications_enabled?

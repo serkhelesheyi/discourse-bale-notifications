@@ -11,9 +11,7 @@ module DiscourseBaleNotifications
       return render json: { success: true } if rate_limited_chat?(chat_id)
 
       user, known_user, message_text = resolve_message_user(chat_id, incoming)
-      if known_user && incoming.key?('reply_to_message')
-        message_text = reply_message_text(user, chat_id, incoming)
-      end
+      message_text = reply_message_text(user, chat_id, incoming) if known_user && incoming.key?('reply_to_message')
 
       DiscourseBaleNotifications::BaleNotifier.send_message(
         {
@@ -26,13 +24,11 @@ module DiscourseBaleNotifications
     end
 
     def resolve_message_user(chat_id, incoming)
-      begin
-        field = UserCustomField.find_by(name: 'bale_chat_id', value: chat_id.to_s)
-        user = User.find(field.user_id)
-        return [user, true, known_user_text(user)]
-      rescue Discourse::NotFound, NoMethodError
-        resolve_unlinked_user(chat_id, incoming)
-      end
+      field = UserCustomField.find_by(name: 'bale_chat_id', value: chat_id.to_s)
+      user = User.find(field.user_id)
+      [user, true, known_user_text(user)]
+    rescue Discourse::NotFound, NoMethodError
+      resolve_unlinked_user(chat_id, incoming)
     end
 
     def known_user_text(user)
