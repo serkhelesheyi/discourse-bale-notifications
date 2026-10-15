@@ -223,3 +223,20 @@
 ### دستهٔ چهاردهم: آخرین تخلف سبک RuboCop — ۱۵ اکتبر ۲۰۲۶
 
 در اجرای [CI شمارهٔ 38749919779](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38749919779)، `backend_tests` و `check_for_tests` موفق شدند و آزمون‌های `zeitwerk:check`، reloading و RSpec نیز عبور کردند. تنها شکست باقی‌مانده در `linting` بود: یک تخلف `Style/IfUnlessModifier` در `plugin.rb:12`. ثبت ماژول به شرط تک‌خطی تبدیل می‌شود؛ منطق و ترتیب مقداردهی تغییر نمی‌کند. پس از این اصلاح، اجرای تازهٔ CI برای تأیید کامل لازم است.
+
+### وضعیت نهایی پاک‌سازی CI و گام بعد — ۱۵ اکتبر ۲۰۲۶
+
+آخرین اجرای [CI شمارهٔ 38750752257](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38750752257) روی commit `05040efab5c6cae05a2ec110d8bfc811cedd3766` با نتیجهٔ **success** تمام شد. هر سه job موفق بودند: `check_for_tests`، `linting` و `backend_tests`. در lint، RuboCop و Syntax Tree موفق شدند؛ در backend نیز `zeitwerk:check` برای eager load و reloading، بررسی bootability و آزمون‌های RSpec افزونه موفق بودند. خطای نهایی RuboCop در commit «Fix final RuboCop modifier offense» رفع شد.
+
+#### آنچه تأیید شده است
+
+- تخلف‌های RuboCop در این اجرای CI: صفر؛ job مربوطه موفق است.
+- بارگذاری کلاس‌ها و مسیرهای autoload: بررسی eager-load و reloading موفق است.
+- آزمون‌های backend افزونه: موفق.
+- بررسی ترجمهٔ انگلیسی: موفق.
+- شاخهٔ کاری: `docs/initial-audit-roadmap`؛ آخرین commit تأییدشدهٔ CI: `05040efab5c6cae05a2ec110d8bfc811cedd3766`.
+- ادغام در شاخهٔ اصلی و استقرار روی سایت: انجام نشده‌اند.
+
+#### مرحلهٔ بعد پیشنهادی
+
+از اینجا پاک‌سازی lint و خطاهای مسدودکنندهٔ بارگذاری را بسته‌شده در نظر بگیرید و وارد **بازبینی رفتاری و پوشش آزمون‌ها** شوید. ابتدا diff مجموعهٔ اصلاحات را نسبت به مبنای پیش از این دسته‌ها بازبینی کنید؛ سپس برای مسیرهای حساس، آزمون‌های مشخص را بررسی/تکمیل کنید: احراز هویت وب‌هوک و محدودیت نرخ، پردازش پیام و callback، payload ارسالی به API بله، خطاهای HTTP/شبکه و پاسخ غیر JSON، اتصال/قطع اتصال کاربر، endpointهای مدیریتی و ثبت ترجیحات اعلان. هر تغییر بعدی باید کوچک و مبتنی بر آزمون باشد. پس از تکمیل این بازبینی، گزارش CI تازه بگیرید و فقط با اجازهٔ صریح، دربارهٔ ادغام یا استقرار اقدام کنید.
