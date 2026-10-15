@@ -115,7 +115,7 @@ after_initialize do
             I18n.t(
               "discourse_bale_notifications.known-user",
               site_title: CGI::escapeHTML(SiteSetting.title),
-              username: CGI::escapeHTML(user.username)
+              username: escape_html(user.username)
             )
           end
           known_user = true
@@ -140,7 +140,7 @@ after_initialize do
               I18n.t(
                 "discourse_bale_notifications.link-success",
                 site_title: CGI::escapeHTML(SiteSetting.title),
-                username: CGI::escapeHTML(linked_user.username)
+                username: escape_html(linked_user.username)
               )
             end
           else
@@ -182,7 +182,7 @@ after_initialize do
               if result.errors.any?
                 # Validation messages may include user-controlled input; the
                 # translated reply-failed template is sent with parse_mode=HTML.
-                errors = CGI::escapeHTML(result.errors.full_messages.join("\n"))
+                errors = escape_html(result.errors.full_messages.join("\n"))
                 I18n.t("discourse_bale_notifications.reply-failed", errors: errors)
               else
                 I18n.t("discourse_bale_notifications.reply-success", post_url: result.post.full_url)
@@ -291,6 +291,12 @@ after_initialize do
     end
 
     private
+
+    # Escape dynamic text before interpolating it into a message sent with
+    # parse_mode=HTML. This also handles nil defensively.
+    def escape_html(value)
+      CGI.escapeHTML(value.to_s)
+    end
 
     # فاز یک - اصلاح #۷: محدودکننده‌ی نرخ اقدامات هر چت (پیام/کلیک دکمه).
     # عمداً روی chat_id محدود می‌شود، نه IP، چون همه‌ی درخواست‌ها از سرور بله
