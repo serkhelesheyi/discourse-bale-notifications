@@ -278,3 +278,9 @@ PR شمارهٔ [#1](https://github.com/serkhelesheyi/discourse-bale-notificatio
 - The staging acceptance and rollback procedure is documented in [`STAGING_ACCEPTANCE.md`](STAGING_ACCEPTANCE.md).
 - The staging checklist has not yet been executed; successful CI does not prove end-to-end behavior against a live Discourse staging instance.
 - No production deployment has been performed. See [`ROADMAP.md`](ROADMAP.md) for the current stage and remaining acceptance work.
+
+## Latest CI and release gate — 16 October 2026
+
+Both GitHub Actions workflows passed on commit `91fcbf657b45bbde017f8f01c6845adf3f15b080`: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38815756869) and [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38815756777). The full CI jobs for linting, test discovery, backend bootability/loader checks, and plugin RSpec succeeded; the smoke workflow's Ruby syntax and standalone service tests also succeeded.
+
+The next release gate is live staging acceptance. Follow [`STAGING_ACCEPTANCE.md`](STAGING_ACCEPTANCE.md) and record evidence for each test. The staging matrix has **not** been marked complete without an actual staging run; automated CI does not prove end-to-end Bale delivery or rollback behavior. No production deployment has been performed.
