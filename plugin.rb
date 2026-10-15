@@ -28,7 +28,6 @@ after_initialize do
     autoload :BaleReplyMarkup, "#{services_path}/bale_reply_markup"
     autoload :BaleApiClient, "#{services_path}/bale_api_client"
     autoload :BaleNotificationPayload, "#{services_path}/bale_notification_payload"
-    autoload :PluginSetup, "#{services_path}/plugin_setup"
 
     controllers_path = File.join(
       Rails.root,
@@ -47,6 +46,10 @@ after_initialize do
     end
   end
 
+  require_dependency File.join(
+    Rails.root,
+    'plugins/discourse-bale-notifications/services/discourse_bale_notifications/plugin_setup'
+  )
   DiscourseBaleNotifications::PluginSetup.configure
   register_editable_user_custom_field :bale_notification_types
 end
