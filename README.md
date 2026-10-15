@@ -270,3 +270,11 @@ PR شمارهٔ [#1](https://github.com/serkhelesheyi/discourse-bale-notificatio
 - در SHA مستندات قبلی `553473876d3789f9ced4550a2f9c26d7d42379f8` اجرای کامل Discourse Plugin CI لغو شده است ([run 38808769535](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38808769535))؛ بنابراین نتیجهٔ کامل CI روی آخرین HEAD باید جداگانه تأیید شود.
 - شاخهٔ کاری `docs/initial-audit-roadmap` در مقایسه با `main` صفر commit جلو و شش commit عقب دارد. شاخه فعلاً حذف نشده؛ حذف آن اقدام پاک‌سازی مستقلی است و در اجرای فعلی ابزار حذف ref در دسترس نبود.
 - **هیچ استقرار عملیاتی انجام نشده است.** برای جزئیات شواهد و مراحل باقیمانده، [نقشه‌راه](ROADMAP.md) را ببینید.
+
+
+## Current verification status — 16 October 2026
+
+- Both GitHub Actions workflows completed successfully on commit [`97d19d10af37c9bfad1f436099e5882506360eeb`](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/97d19d10af37c9bfad1f436099e5882506360eeb): [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38813842853) and [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38813842481).
+- The staging acceptance and rollback procedure is documented in [`STAGING_ACCEPTANCE.md`](STAGING_ACCEPTANCE.md).
+- The staging checklist has not yet been executed; successful CI does not prove end-to-end behavior against a live Discourse staging instance.
+- No production deployment has been performed. See [`ROADMAP.md`](ROADMAP.md) for the current stage and remaining acceptance work.
