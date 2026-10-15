@@ -42,7 +42,7 @@ after_initialize do
 
     # Rails engine that owns this plugin's mounted routes.
     class Engine < ::Rails::Engine
-      engine_name PLUGIN_NAME
+      engine_name DiscourseBaleNotifications::PLUGIN_NAME
       isolate_namespace DiscourseBaleNotifications
     end
   end
