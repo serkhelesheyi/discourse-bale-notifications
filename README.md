@@ -252,3 +252,12 @@
 ### پیگیری CI: اصلاح نهایی directive آزمون مستقل
 
 در اجرای [Discourse Plugin CI شمارهٔ 38806862001](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38806862001)، backend/RSpec و `check_for_tests` موفق بودند، اما RuboCop با `Lint/MissingCopEnableDirective` در `test/link_code_test.rb` شکست خورد. بررسی خود فایل نشان داد که directive هنوز به‌صورت خط جداگانه پیش از helper بود؛ بنابراین اصلاح قبلی در HEAD جاری اعمال نشده بود. directive اکنون روی خط تعریف همان helper قرار گرفته و در commit `5da56cbda6c8052b7d036573065a5aa67203e021` ثبت شده است. این اصلاح تا زمانی که هر دو workflow روی همین HEAD جدید سبز نشوند، تأیید نهایی CI محسوب نمی‌شود. [PR #1](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/1) همچنان draft است و هنوز ادغام نشده است.
+
+
+### وضعیت فعلی بازبینی و ادغام
+
+PR شمارهٔ [#1](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/1) پس از موفقیت هر دو workflow روی HEAD نهایی PR، در ۱۵ اکتبر ۲۰۲۶ ادغام شد. commit ادغام: `ece39105a0c7ec69191e9e881d0e70befb2d9b0d`. اجرای [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38808102922) و [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38808102056) روی HEAD نهایی PR هر دو موفق بودند.
+
+پس از ادغام، workflowهای مربوط به خود commit ادغام اجرا شدند و نتیجهٔ آن‌ها در زمان ثبت اولیه در انتظار بود: [smoke tests پس از ادغام](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38808698752) و [Discourse Plugin CI پس از ادغام](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38808699319). بنابراین موفقیت پیش از ادغام را نباید جایگزین تأیید CI پس از ادغام یا آخرین HEAD مستندات کرد. وضعیت دقیق این اجراها و HEAD جاری را در GitHub Actions و [نقشهٔ راه](ROADMAP.md) پیگیری کنید.
+
+این PR تغییرات را وارد شاخهٔ اصلی کرد؛ استقرار افزونه روی سایت عملیاتی انجام نشده است. شاخهٔ کاری هنوز حذف نشده و حذف آن تنها پس از بررسی ancestry و اطمینان از نبود تغییر مستقل ادغام‌نشده مجاز است.
