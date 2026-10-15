@@ -135,4 +135,5 @@ class LinkCodeTest < Minitest::Test
   ensure
     SecureRandom.define_singleton_method(:random_number, original_random_number) if original_random_number
   end
+  # rubocop:enable Metrics/MethodLength
 end
