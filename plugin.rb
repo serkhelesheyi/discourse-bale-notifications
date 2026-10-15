@@ -24,10 +24,13 @@ after_initialize do
     autoload :BaleReplyMarkup, "#{services_path}/bale_reply_markup"
     autoload :BaleApiClient, "#{services_path}/bale_api_client"
     autoload :BaleNotificationPayload, "#{services_path}/bale_notification_payload"
-    controllers_path = "#{'#{Rails.root}'}/plugins/discourse-bale-notifications/controllers/discourse_bale_notifications"
-    autoload :BaleController, "#{'#{controllers_path}'}/bale_controller"
-    autoload :LinkController, "#{'#{controllers_path}'}/link_controller"
-    autoload :AdminController, "#{'#{controllers_path}'}/admin_controller"
+    controllers_path = File.join(
+      Rails.root,
+      'plugins/discourse-bale-notifications/controllers/discourse_bale_notifications'
+    )
+    autoload :BaleController, "#{controllers_path}/bale_controller"
+    autoload :LinkController, "#{controllers_path}/link_controller"
+    autoload :AdminController, "#{controllers_path}/admin_controller"
 
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
@@ -91,7 +94,7 @@ after_initialize do
   end
 
   require_dependency 'jobs/base'
-  jobs_path = "#{'#{Rails.root}'}/plugins/discourse-bale-notifications/jobs"
-  ::Jobs.autoload :SendBaleNotifications, "#{'#{jobs_path}'}/send_bale_notifications"
-  ::Jobs.autoload :SetupBaleWebhook, "#{'#{jobs_path}'}/setup_bale_webhook"
+  jobs_path = File.join(Rails.root, 'plugins/discourse-bale-notifications/jobs')
+  ::Jobs.autoload :SendBaleNotifications, "#{jobs_path}/send_bale_notifications"
+  ::Jobs.autoload :SetupBaleWebhook, "#{jobs_path}/setup_bale_webhook"
 end

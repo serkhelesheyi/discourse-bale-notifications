@@ -16,4 +16,5 @@ module Jobs
         DiscourseBaleNotifications::BaleNotifier.delete_webhook
       end
     end
-  endend
+  end
+end
