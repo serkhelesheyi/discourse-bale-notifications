@@ -13,7 +13,7 @@ unless defined?(::DiscourseBaleNotifications)
   Object.const_set(:DiscourseBaleNotifications, Module.new)
 end
 
-::::DiscourseBaleNotifications.const_set(:PLUGIN_NAME, 'discourse-bale-notifications') unless
+::DiscourseBaleNotifications.const_set(:PLUGIN_NAME, 'discourse-bale-notifications') unless
   ::DiscourseBaleNotifications.const_defined?(:PLUGIN_NAME, false)
 
 enabled_site_setting :bale_notifications_enabled
@@ -52,7 +52,7 @@ end
 after_initialize do
   # Defer engine construction until after the host application's middleware stack
   # has been initialized. This preserves the plugin's established initialization order.
-  DiscourseBaleNotifications.const_set(
+  ::DiscourseBaleNotifications.const_set(
     :Engine,
     Class.new(::Rails::Engine) do
       engine_name ::DiscourseBaleNotifications::PLUGIN_NAME
