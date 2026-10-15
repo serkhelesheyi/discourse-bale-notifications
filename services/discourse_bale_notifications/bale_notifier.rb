@@ -21,7 +21,7 @@ module DiscourseBaleNotifications
     end
 
     def self.answer_callback(callback_id, text)
-      do_request('answerCallbackQuery', callback_query_id: callback_id, text: text)
+      do_request('answerCallbackQuery', { callback_query_id: callback_id, text: text })
     end
 
     def self.setup_webhook(_key)
