@@ -120,7 +120,7 @@ after_initialize do
           message_text = I18n.with_locale(user.effective_locale) do
             I18n.t(
               'discourse_bale_notifications.known-user',
-              site_title: CGI::escapeHTML(SiteSetting.title),
+              site_title: CGI.escapeHTML(SiteSetting.title),
               username: escape_html(user.username)
             )
           end
@@ -145,7 +145,7 @@ after_initialize do
             message_text = I18n.with_locale(linked_user.effective_locale) do
               I18n.t(
                 'discourse_bale_notifications.link-success',
-                site_title: CGI::escapeHTML(SiteSetting.title),
+                site_title: CGI.escapeHTML(SiteSetting.title),
                 username: escape_html(linked_user.username)
               )
             end
@@ -154,7 +154,7 @@ after_initialize do
             # می‌رود (رفتار طبیعی بدون with_locale).
             message_text = I18n.t(
               'discourse_bale_notifications.initial-contact',
-              site_title: CGI::escapeHTML(SiteSetting.title)
+              site_title: CGI.escapeHTML(SiteSetting.title)
             )
           end
         end
@@ -191,7 +191,7 @@ after_initialize do
                 errors = escape_html(result.errors.full_messages.join("\n"))
                 I18n.t('discourse_bale_notifications.reply-failed', errors: errors)
               else
-                I18n.t('discourse_bale_notifications.reply-success', post_url: CGI::escapeHTML(result.post.full_url))
+                I18n.t('discourse_bale_notifications.reply-success', post_url: CGI.escapeHTML(result.post.full_url))
               end
             else
               I18n.t('discourse_bale_notifications.reply-error')
@@ -447,7 +447,7 @@ after_initialize do
       end
 
       test_text = I18n.with_locale(target_user.effective_locale) do
-        I18n.t('discourse_bale_notifications.admin.test_message', site_title: CGI::escapeHTML(SiteSetting.title))
+        I18n.t('discourse_bale_notifications.admin.test_message', site_title: CGI.escapeHTML(SiteSetting.title))
       end
 
       response = DiscourseBaleNotifications::BaleNotifier.sendMessage({
@@ -493,17 +493,15 @@ after_initialize do
     end
   end
 
-  DiscourseEvent.on(:site_setting_changed) do |name, old, new|
-    if (name == :bale_notifications_enabled) || (name == :bale_access_token)
-      Jobs.enqueue(:setup_bale_webhook)
-    end
+  DiscourseEvent.on(:site_setting_changed) do |name, _old, _new|
+    Jobs.enqueue(:setup_bale_webhook) if (name == :bale_notifications_enabled) || (name == :bale_access_token)
   end
 
   require_dependency 'jobs/base'
   module ::Jobs
     class SendBaleNotifications < ::Jobs::Base
       def execute(args)
-        return if !SiteSetting.bale_notifications_enabled?
+        return unless SiteSetting.bale_notifications_enabled?
 
         payload = args[:payload]
         notification_type_name = Notification.types[payload[:notification_type]].to_s
@@ -512,7 +510,7 @@ after_initialize do
         user = User.find(args[:user_id])
         chat_id = user.custom_fields['bale_chat_id']
 
-        if (not chat_id.present?) || (chat_id.length < 1)
+        if chat_id.nil? || chat_id.empty?
           return
         end
 
@@ -536,13 +534,13 @@ after_initialize do
         message_text = I18n.with_locale(user.effective_locale) do
           I18n.t(
             "discourse_bale_notifications.message.#{notification_type_name}",
-            site_title: CGI::escapeHTML(SiteSetting.title),
+            site_title: CGI.escapeHTML(SiteSetting.title),
             site_url: Discourse.base_url,
-            post_url: CGI::escapeHTML(Discourse.base_url + payload[:post_url].to_s),
-            post_excerpt: CGI::escapeHTML(payload[:excerpt]),
-            topic: CGI::escapeHTML(payload[:topic_title]),
-            username: CGI::escapeHTML(payload[:username]),
-            user_url: CGI::escapeHTML(Discourse.base_url + '/u/' + payload[:username].to_s)
+            post_url: CGI.escapeHTML(Discourse.base_url + payload[:post_url].to_s),
+            post_excerpt: CGI.escapeHTML(payload[:excerpt]),
+            topic: CGI.escapeHTML(payload[:topic_title]),
+            username: CGI.escapeHTML(payload[:username]),
+            user_url: CGI.escapeHTML(Discourse.base_url + '/u/' + payload[:username].to_s)
           )
         end
 
@@ -591,16 +589,16 @@ after_initialize do
           disable_notification: disable_notification
         )
 
-        if response
-          message_id = response['result']['message_id']
-          # مطابق اصلاح بحرانی #۲: کلید بر اساس chat_id هم namespace شده است.
-          PluginStore.set('bale-notifications', "message_#{chat_id}_#{message_id}", post.id)
-        end
+        return unless response
+
+        message_id = response['result']['message_id']
+        # مطابق اصلاح بحرانی #۲: کلید بر اساس chat_id هم namespace شده است.
+        PluginStore.set('bale-notifications', "message_#{chat_id}_#{message_id}", post.id)
       end
     end
 
     class SetupBaleWebhook < ::Jobs::Base
-      def execute(args)
+      def execute(*)
         if SiteSetting.bale_notifications_enabled?
           SiteSetting.bale_secret = SecureRandom.hex
           DiscourseBaleNotifications::BaleNotifier.setupWebhook(SiteSetting.bale_secret)

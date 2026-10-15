@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'net/http'
 
 module DiscourseBaleNotifications
   class BaleNotifier
     def self.sendMessage(message)
-      return self.doRequest('sendMessage', message)
+      return doRequest('sendMessage', message)
     end
 
     # فاز سه - اصلاح #۱۷: ارسال عکس (مثلاً آواتار کاربر عامل) به‌همراه کپشن.
@@ -32,7 +34,7 @@ module DiscourseBaleNotifications
           caption: text,
           parse_mode: 'html',
           disable_notification: disable_notification,
-          reply_markup: reply_markup,
+          reply_markup: reply_markup
         })
       else
         sendMessage({
@@ -54,10 +56,10 @@ module DiscourseBaleNotifications
       return self.doRequest('answerCallbackQuery', message)
     end
 
-    def self.setupWebhook(key)
+    def self.setupWebhook(_key)
       message = {
         # آدرس وب‌هوک با دامنه بله و مسیر جدید
-        url: Discourse.base_url + '/bale/hook/' + SiteSetting.bale_secret,
+        url: "#{Discourse.base_url}/bale/hook/#{SiteSetting.bale_secret}"
       }
       return self.doRequest('setWebhook', message)
     end
@@ -83,14 +85,14 @@ module DiscourseBaleNotifications
     # ارسال واقعی پیام (sendMessage/sendPhoto) ثبت می‌شوند، نه هر فراخوانی
     # داخلی API (مثل answerCallback)، تا این لاگ برای ادمین معنادار بماند.
     RECORDABLE_METHODS = %w[sendMessage sendPhoto].freeze
-    ACTIVITY_LOG_KEY = 'recent-activity'
+    ACTIVITY_LOG_KEY = 'recent-activity'.freeze
     ACTIVITY_LOG_MAX_ENTRIES = 50
 
     def self.recent_activity
       PluginStore.get('bale-notifications', ACTIVITY_LOG_KEY) || []
     end
 
-    def self.record_activity(method_name, chat_id, ok, error_code, description)
+    def self.record_activity(method_name, chat_id, success, error_code, description)
       return unless RECORDABLE_METHODS.include?(method_name)
 
       entry = {
@@ -100,7 +102,7 @@ module DiscourseBaleNotifications
         'ts' => Time.now.utc.iso8601,
         'method' => method_name,
         'chat_id' => chat_id,
-        'ok' => ok,
+        'ok' => success,
         'error_code' => error_code,
         'description' => description,
       }
@@ -196,11 +198,13 @@ module DiscourseBaleNotifications
       description = response_data['description'].to_s
       return true if code == 403
       return true if code == 400 && description.match?(/chat not found/i)
+
       false
     end
 
     def self.unlink_chat_if_unreachable(chat_id, response_data)
       return if chat_id.blank?
+
       return unless bot_unreachable?(response_data)
 
       removed = UserCustomField.where(name: 'bale_chat_id', value: chat_id.to_s).delete_all
@@ -222,12 +226,12 @@ module DiscourseBaleNotifications
         like_button_action = "like:#{post.id}"
       end
 
-      post_url = "#{Discourse.base_url}#{post.url(opts={without_slug: true})}"
+      post_url = "#{Discourse.base_url}#{post.url({ without_slug: true })}"
       {
         inline_keyboard: [
           [
             { text: like_button_text, callback_data: like_button_action },
-            { text: I18n.t('discourse_bale_notifications.view_online'), url: post_url },
+            { text: I18n.t('discourse_bale_notifications.view_online'), url: post_url }
           ]
         ]
       }
