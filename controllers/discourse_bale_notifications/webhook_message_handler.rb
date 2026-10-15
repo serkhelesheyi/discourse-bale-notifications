@@ -16,10 +16,12 @@ module DiscourseBaleNotifications
       end
 
       DiscourseBaleNotifications::BaleNotifier.send_message(
-        chat_id: chat_id,
-        text: message_text,
-        parse_mode: 'html',
-        disable_web_page_preview: true
+        {
+          chat_id: chat_id,
+          text: message_text,
+          parse_mode: 'html',
+          disable_web_page_preview: true
+        }
       )
     end
 
@@ -71,17 +73,19 @@ module DiscourseBaleNotifications
     end
 
     def reply_message_text(user, chat_id, incoming)
-      post = reply_to_post(chat_id, incoming)
-      return I18n.t('discourse_bale_notifications.reply-error') unless post
-
       I18n.with_locale(user.effective_locale) do
-        new_post = {
-          raw: incoming['text'],
-          topic_id: post.topic_id,
-          reply_to_post_number: post.post_number
-        }
-        result = NewPostManager.new(user, new_post).perform
-        reply_result_text(result)
+        post = reply_to_post(chat_id, incoming)
+        if post
+          new_post = {
+            raw: incoming['text'],
+            topic_id: post.topic_id,
+            reply_to_post_number: post.post_number
+          }
+          result = NewPostManager.new(user, new_post).perform
+          reply_result_text(result)
+        else
+          I18n.t('discourse_bale_notifications.reply-error')
+        end
       end
     end
 
