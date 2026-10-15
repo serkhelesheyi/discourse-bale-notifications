@@ -9,9 +9,7 @@ require 'cgi'
 
 # Keep plugin constants and autoloads on the top-level namespace. Discourse evaluates
 # plugin.rb in a plugin-instance context, so use explicit root-qualified constants.
-unless defined?(::DiscourseBaleNotifications)
-  Object.const_set(:DiscourseBaleNotifications, Module.new)
-end
+Object.const_set(:DiscourseBaleNotifications, Module.new) unless defined?(::DiscourseBaleNotifications)
 
 ::DiscourseBaleNotifications.const_set(:PLUGIN_NAME, 'discourse-bale-notifications') unless
   ::DiscourseBaleNotifications.const_defined?(:PLUGIN_NAME, false)

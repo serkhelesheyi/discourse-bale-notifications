@@ -521,3 +521,7 @@
 ### دستهٔ سیزدهم: بررسی خطای namespace در Zeitwerk — ۱۵ اکتبر ۲۰۲۶
 
 اجرای [CI شمارهٔ 38747805691](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38747805691) کامل شد و هر دو مرحلهٔ `linting` و `backend_tests` شکست خوردند. گزارش lint دقیقاً یک تخلف مکانیکی در `plugin.rb:40` (خط خالی اضافی) داشت. آزمون eager-load خطای `uninitialized constant #<Class...>::DiscourseBaleNotifications::PluginSetup` را گزارش کرد؛ این خطا نشان می‌دهد ثبت autoload در namespace مورد انتظار انجام نشده است. در اصلاح بعدی، ثبت autoloadها و ارجاع‌های Engine به‌صورت صریح با namespace ریشه‌ای `::DiscourseBaleNotifications` انجام می‌شود و خط خالی گزارش‌شده حذف می‌گردد. این تغییر هنوز باید با CI تازه تأیید شود.
+
+### دستهٔ چهاردهم: آخرین تخلف سبک RuboCop — ۱۵ اکتبر ۲۰۲۶
+
+در اجرای [CI شمارهٔ 38749919779](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38749919779)، `backend_tests` و `check_for_tests` موفق شدند و آزمون‌های `zeitwerk:check`، reloading و RSpec نیز عبور کردند. تنها شکست باقی‌مانده در `linting` بود: یک تخلف `Style/IfUnlessModifier` در `plugin.rb:12`. ثبت ماژول به شرط تک‌خطی تبدیل می‌شود؛ منطق و ترتیب مقداردهی تغییر نمی‌کند. پس از این اصلاح، اجرای تازهٔ CI برای تأیید کامل لازم است.
