@@ -58,7 +58,15 @@ module DiscourseBaleNotifications
     end
 
     def self.parse_response(response, method_name, chat_id)
-      JSON.parse(response.body)
+      response_data = JSON.parse(response.body)
+      return response_data if response_data.is_a?(Hash)
+
+      Rails.logger.error(
+        'Bale API returned a JSON response with an invalid structure ' \
+        "(method=#{method_name}, http_status=#{response.code})"
+      )
+      BaleActivityLog.record_activity(method_name, chat_id, false, response.code, 'invalid response structure')
+      :invalid_json
     rescue JSON::ParserError => e
       Rails.logger.error(
         'Bale API returned a non-JSON response ' \
