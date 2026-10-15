@@ -6,16 +6,17 @@ require 'openssl'
 
 module DiscourseBaleNotifications
   # Performs HTTP requests to the Bale Bot API and handles API failures.
+  NETWORK_ERRORS = [
+    Net::OpenTimeout,
+    Net::ReadTimeout,
+    SocketError,
+    OpenSSL::SSL::SSLError,
+    Errno::ECONNREFUSED,
+    Errno::ECONNRESET,
+    Errno::EHOSTUNREACH
+  ].freeze
+
   class BaleApiClient
-    NETWORK_ERRORS = [
-      Net::OpenTimeout,
-      Net::ReadTimeout,
-      SocketError,
-      OpenSSL::SSL::SSLError,
-      Errno::ECONNREFUSED,
-      Errno::ECONNRESET,
-      Errno::EHOSTUNREACH
-    ].freeze
 
     def self.call(method_name, message)
       http, request, chat_id = build_request(method_name, message)
@@ -48,7 +49,7 @@ module DiscourseBaleNotifications
 
     def self.perform_request(http, request, method_name, chat_id)
       http.request(request)
-    rescue *NETWORK_ERRORS => e
+    rescue *DiscourseBaleNotifications::NETWORK_ERRORS => e
       Rails.logger.error(
         'Bale API request failed before receiving a response ' \
         "(method=#{method_name}, chat_id=#{chat_id}): #{e.class}: #{e.message}"
