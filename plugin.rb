@@ -265,7 +265,7 @@ after_initialize do
               I18n.t("discourse_bale_notifications.unlike-failed")
             end
           else
-            I18n.t("discourse_bale_notifications.action-unavailable")
+            I18n.t("discourse_bale_notifications.action-unavailable", default: "❌ This action is no longer available.")
           end
         end
 
