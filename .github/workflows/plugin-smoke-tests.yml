@@ -1,0 +1,33 @@
+name: Plugin smoke tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ruby-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+
+      - name: Check Ruby syntax
+        run: |
+          ruby -c plugin.rb
+          ruby -c services/discourse_bale_notifications/link_code.rb
+          ruby -c services/discourse_bale_notifications/bale_api_client.rb
+          ruby -c services/discourse_bale_notifications/bale_notifier.rb
+          ruby -c test/link_code_test.rb
+
+      - name: Run standalone service tests
+        run: ruby test/link_code_test.rb
