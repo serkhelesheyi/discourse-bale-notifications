@@ -15,6 +15,17 @@ module DiscourseBaleNotifications
   #   ۲) کاربر باید همان کد را از همان چت بله برای ربات ارسال کند.
   # فقط با برقراری هر دو شرط، اتصال برقرار می‌شود.
   class LinkCode
+    # Redis Lua script makes read-and-delete a single atomic operation.
+    # The key is namespaced explicitly because eval does not pass through
+    # DiscourseRedis's per-command key namespacing wrappers.
+    CONSUME_SCRIPT = <<~LUA.freeze
+      local user_id = redis.call("GET", KEYS[1])
+      if user_id then
+        redis.call("DEL", KEYS[1])
+      end
+      return user_id
+    LUA
+
     TTL_SECONDS = 15 * 60
     LENGTH = 6
     MAX_GENERATION_ATTEMPTS = 10
@@ -48,11 +59,11 @@ module DiscourseBaleNotifications
       # غیرضروری به Redis زده نشود.
       return nil unless code.match?(/\A\d{#{LENGTH}}\z/)
 
-      key = redis_key(code)
-      user_id = Discourse.redis.get(key)
+      redis = Discourse.redis
+      key = redis.namespace_key(redis_key(code))
+      user_id = redis.eval(CONSUME_SCRIPT, keys: [key])
       return nil if user_id.nil?
 
-      Discourse.redis.del(key)
       user_id.to_i
     end
   end
