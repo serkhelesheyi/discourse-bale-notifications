@@ -90,3 +90,14 @@ Candidate documentation/code HEAD: `91fcbf657b45bbde017f8f01c6845adf3f15b080`.
 - [ ] Live staging acceptance: not evidenced by GitHub Actions and still requires execution on the actual staging instance.
 
 These CI results establish automated checks for the exact SHA above. They do not certify Bale API behavior, webhook configuration, privacy in a real forum, or rollback on a deployed instance.
+
+## Latest CI re-check — 16 October 2026
+
+The following workflows completed successfully for candidate commit `fef00db7c44ad997156fb5d2c2d850c08c489185`:
+
+- [x] [Discourse Plugin CI run 38818772655](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38818772655): completed / success.
+- [x] [Plugin smoke tests run 38818772243](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38818772243): completed / success.
+- [ ] Live staging acceptance remains unexecuted/unverified. Do not mark A01–A15 as passing without actual staging evidence.
+- [ ] Record the exact SHA actually installed on staging. The CI candidate above is the tested code revision; documentation-only commits may advance `main` after it.
+
+No production deployment has been performed. Production release requires separate explicit authorization.
