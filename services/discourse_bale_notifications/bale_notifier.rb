@@ -67,13 +67,13 @@ module DiscourseBaleNotifications
     # فاز یک - اصلاح #۱۰: برای حذف صریح وب‌هوک از سمت بله هنگام غیرفعال‌سازی
     # افزونه، تا سرور بله برای همیشه تلاش برای تحویل به endpointِ اکنون
     # غیرفعال را متوقف کند.
-    def self.deleteWebhook
+    def self.delete_webhook
       return self.do_request('deleteWebhook', {})
     end
 
     # فاز سه - اصلاح #۱۵: برای نمایش وضعیت واقعی وب‌هوک (آیا ثبت شده، آخرین
     # خطا از سمت بله چه بوده) در پنل مدیریتی.
-    def self.getWebhookInfo
+    def self.get_webhook_info
       return self.do_request('getWebhookInfo', {})
     end
 

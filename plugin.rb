@@ -412,7 +412,7 @@ after_initialize do
 
       # فراخوانی زنده‌ی getWebhookInfo تا ادمین وضعیت واقعی سمت بله را ببیند،
       # نه فقط آن‌چه در دیتابیس محلی داریم.
-      webhook_info = DiscourseBaleNotifications::BaleNotifier.getWebhookInfo
+      webhook_info = DiscourseBaleNotifications::BaleNotifier.get_webhook_info
 
       # URL برگشتی API بله شامل secret مسیر /bale/hook/:key است.
       # پنل وضعیت فقط به مسیر ثبت‌شده نیاز دارد؛ secret نباید در پاسخ JSON
@@ -604,7 +604,7 @@ after_initialize do
           # انجام نمی‌شد و وب‌هوک نزد بله ثبت‌شده باقی می‌ماند؛ بله تا ابد
           # سعی در ارسال درخواست به endpointِ اکنون ۴۰۴ می‌کرد. اکنون هنگام
           # غیرفعال‌سازی، وب‌هوک صراحتاً از سمت بله حذف می‌شود.
-          DiscourseBaleNotifications::BaleNotifier.deleteWebhook
+          DiscourseBaleNotifications::BaleNotifier.delete_webhook
         end
       end
     end
