@@ -261,3 +261,12 @@ PR شمارهٔ [#1](https://github.com/serkhelesheyi/discourse-bale-notificatio
 پس از ادغام، workflowهای مربوط به خود commit ادغام اجرا شدند و نتیجهٔ آن‌ها در زمان ثبت اولیه در انتظار بود: [smoke tests پس از ادغام](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38808698752) و [Discourse Plugin CI پس از ادغام](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38808699319). بنابراین موفقیت پیش از ادغام را نباید جایگزین تأیید CI پس از ادغام یا آخرین HEAD مستندات کرد. وضعیت دقیق این اجراها و HEAD جاری را در GitHub Actions و [نقشهٔ راه](ROADMAP.md) پیگیری کنید.
 
 این PR تغییرات را وارد شاخهٔ اصلی کرد؛ استقرار افزونه روی سایت عملیاتی انجام نشده است. شاخهٔ کاری هنوز حذف نشده و حذف آن تنها پس از بررسی ancestry و اطمینان از نبود تغییر مستقل ادغام‌نشده مجاز است.
+
+## وضعیت فعلی مخزن — ۱۶ اکتبر ۲۰۲۶
+
+- PR شمارهٔ [#1](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/1) در شاخهٔ `main` ادغام شده است: `ece39105a0c7ec69191e9e881d0e70befb2d9b0d`.
+- [Discourse Plugin CI پس از ادغام](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38808699319) و [Plugin smoke tests پس از ادغام](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38808698752) روی commit ادغام موفق شده‌اند.
+- [Smoke tests روی آخرین HEAD مستندات main](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38808768520) موفق است.
+- آخرین HEAD ثبت‌شدهٔ `main`: `553473876d3789f9ced4550a2f9c26d7d42379f8`. اجرای کامل Discourse Plugin CI روی این SHA لغو شده است ([run 38808769535](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38808769535))؛ بنابراین نتیجهٔ کامل CI روی آخرین HEAD باید جداگانه تأیید شود.
+- شاخهٔ کاری `docs/initial-audit-roadmap` سه commit عقب و صفر commit جلو است. شاخه فعلاً حذف نشده؛ حذف آن اقدام پاک‌سازی مستقلی است و در اجرای فعلی ابزار حذف ref در دسترس نبود.
+- **هیچ استقرار عملیاتی انجام نشده است.** برای جزئیات شواهد و مراحل باقیمانده، [نقشه‌راه](ROADMAP.md) را ببینید.
