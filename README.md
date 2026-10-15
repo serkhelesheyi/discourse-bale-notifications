@@ -244,3 +244,6 @@
 ### آخرین پیگیری آزمون‌ها — ۱۵ اکتبر ۲۰۲۶
 
 اجرای [CI شمارهٔ 38756265646](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38756265646) آزمون‌های backend/RSpec و شناسایی آزمون‌ها را با موفقیت گذراند، اما lint به‌دلیل سه تخلف RuboCop در API client و helper آزمون مستقل شکست خورد. این موارد اصلاح و در نقشه‌راه ثبت شده‌اند؛ تا زمان اجرای مجدد و موفقیت هر دو workflow روی آخرین commit، وضعیت کلی CI را موفق تلقی نکنید. ادغام PR شمارهٔ ۱ همچنان منوط به تأیید این اجراهاست.
+
+
+پیگیری CI: اجرای [38758938533](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38758938533) نشان داد smoke tests و backend/RSpec موفق، اما lint به‌دلیل یک directive زائد RuboCop در آزمون مستقل ناموفق است. directive اصلاح شده و باید اجرای جدید روی commit تازه بررسی شود؛ تا آن زمان CI کامل موفق محسوب نمی‌شود.
