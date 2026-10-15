@@ -27,7 +27,7 @@ module Jobs
     def delivery_context(args, payload, type_name)
       user = User.find(args[:user_id])
       chat_id = user.custom_fields['bale_chat_id']
-      return if chat_id.nil? || chat_id.empty?
+      return if chat_id.blank?
       return unless user_notification_enabled?(user, type_name)
 
       [user, chat_id, Post.where(post_number: payload[:post_number], topic_id: payload[:topic_id]).first]
