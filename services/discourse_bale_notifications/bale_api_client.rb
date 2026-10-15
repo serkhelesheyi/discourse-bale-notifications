@@ -16,8 +16,8 @@ module DiscourseBaleNotifications
     Errno::EHOSTUNREACH
   ].freeze
 
+  # Sends requests to the Bale Bot API and normalizes responses and failures.
   class BaleApiClient
-
     def self.call(method_name, message)
       http, request, chat_id = build_request(method_name, message)
       response = perform_request(http, request, method_name, chat_id)
