@@ -284,3 +284,7 @@ PR شمارهٔ [#1](https://github.com/serkhelesheyi/discourse-bale-notificatio
 Both GitHub Actions workflows passed on commit `91fcbf657b45bbde017f8f01c6845adf3f15b080`: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38815756869) and [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38815756777). The full CI jobs for linting, test discovery, backend bootability/loader checks, and plugin RSpec succeeded; the smoke workflow's Ruby syntax and standalone service tests also succeeded.
 
 The next release gate is live staging acceptance. Follow [`STAGING_ACCEPTANCE.md`](STAGING_ACCEPTANCE.md) and record evidence for each test. The staging matrix has **not** been marked complete without an actual staging run; automated CI does not prove end-to-end Bale delivery or rollback behavior. No production deployment has been performed.
+
+## Latest CI verification — 16 October 2026
+
+Both workflows passed on candidate commit `fef00db7c44ad997156fb5d2c2d850c08c489185`: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38818772655) and [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38818772243). Live staging acceptance remains pending; follow [STAGING_ACCEPTANCE.md](STAGING_ACCEPTANCE.md) and record actual evidence before making a release decision. No production deployment has been performed.
