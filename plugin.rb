@@ -249,7 +249,7 @@ after_initialize do
             rescue PostAction::AlreadyActed
               I18n.t("discourse_bale_notifications.already-liked")
             rescue Discourse::InvalidAccess
-              I18n.t("discourse_bale_notifications.like-fail")
+              I18n.t("discourse_bale_notifications.like-failed")
             end
 
           elsif data[0] == 'unlike'
@@ -265,7 +265,7 @@ after_initialize do
               I18n.t("discourse_bale_notifications.unlike-failed")
             end
           else
-            I18n.t("discourse_bale_notifications.error-unknown-action")
+            I18n.t("discourse_bale_notifications.action-unavailable")
           end
         end
 
