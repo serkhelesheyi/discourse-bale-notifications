@@ -493,3 +493,8 @@
 ### دستهٔ هشتم: کوچک‌سازی API client و payload builder — ۱۵ اکتبر ۲۰۲۶
 
 اجرای [CI شمارهٔ 38720093308](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38720093308) کامل شد: آزمون‌های backend و شناسایی تست‌ها موفق؛ RuboCop **۴۵ تخلف در ۱۰ فایل** (۱۴ مورد قابل اصلاح خودکار) گزارش کرد. این دسته منطق HTTP را به چند مرحلهٔ مشخص (ساخت درخواست، ارسال، parse پاسخ و مدیریت خطا) تقسیم می‌کند و ساخت payload پیام را از notifier جدا می‌سازد. رفتار خطاهای شبکه، پاسخ غیر JSON، خطاهای API و ثبت فعالیت باید در CI تأیید شود.
+
+
+### دستهٔ نهم: جداسازی کنترلرها و jobها از initializer — ۱۵ اکتبر ۲۰۲۶
+
+اجرای [CI شمارهٔ 38720688542](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38720688542) کامل شد: `backend_tests` و `check_for_tests` موفق؛ RuboCop **۳۴ تخلف در ۱۱ فایل** (۶ مورد قابل اصلاح خودکار) گزارش کرد. این دسته سه کنترلر (`BaleController`، `LinkController`، `AdminController`) و دو job را از `plugin.rb` به فایل‌های جدا منتقل می‌کند و با autoload صریح ثبت می‌کند. هدف کاهش طول initializer و حذف هشدارهای تعریف کلاس داخل block، بدون تغییر مسیرها یا منطق endpointهاست. آزمون‌های Zeitwerk و backend باید این انتقال را تأیید کنند.
