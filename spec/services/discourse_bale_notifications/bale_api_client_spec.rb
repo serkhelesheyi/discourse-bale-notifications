@@ -60,8 +60,13 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
     end
 
-    it 'returns false for valid JSON that is not an API response object' do
+    it 'returns false and records a safe diagnostic for valid JSON that is not an API response object' do
       allow(response).to receive(:body).and_return('null')
+      expect(Rails.logger).to receive(:error).with(
+        'Bale API returned a JSON response with an invalid structure (method=sendMessage, http_status=200)'
+      )
+      expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
+        .with('sendMessage', chat_id, false, '200', 'invalid response structure')
 
       expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
     end
