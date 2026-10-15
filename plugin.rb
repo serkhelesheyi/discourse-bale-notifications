@@ -280,8 +280,13 @@ after_initialize do
             begin
               guardian = Guardian.new(user)
               post_action_type_id = PostActionType.types[:like]
-              post_action = user.post_actions.find_by(post_id: post.id, post_action_type_id: post_action_type_id, deleted_at: nil)
+              post_action = user.post_actions.find_by(
+                post_id: post.id,
+                post_action_type_id: post_action_type_id,
+                deleted_at: nil
+              )
               raise Discourse::NotFound if post_action.blank?
+
               guardian.ensure_can_delete!(post_action)
               PostAction.remove_act(user, post, post_action_type_id)
               I18n.t('discourse_bale_notifications.unlike-success')
@@ -412,13 +417,13 @@ after_initialize do
 
       # فراخوانی زنده‌ی getWebhookInfo تا ادمین وضعیت واقعی سمت بله را ببیند،
       # نه فقط آن‌چه در دیتابیس محلی داریم.
-      webhook_info = DiscourseBaleNotifications::BaleNotifier.get_webhook_info
+      webhook_info = DiscourseBaleNotifications::BaleNotifier.fetch_webhook_info
 
       # URL برگشتی API بله شامل secret مسیر /bale/hook/:key است.
       # پنل وضعیت فقط به مسیر ثبت‌شده نیاز دارد؛ secret نباید در پاسخ JSON
       # قابل مشاهده برای مدیران نمایش داده شود.
       if webhook_info.is_a?(Hash) && webhook_info['result'].is_a?(Hash) &&
-           webhook_info['result']['url'].present?
+         webhook_info['result']['url'].present?
         webhook_info = webhook_info.deep_dup
         registered_url = webhook_info['result']['url'].to_s
         redacted_url = registered_url.sub(%r{(/bale/hook/)[^/?#]+}, '\\1[REDACTED]')
@@ -451,11 +456,13 @@ after_initialize do
         I18n.t('discourse_bale_notifications.admin.test_message', site_title: CGI.escapeHTML(SiteSetting.title))
       end
 
-      response = DiscourseBaleNotifications::BaleNotifier.send_message({
-        chat_id: chat_id,
-        text: test_text,
-        parse_mode: 'html'
-      })
+      response = DiscourseBaleNotifications::BaleNotifier.send_message(
+        {
+          chat_id: chat_id,
+          text: test_text,
+          parse_mode: 'html'
+        }
+      )
 
       if response
         render json: success_json
@@ -537,7 +544,7 @@ after_initialize do
             post_excerpt: CGI.escapeHTML(payload[:excerpt]),
             topic: CGI.escapeHTML(payload[:topic_title]),
             username: CGI.escapeHTML(payload[:username]),
-            user_url: CGI.escapeHTML(Discourse.base_url + '/u/' + payload[:username].to_s)
+            user_url: CGI.escapeHTML("#{Discourse.base_url}/u/#{payload[:username]}")
           )
         end
 
@@ -546,10 +553,7 @@ after_initialize do
         # منطق تصمیم‌گیری نهایی (آیا واقعاً به‌صورت عکس ارسال شود) داخل
         # BaleNotifier.sendNotification است.
         acting_user = User.find_by(username: payload[:username])
-        avatar_url =
-          if acting_user
-            "#{Discourse.base_url}#{acting_user.avatar_template.gsub('{size}', '128')}"
-          end
+        avatar_url = "#{Discourse.base_url}#{acting_user.avatar_template.gsub('{size}', '128')}" if acting_user
 
         # فاز سه - اصلاح #۱۹: «ساعات سکوت» - چیزی حذف/به‌تاخیر نمی‌افتد، فقط
         # با پرچم disable_notification به بله گفته می‌شود پیام را بی‌صدا

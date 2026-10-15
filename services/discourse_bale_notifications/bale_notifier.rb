@@ -11,7 +11,7 @@ module DiscourseBaleNotifications
 
     # فاز سه - اصلاح #۱۷: ارسال عکس (مثلاً آواتار کاربر عامل) به‌همراه کپشن.
     def self.send_photo(message)
-      return self.do_request('sendPhoto', message)
+      do_request('sendPhoto', message)
     end
 
     # حد مجاز کپشن در APIهای سازگار با تلگرام کوتاه‌تر از حد مجاز متن معمولی
@@ -73,7 +73,7 @@ module DiscourseBaleNotifications
 
     # فاز سه - اصلاح #۱۵: برای نمایش وضعیت واقعی وب‌هوک (آیا ثبت شده، آخرین
     # خطا از سمت بله چه بوده) در پنل مدیریتی.
-    def self.get_webhook_info
+    def self.fetch_webhook_info
       return self.do_request('getWebhookInfo', {})
     end
 
