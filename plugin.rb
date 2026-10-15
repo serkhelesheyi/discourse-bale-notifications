@@ -16,7 +16,7 @@ add_admin_route 'bale_notifications.title', 'bale-notifications', use_new_show_r
 
 after_initialize do
   module ::DiscourseBaleNotifications
-    PLUGIN_NAME ||= 'discourse-bale-notifications'.freeze
+    PLUGIN_NAME ||= 'discourse-bale-notifications'
     autoload :BaleNotifier, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/bale-notifier"
     autoload :LinkCode, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/link_code"
 
@@ -28,13 +28,13 @@ after_initialize do
 
   DiscourseBaleNotifications::Engine.routes.draw do
     # تغییر مسیر وب‌هوک از /telegram به /bale
-    post '/hook/:key' => "bale#hook"
+    post '/hook/:key' => 'bale#hook'
     # فاز یک - اصلاح #۸: تولید/حذف کد اتصال یک‌بارمصرف (نیازمند ورود به حساب)
-    post '/link' => "link#create"
-    delete '/link' => "link#destroy"
+    post '/link' => 'link#create'
+    delete '/link' => 'link#destroy'
     # فاز سه - اصلاح #۱۵: endpointهای JSON پنل مدیریتی (فقط ادمین)
-    get '/admin/status' => "admin#status"
-    post '/admin/test' => "admin#test"
+    get '/admin/status' => 'admin#status'
+    post '/admin/test' => 'admin#test'
   end
 
   Discourse::Application.routes.append do
@@ -43,7 +43,7 @@ after_initialize do
     scope '/admin/plugins/discourse-bale-notifications',
           constraints: AdminConstraint.new do
       scope format: false do
-        get '/bale-notifications' => "discourse_bale_notifications/admin#index"
+        get '/bale-notifications' => 'discourse_bale_notifications/admin#index'
       end
     end
   end
@@ -70,7 +70,7 @@ after_initialize do
       # مصرف (performed!) می‌شود، پس ترافیک معتبر با کلید درست هرگز محدود
       # نمی‌شود؛ can_perform? هم یک بررسی بدون مصرف (peek) است.
       auth_fail_limiter = RateLimiter.new(nil, "bale-hook-auth-fail-#{request.remote_ip}", 20, 1.minute)
-      if !auth_fail_limiter.can_perform?
+      unless auth_fail_limiter.can_perform?
         render json: { error: 'rate_limited' }, status: :too_many_requests
         return
       end
@@ -180,7 +180,7 @@ after_initialize do
               new_post = {
                 raw: params['message']['text'],
                 topic_id: reply_to.topic_id,
-                reply_to_post_number: reply_to.post_number,
+                reply_to_post_number: reply_to.post_number
               }
               manager = NewPostManager.new(user, new_post)
               result = manager.perform
@@ -203,7 +203,7 @@ after_initialize do
           chat_id: chat_id,
           text: message_text,
           parse_mode: 'html',
-          disable_web_page_preview: true,
+          disable_web_page_preview: true
         }
         DiscourseBaleNotifications::BaleNotifier.sendMessage(message)
 
@@ -429,7 +429,7 @@ after_initialize do
         enabled: SiteSetting.bale_notifications_enabled?,
         linked_users_count: linked_count,
         recent_activity: activity_with_usernames,
-        webhook_info: webhook_info,
+        webhook_info: webhook_info
       }
     end
 
@@ -453,7 +453,7 @@ after_initialize do
       response = DiscourseBaleNotifications::BaleNotifier.sendMessage({
         chat_id: chat_id,
         text: test_text,
-        parse_mode: 'html',
+        parse_mode: 'html'
       })
 
       if response
