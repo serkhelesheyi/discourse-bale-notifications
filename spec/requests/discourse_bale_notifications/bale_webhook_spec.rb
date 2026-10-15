@@ -42,7 +42,7 @@ RSpec.describe 'Bale webhook', type: :request do
     end
 
     it 'answers and acknowledges a callback without a message object' do
-      DiscourseBaleNotifications::BaleNotifier.expects(:answerCallback).with(
+      DiscourseBaleNotifications::BaleNotifier.expects(:answer_callback).with(
         'callback-1',
         I18n.t('discourse_bale_notifications.action-unavailable')
       )
@@ -55,7 +55,7 @@ RSpec.describe 'Bale webhook', type: :request do
     end
 
     it 'acknowledges a callback with malformed action data' do
-      DiscourseBaleNotifications::BaleNotifier.expects(:answerCallback).with(
+      DiscourseBaleNotifications::BaleNotifier.expects(:answer_callback).with(
         'callback-2',
         I18n.t('discourse_bale_notifications.action-unavailable')
       )

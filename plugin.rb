@@ -17,7 +17,7 @@ add_admin_route 'bale_notifications.title', 'bale-notifications', use_new_show_r
 after_initialize do
   module ::DiscourseBaleNotifications
     PLUGIN_NAME ||= 'discourse-bale-notifications'
-    autoload :BaleNotifier, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/bale-notifier"
+    autoload :BaleNotifier, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/bale_notifier"
     autoload :LinkCode, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/link_code"
 
     class Engine < ::Rails::Engine
@@ -205,14 +205,14 @@ after_initialize do
           parse_mode: 'html',
           disable_web_page_preview: true
         }
-        DiscourseBaleNotifications::BaleNotifier.sendMessage(message)
+        DiscourseBaleNotifications::BaleNotifier.send_message(message)
 
       elsif params.key?('callback_query')
         callback_payload = params['callback_query']
         unless valid_callback_payload?(callback_payload)
           callback_id = callback_payload['id'] if webhook_object?(callback_payload)
           if callback_id.present?
-            DiscourseBaleNotifications::BaleNotifier.answerCallback(
+            DiscourseBaleNotifications::BaleNotifier.answer_callback(
               callback_id,
               I18n.t(
                 'discourse_bale_notifications.action-unavailable',
@@ -253,7 +253,7 @@ after_initialize do
           data = params['callback_query']['data'].to_s.split(':')
           post = Post.find(data[1])
         rescue ActiveRecord::RecordNotFound
-          DiscourseBaleNotifications::BaleNotifier.answerCallback(
+          DiscourseBaleNotifications::BaleNotifier.answer_callback(
             callback_id,
             I18n.t(
               'discourse_bale_notifications.action-unavailable',
@@ -297,14 +297,14 @@ after_initialize do
         # بعد از if/elsif فراخوانی می‌شد (فراخوانی دوگانه‌ی answerCallback
         # برای بله)؛ اکنون فقط یک‌بار و به‌صورت یکنواخت برای هر سه حالت
         # (like/unlike/نامعتبر) صدا زده می‌شود.
-        DiscourseBaleNotifications::BaleNotifier.answerCallback(callback_id, string)
+        DiscourseBaleNotifications::BaleNotifier.answer_callback(callback_id, string)
 
         message = {
           chat_id: chat_id,
           message_id: params['callback_query']['message']['message_id'],
-          reply_markup: DiscourseBaleNotifications::BaleNotifier.generateReplyMarkup(post, user)
+          reply_markup: DiscourseBaleNotifications::BaleNotifier.generate_reply_markup(post, user)
         }
-        DiscourseBaleNotifications::BaleNotifier.editKeyboard(message)
+        DiscourseBaleNotifications::BaleNotifier.edit_keyboard(message)
       end
 
       # پاسخ موفقیت‌آمیز به سرور بله برای جلوگیری از توقف ارسال وب‌هوک‌ها
@@ -417,7 +417,8 @@ after_initialize do
       # URL برگشتی API بله شامل secret مسیر /bale/hook/:key است.
       # پنل وضعیت فقط به مسیر ثبت‌شده نیاز دارد؛ secret نباید در پاسخ JSON
       # قابل مشاهده برای مدیران نمایش داده شود.
-      if webhook_info.is_a?(Hash) && webhook_info['result'].is_a?(Hash) && webhook_info['result']['url'].present?
+      if webhook_info.is_a?(Hash) && webhook_info['result'].is_a?(Hash) &&
+           webhook_info['result']['url'].present?
         webhook_info = webhook_info.deep_dup
         registered_url = webhook_info['result']['url'].to_s
         redacted_url = registered_url.sub(%r{(/bale/hook/)[^/?#]+}, '\\1[REDACTED]')
@@ -450,7 +451,7 @@ after_initialize do
         I18n.t('discourse_bale_notifications.admin.test_message', site_title: CGI.escapeHTML(SiteSetting.title))
       end
 
-      response = DiscourseBaleNotifications::BaleNotifier.sendMessage({
+      response = DiscourseBaleNotifications::BaleNotifier.send_message({
         chat_id: chat_id,
         text: test_text,
         parse_mode: 'html'
@@ -510,18 +511,14 @@ after_initialize do
         user = User.find(args[:user_id])
         chat_id = user.custom_fields['bale_chat_id']
 
-        if chat_id.nil? || chat_id.empty?
-          return
-        end
+        return if chat_id.nil? || chat_id.empty?
 
         # فاز سه - اصلاح #۱۸: اگر کاربر خودش ترجیحی برای زیرمجموعه‌ای از انواع
         # ثبت کرده باشد، به آن احترام گذاشته می‌شود. اگر فیلد خالی/تنظیم‌نشده
         # باشد (رفتار پیش‌فرض برای همه‌ی کاربران فعلی)، هیچ محدودیت اضافه‌ای
         # اعمال نمی‌شود - یعنی رفتار قبلی (همه‌ی انواع فعال سایت) دقیقاً حفظ می‌شود.
         user_type_prefs = user.custom_fields['bale_notification_types']
-        if user_type_prefs.present?
-          return unless user_type_prefs.split('|').include?(notification_type_name)
-        end
+        return if user_type_prefs.present? && !user_type_prefs.split('|').include?(notification_type_name)
 
         post = Post.where(post_number: payload[:post_number], topic_id: payload[:topic_id]).first
 
@@ -551,7 +548,7 @@ after_initialize do
         acting_user = User.find_by(username: payload[:username])
         avatar_url =
           if acting_user
-            Discourse.base_url + acting_user.avatar_template.gsub('{size}', '128')
+            "#{Discourse.base_url}#{acting_user.avatar_template.gsub('{size}', '128')}"
           end
 
         # فاز سه - اصلاح #۱۹: «ساعات سکوت» - چیزی حذف/به‌تاخیر نمی‌افتد، فقط
@@ -581,10 +578,10 @@ after_initialize do
           end
         end
 
-        response = DiscourseBaleNotifications::BaleNotifier.sendNotification(
+        response = DiscourseBaleNotifications::BaleNotifier.send_notification(
           message_text,
           chat_id,
-          DiscourseBaleNotifications::BaleNotifier.generateReplyMarkup(post, user),
+          DiscourseBaleNotifications::BaleNotifier.generate_reply_markup(post, user),
           avatar_url: avatar_url,
           disable_notification: disable_notification
         )
@@ -601,7 +598,7 @@ after_initialize do
       def execute(*)
         if SiteSetting.bale_notifications_enabled?
           SiteSetting.bale_secret = SecureRandom.hex
-          DiscourseBaleNotifications::BaleNotifier.setupWebhook(SiteSetting.bale_secret)
+          DiscourseBaleNotifications::BaleNotifier.setup_webhook(SiteSetting.bale_secret)
         else
           # فاز یک - اصلاح #۱۰: قبلاً هنگام غیرفعال‌سازی افزونه هیچ اقدامی
           # انجام نمی‌شد و وب‌هوک نزد بله ثبت‌شده باقی می‌ماند؛ بله تا ابد

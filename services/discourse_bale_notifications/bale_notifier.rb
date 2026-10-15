@@ -5,13 +5,13 @@ require 'net/http'
 
 module DiscourseBaleNotifications
   class BaleNotifier
-    def self.sendMessage(message)
-      return doRequest('sendMessage', message)
+    def self.send_message(message)
+      do_request('sendMessage', message)
     end
 
     # فاز سه - اصلاح #۱۷: ارسال عکس (مثلاً آواتار کاربر عامل) به‌همراه کپشن.
-    def self.sendPhoto(message)
-      return self.doRequest('sendPhoto', message)
+    def self.send_photo(message)
+      return self.do_request('sendPhoto', message)
     end
 
     # حد مجاز کپشن در APIهای سازگار با تلگرام کوتاه‌تر از حد مجاز متن معمولی
@@ -26,9 +26,9 @@ module DiscourseBaleNotifications
     # ارسال می‌شود؛ در غیر این‌صورت به روش معمول متنی برمی‌گردد. در هر دو
     # حالت، ساختار پاسخ (شامل message_id) یکسان است، پس بقیه‌ی کد
     # (مثل ذخیره‌سازی برای قابلیت پاسخ) نیازی به تغییر ندارد.
-    def self.sendNotification(text, chat_id, reply_markup, avatar_url: nil, disable_notification: false)
+    def self.send_notification(text, chat_id, reply_markup, avatar_url: nil, disable_notification: false)
       if SiteSetting.bale_notifications_show_avatar? && avatar_url.present? && text.bytesize <= CAPTION_LIMIT
-        sendPhoto({
+        send_photo({
           chat_id: chat_id,
           photo: avatar_url,
           caption: text,
@@ -37,55 +37,55 @@ module DiscourseBaleNotifications
           reply_markup: reply_markup
         })
       else
-        sendMessage({
+        send_message({
           chat_id: chat_id,
           text: text,
           parse_mode: 'html',
           disable_web_page_preview: true,
           disable_notification: disable_notification,
-          reply_markup: reply_markup,
+          reply_markup: reply_markup
         })
       end
     end
 
-    def self.answerCallback(callback_id, text)
+    def self.answer_callback(callback_id, text)
       message = {
         callback_query_id: callback_id,
         text: text
       }
-      return self.doRequest('answerCallbackQuery', message)
+      return self.do_request('answerCallbackQuery', message)
     end
 
-    def self.setupWebhook(_key)
+    def self.setup_webhook(_key)
       message = {
         # آدرس وب‌هوک با دامنه بله و مسیر جدید
         url: "#{Discourse.base_url}/bale/hook/#{SiteSetting.bale_secret}"
       }
-      return self.doRequest('setWebhook', message)
+      return self.do_request('setWebhook', message)
     end
 
     # فاز یک - اصلاح #۱۰: برای حذف صریح وب‌هوک از سمت بله هنگام غیرفعال‌سازی
     # افزونه، تا سرور بله برای همیشه تلاش برای تحویل به endpointِ اکنون
     # غیرفعال را متوقف کند.
     def self.deleteWebhook
-      return self.doRequest('deleteWebhook', {})
+      return self.do_request('deleteWebhook', {})
     end
 
     # فاز سه - اصلاح #۱۵: برای نمایش وضعیت واقعی وب‌هوک (آیا ثبت شده، آخرین
     # خطا از سمت بله چه بوده) در پنل مدیریتی.
     def self.getWebhookInfo
-      return self.doRequest('getWebhookInfo', {})
+      return self.do_request('getWebhookInfo', {})
     end
 
-    def self.editKeyboard(message)
-      return self.doRequest('editMessageReplyMarkup', message)
+    def self.edit_keyboard(message)
+      return self.do_request('editMessageReplyMarkup', message)
     end
 
     # فاز سه - اصلاح #۱۵: لاگ فعالیت اخیر برای پنل مدیریتی. عمداً فقط تلاش‌های
     # ارسال واقعی پیام (sendMessage/sendPhoto) ثبت می‌شوند، نه هر فراخوانی
     # داخلی API (مثل answerCallback)، تا این لاگ برای ادمین معنادار بماند.
     RECORDABLE_METHODS = %w[sendMessage sendPhoto].freeze
-    ACTIVITY_LOG_KEY = 'recent-activity'.freeze
+    ACTIVITY_LOG_KEY = 'recent-activity'
     ACTIVITY_LOG_MAX_ENTRIES = 50
 
     def self.recent_activity
@@ -104,7 +104,7 @@ module DiscourseBaleNotifications
         'chat_id' => chat_id,
         'ok' => success,
         'error_code' => error_code,
-        'description' => description,
+        'description' => description
       }
 
       # DistributedMutex چون چند Worker سیدکیک ممکن است هم‌زمان بخواهند این
@@ -121,7 +121,7 @@ module DiscourseBaleNotifications
       Rails.logger.warn("Bale notifications: failed to record activity log entry: #{e.class}: #{e.message}")
     end
 
-    def self.doRequest(method_name, message)
+    def self.do_request(method_name, message)
       # تغییر دامنه به سرور بله
       http = Net::HTTP.new('tapi.bale.ai', 443)
       http.use_ssl = true
@@ -216,7 +216,7 @@ module DiscourseBaleNotifications
       )
     end
 
-    def self.generateReplyMarkup(post, user)
+    def self.generate_reply_markup(post, user)
       likes = UserAction.where(action_type: UserAction::LIKE, user_id: user.id, target_post_id: post.id).count
       if likes.positive?
         like_button_text = I18n.t('discourse_bale_notifications.unlike')
