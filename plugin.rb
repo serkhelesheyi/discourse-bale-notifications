@@ -355,6 +355,15 @@ after_initialize do
       # نه فقط آن‌چه در دیتابیس محلی داریم.
       webhook_info = DiscourseBaleNotifications::BaleNotifier.getWebhookInfo
 
+      # URL برگشتی API بله شامل secret مسیر /bale/hook/:key است.
+      # پنل وضعیت فقط به مسیر ثبت‌شده نیاز دارد؛ secret نباید در پاسخ JSON
+      # قابل مشاهده برای مدیران نمایش داده شود.
+      if webhook_info.is_a?(Hash) && webhook_info.dig("result", "url").present?
+        webhook_info = webhook_info.deep_dup
+        webhook_info["result"]["url"] =
+          webhook_info["result"]["url"].to_s.sub(%r{(/bale/hook/)[^/?#]+}, '\\1[REDACTED]')
+      end
+
       render json: {
         enabled: SiteSetting.bale_notifications_enabled?,
         linked_users_count: linked_count,
