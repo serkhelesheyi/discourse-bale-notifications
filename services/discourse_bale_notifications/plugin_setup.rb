@@ -48,7 +48,6 @@ module DiscourseBaleNotifications
     def self.register_notification_types_field
       DiscoursePluginRegistry.serialized_current_user_fields << 'bale_notification_types'
       User.register_custom_field_type('bale_notification_types', :text)
-      register_editable_user_custom_field :bale_notification_types
     end
 
     # The current push_notification event intentionally respects Discourse's DND behavior.

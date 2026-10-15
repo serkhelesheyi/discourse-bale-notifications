@@ -48,4 +48,5 @@ after_initialize do
   end
 
   DiscourseBaleNotifications::PluginSetup.configure
+  register_editable_user_custom_field :bale_notification_types
 end
