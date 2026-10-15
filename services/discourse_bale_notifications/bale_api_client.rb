@@ -7,78 +7,82 @@ require 'openssl'
 module DiscourseBaleNotifications
   # Performs HTTP requests to the Bale Bot API and handles API failures.
   class BaleApiClient
+    NETWORK_ERRORS = [
+      Net::OpenTimeout,
+      Net::ReadTimeout,
+      SocketError,
+      OpenSSL::SSL::SSLError,
+      Errno::ECONNREFUSED,
+      Errno::ECONNRESET,
+      Errno::EHOSTUNREACH
+    ].freeze
+
     def self.call(method_name, message)
-      # تغییر دامنه به سرور بله
-      http = Net::HTTP.new('tapi.bale.ai', 443)
-      http.use_ssl = true
-      # فاز یک - اصلاح #۵: بدون timeout صریح، یک هنگ‌کردن یا کندی سرور بله
-      # می‌توانست یک Worker سیدکیک را بی‌نهایت مشغول نگه دارد.
-      http.open_timeout = 5
-      http.read_timeout = 10
+      http, request, chat_id = build_request(method_name, message)
+      response = perform_request(http, request, method_name, chat_id)
+      return false unless response
 
-      access_token = SiteSetting.bale_access_token
-      # تغییر Base URL به فرمت استاندارد بله
-      uri = URI("https://tapi.bale.ai/bot#{access_token}/#{method_name}")
+      response_data = parse_response(response, method_name, chat_id)
+      return false if response_data == :invalid_json
+      return handle_api_failure(method_name, chat_id, response, response_data) unless response_data['ok'] == true
 
-      req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
-      req.body = message.to_json
-
-      # شناسه‌ی چت فقط برای لاگ (نه محتوای پیام) استخراج می‌شود.
-      chat_id_for_log = message[:chat_id] || message['chat_id']
-
-      begin
-        response = http.request(req)
-      rescue Net::OpenTimeout, Net::ReadTimeout, SocketError, OpenSSL::SSL::SSLError,
-             Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::EHOSTUNREACH => e
-        Rails.logger.error(
-          'Bale API request failed before receiving a response ' \
-          "(method=#{method_name}, chat_id=#{chat_id_for_log}): #{e.class}: #{e.message}"
-        )
-        BaleActivityLog.record_activity(method_name, chat_id_for_log, false, nil, "#{e.class}: #{e.message}")
-        return false
-      end
-
-      begin
-        response_data = JSON.parse(response.body)
-      rescue JSON::ParserError => e
-        # فاز یک - اصلاح #۵: پاسخ‌های غیر JSON (مثلاً صفحه‌ی خطای پروکسی هنگام
-        # قطعی سرویس بله) قبلاً باعث رها شدن یک Exception بدون rescue می‌شدند.
-        Rails.logger.error(
-          'Bale API returned a non-JSON response ' \
-          "(method=#{method_name}, http_status=#{response.code}): #{e.message}"
-        )
-        BaleActivityLog.record_activity(method_name, chat_id_for_log, false, response.code, 'non-JSON response')
-        return false
-      end
-
-      unless response_data['ok'] == true
-        # فاز یک - اصلاح #۶: قبلاً کل بدنه‌ی پیام (req.body) که می‌توانست شامل
-        # خلاصه‌ی پیام‌های خصوصی کاربران باشد، عیناً در لاگ سرور نوشته می‌شد.
-        # اکنون فقط اطلاعات غیرحساس (نام متد، chat_id، وضعیت HTTP، و کد/توضیح
-        # خطای خودِ API بله) لاگ می‌شود - نه متن پیام.
-        Rails.logger.error(
-          "Bale API call failed (method=#{method_name}, chat_id=#{chat_id_for_log}, " \
-          "http_status=#{response.code}, error_code=#{response_data['error_code']}, " \
-          "description=#{response_data['description']})"
-        )
-
-        # فاز دو - اصلاح #۱۴: اگر بله اعلام کند کاربر ربات را بلاک کرده یا چت
-        # دیگر معتبر نیست، تلاش مکرر و بی‌نتیجه برای ارسال پیام به آن چت
-        # فایده‌ای ندارد؛ اتصال به‌صورت خودکار قطع می‌شود تا هم لاگ تمیز بماند
-        # و هم کاربر (در صورت بازگشت) بداند باید دوباره اتصال را برقرار کند.
-        unlink_chat_if_unreachable(chat_id_for_log, response_data)
-        BaleActivityLog.record_activity(method_name, chat_id_for_log, false, response_data['error_code'], response_data['description'])
-
-        return false
-      end
-
-      BaleActivityLog.record_activity(method_name, chat_id_for_log, true, nil, nil)
+      BaleActivityLog.record_activity(method_name, chat_id, true, nil, nil)
       response_data
     end
 
-    # فاز دو - اصلاح #۱۴: خطاهای استاندارد APIهای سازگار با تلگرام برای
-    # «ربات بلاک شده» (error_code 403) یا «چت دیگر وجود ندارد» (error_code 400
-    # با توضیح «chat not found») را تشخیص می‌دهد.
+    def self.build_request(method_name, message)
+      http = Net::HTTP.new('tapi.bale.ai', 443)
+      configure_http(http)
+      uri = URI("https://tapi.bale.ai/bot#{SiteSetting.bale_access_token}/#{method_name}")
+      request = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
+      request.body = message.to_json
+      chat_id = message[:chat_id] || message['chat_id']
+      [http, request, chat_id]
+    end
+
+    def self.configure_http(http)
+      http.use_ssl = true
+      http.open_timeout = 5
+      http.read_timeout = 10
+    end
+
+    def self.perform_request(http, request, method_name, chat_id)
+      http.request(request)
+    rescue *NETWORK_ERRORS => error
+      Rails.logger.error(
+        'Bale API request failed before receiving a response ' \
+        "(method=#{method_name}, chat_id=#{chat_id}): #{error.class}: #{error.message}"
+      )
+      BaleActivityLog.record_activity(method_name, chat_id, false, nil, "#{error.class}: #{error.message}")
+      false
+    end
+
+    def self.parse_response(response, method_name, chat_id)
+      JSON.parse(response.body)
+    rescue JSON::ParserError => error
+      Rails.logger.error(
+        'Bale API returned a non-JSON response ' \
+        "(method=#{method_name}, http_status=#{response.code}): #{error.message}"
+      )
+      BaleActivityLog.record_activity(method_name, chat_id, false, response.code, 'non-JSON response')
+      :invalid_json
+    end
+
+    def self.handle_api_failure(method_name, chat_id, response, response_data)
+      log_api_failure(method_name, chat_id, response, response_data)
+      unlink_chat_if_unreachable(chat_id, response_data)
+      BaleActivityLog.record_activity(method_name, chat_id, false, response_data['error_code'], response_data['description'])
+      false
+    end
+
+    def self.log_api_failure(method_name, chat_id, response, response_data)
+      Rails.logger.error(
+        "Bale API call failed (method=#{method_name}, chat_id=#{chat_id}, " \
+        "http_status=#{response.code}, error_code=#{response_data['error_code']}, " \
+        "description=#{response_data['description']})"
+      )
+    end
+
     def self.bot_unreachable?(response_data)
       code = response_data['error_code']
       description = response_data['description'].to_s
@@ -90,7 +94,6 @@ module DiscourseBaleNotifications
 
     def self.unlink_chat_if_unreachable(chat_id, response_data)
       return if chat_id.blank?
-
       return unless bot_unreachable?(response_data)
 
       removed = UserCustomField.where(name: 'bale_chat_id', value: chat_id.to_s).delete_all
@@ -101,6 +104,5 @@ module DiscourseBaleNotifications
         'after Bale reported it as blocked/unreachable'
       )
     end
-
   end
 end

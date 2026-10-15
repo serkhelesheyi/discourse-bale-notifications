@@ -42,6 +42,5 @@ module DiscourseBaleNotifications
       # Activity logging is diagnostic and must never break message delivery.
       Rails.logger.warn("Bale notifications: failed to record activity log entry: #{e.class}: #{e.message}")
     end
-
   end
 end
