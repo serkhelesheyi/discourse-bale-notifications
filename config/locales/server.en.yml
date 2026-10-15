@@ -59,7 +59,7 @@ en:
 
                 <pre>%{post_excerpt}</pre>
       private_message: |-
-                ✉️ <a href="%{user_url}">@%{username}</a> sent you a <b>private message</b>
+                ✉️ <a href="%{user_url}">@%{username}</a> sent you a <b>personal message</b>
                 in <a href="%{post_url}">%{topic}</a>
 
                 <pre>%{post_excerpt}</pre>

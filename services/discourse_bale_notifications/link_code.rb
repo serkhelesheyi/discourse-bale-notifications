@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DiscourseBaleNotifications
   # کدهای اتصال یک‌بارمصرف و کوتاه‌مدت برای اتصال امن حساب دیسکورس به چت بله.
   #
@@ -15,6 +17,17 @@ module DiscourseBaleNotifications
   #   ۲) کاربر باید همان کد را از همان چت بله برای ربات ارسال کند.
   # فقط با برقراری هر دو شرط، اتصال برقرار می‌شود.
   class LinkCode
+    # Redis Lua script makes read-and-delete a single atomic operation.
+    # The key is namespaced explicitly because eval does not pass through
+    # DiscourseRedis's per-command key namespacing wrappers.
+    CONSUME_SCRIPT = <<~LUA
+      local user_id = redis.call('GET', KEYS[1])
+      if user_id then
+        redis.call('DEL', KEYS[1])
+      end
+      return user_id
+    LUA
+
     TTL_SECONDS = 15 * 60
     LENGTH = 6
     MAX_GENERATION_ATTEMPTS = 10
@@ -29,12 +42,13 @@ module DiscourseBaleNotifications
     # همان کد قبلاً برای کاربر دیگری فعال است، به‌جای بازنویسی، دوباره تلاش شود.
     def self.generate_for(user)
       MAX_GENERATION_ATTEMPTS.times do
-        candidate = SecureRandom.random_number(10**LENGTH).to_s.rjust(LENGTH, "0")
+        candidate = SecureRandom.random_number(10**LENGTH).to_s.rjust(LENGTH, '0')
         created = Discourse.redis.set(redis_key(candidate), user.id.to_s, nx: true, ex: TTL_SECONDS)
         return candidate if created
       end
 
-      raise "DiscourseBaleNotifications::LinkCode could not generate a unique code after #{MAX_GENERATION_ATTEMPTS} attempts"
+      raise 'DiscourseBaleNotifications::LinkCode could not generate a unique code ' \
+            "after #{MAX_GENERATION_ATTEMPTS} attempts"
     end
 
     # اگر ورودی یک کد معتبر و هنوز منقضی‌نشده باشد، user_id مربوطه را
@@ -48,11 +62,11 @@ module DiscourseBaleNotifications
       # غیرضروری به Redis زده نشود.
       return nil unless code.match?(/\A\d{#{LENGTH}}\z/)
 
-      key = redis_key(code)
-      user_id = Discourse.redis.get(key)
+      redis = Discourse.redis
+      key = redis.namespace_key(redis_key(code))
+      user_id = redis.eval(CONSUME_SCRIPT, keys: [key])
       return nil if user_id.nil?
 
-      Discourse.redis.del(key)
       user_id.to_i
     end
   end

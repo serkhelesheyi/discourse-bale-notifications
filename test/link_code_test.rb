@@ -1,19 +1,23 @@
 # frozen_string_literal: true
 
-require "minitest/autorun"
-require "securerandom"
+require 'minitest/autorun'
+require 'securerandom'
 
 # Minimal ActiveSupport compatibility for exercising this service outside Discourse.
 class String
-  def blank?
-    strip.empty?
-  end unless method_defined?(:blank?)
+  unless method_defined?(:blank?)
+    def blank?
+      strip.empty?
+    end
+  end
 end
 
 class NilClass
-  def blank?
-    true
-  end unless method_defined?(:blank?)
+  unless method_defined?(:blank?)
+    def blank?
+      true
+    end
+  end
 end
 
 module Discourse
@@ -33,12 +37,13 @@ class FakeRedis
     @entries = {}
   end
 
-  def set(key, value, nx: false, ex: nil)
-    @last_set_options = { nx: nx, ex: ex }
+  def set(key, value, **options)
+    nx = options.fetch(:nx, false)
+    @last_set_options = { nx: nx, ex: options[:ex] }
     return false if nx && @entries.key?(key)
 
     @entries[key] = value
-    "OK"
+    'OK'
   end
 
   def get(key)
@@ -48,9 +53,21 @@ class FakeRedis
   def del(key)
     @entries.delete(key) ? 1 : 0
   end
+
+  # DiscourseRedis exposes these methods for the atomic consume operation.
+  def namespace_key(key)
+    key
+  end
+
+  def eval(_script, keys:)
+    key = keys.fetch(0)
+    user_id = @entries[key]
+    @entries.delete(key) if user_id
+    user_id
+  end
 end
 
-require_relative "../services/discourse_bale_notifications/link_code"
+require_relative '../services/discourse_bale_notifications/link_code'
 
 class LinkCodeTest < Minitest::Test
   def setup
@@ -61,13 +78,13 @@ class LinkCodeTest < Minitest::Test
     code = DiscourseBaleNotifications::LinkCode.generate_for(Struct.new(:id).new(42))
 
     assert_match(/\A\d{6}\z/, code)
-    assert_equal "42", Discourse.redis.get(DiscourseBaleNotifications::LinkCode.redis_key(code))
+    assert_equal '42', Discourse.redis.get(DiscourseBaleNotifications::LinkCode.redis_key(code))
     assert_equal({ nx: true, ex: 900 }, Discourse.redis.last_set_options)
   end
 
   def test_consume_returns_user_id_and_deletes_code
-    code = "012345"
-    Discourse.redis.set(DiscourseBaleNotifications::LinkCode.redis_key(code), "73", nx: true, ex: 900)
+    code = '012345'
+    Discourse.redis.set(DiscourseBaleNotifications::LinkCode.redis_key(code), '73', nx: true, ex: 900)
 
     assert_equal 73, DiscourseBaleNotifications::LinkCode.consume(code)
     assert_nil Discourse.redis.get(DiscourseBaleNotifications::LinkCode.redis_key(code))
@@ -77,34 +94,42 @@ class LinkCodeTest < Minitest::Test
   def test_consume_rejects_blank_and_non_six_digit_inputs_without_redis_access
     redis = Discourse.redis
     assert_nil DiscourseBaleNotifications::LinkCode.consume(nil)
-    assert_nil DiscourseBaleNotifications::LinkCode.consume("")
-    assert_nil DiscourseBaleNotifications::LinkCode.consume("  ")
-    assert_nil DiscourseBaleNotifications::LinkCode.consume("12345")
-    assert_nil DiscourseBaleNotifications::LinkCode.consume("1234567")
-    assert_nil DiscourseBaleNotifications::LinkCode.consume("12a456")
+    assert_nil DiscourseBaleNotifications::LinkCode.consume('')
+    assert_nil DiscourseBaleNotifications::LinkCode.consume('  ')
+    assert_nil DiscourseBaleNotifications::LinkCode.consume('12345')
+    assert_nil DiscourseBaleNotifications::LinkCode.consume('1234567')
+    assert_nil DiscourseBaleNotifications::LinkCode.consume('12a456')
     assert_empty redis.entries
   end
 
   def test_generate_retries_when_candidate_already_exists
     service = DiscourseBaleNotifications::LinkCode
-    values = ["111111", "222222"]
+    Discourse.redis.set(service.redis_key('111111'), '99', nx: true, ex: service::TTL_SECONDS)
+
+    with_stubbed_random_numbers(%w[111111 222222]) do
+      code = service.generate_for(Struct.new(:id).new(42))
+      assert_equal '222222', code
+    end
+
+    assert_equal '99', Discourse.redis.get(service.redis_key('111111'))
+    assert_equal '42', Discourse.redis.get(service.redis_key('222222'))
+  end
+
+  private
+
+  def with_stubbed_random_numbers(values) # rubocop:disable Metrics/MethodLength -- the stub setup and ensure restoration are one unit.
     original_random_number = SecureRandom.method(:random_number)
     calls = 0
 
     SecureRandom.define_singleton_method(:random_number) do |limit|
-      raise "unexpected random limit" unless limit == 10**service::LENGTH
+      raise 'unexpected random limit' unless limit == 10**DiscourseBaleNotifications::LinkCode::LENGTH
 
       value = values.fetch(calls)
       calls += 1
       value.to_i
     end
 
-    Discourse.redis.set(service.redis_key("111111"), "99", nx: true, ex: service::TTL_SECONDS)
-    code = service.generate_for(Struct.new(:id).new(42))
-
-    assert_equal "222222", code
-    assert_equal "99", Discourse.redis.get(service.redis_key("111111"))
-    assert_equal "42", Discourse.redis.get(service.redis_key("222222"))
+    yield
   ensure
     SecureRandom.define_singleton_method(:random_number, original_random_number) if original_random_number
   end
