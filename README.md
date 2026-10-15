@@ -140,3 +140,8 @@
 ### نتیجهٔ CI برای commit 0101be7 — ۱۵ اکتبر ۲۰۲۶
 
 اجرای [38713600491](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38713600491) کامل شده است: backend tests و Syntax Tree موفق‌اند، اما RuboCop ناموفق است و **۱۶۶ تخلف** در سه فایل گزارش می‌کند: `plugin.rb` (۷۱)، `bale-notifier.rb` (۹۳) و `link_code.rb` (۲). بنابراین شاخه هنوز آمادهٔ ادغام نیست. در این مرحله دو اصلاح صرفاً سبکی و بدون تغییر رفتار در `link_code.rb` انجام می‌شود؛ پس از اجرای CI بعدی، تعداد جدید باید از لاگ واقعی ثبت شود.
+
+
+### پیگیری CI: commit `cd48fcc` — ۱۵ اکتبر ۲۰۲۶
+
+اجرای [38714371226](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38714371226) کامل شد: `check_for_tests` و `backend_tests` موفق، اما `linting` ناموفق است. RuboCop همچنان **۱۶۶ تخلف** در ۷ فایل گزارش می‌کند؛ ۸۵ مورد قابل اصلاح خودکارند. بررسی لاگ نشان داد اصلاح قبلی `link_code.rb` به‌اشتباه رشتهٔ دارای interpolation را به کوتیشن تکی تبدیل کرده بود؛ این خطا اکنون با کوتیشن دوتایی اصلاح می‌شود. نام‌گذاری camelCase در `bale-notifier.rb` و تخلفات ساختاری `plugin.rb` هنوز باز هستند.

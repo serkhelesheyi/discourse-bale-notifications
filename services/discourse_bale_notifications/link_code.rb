@@ -48,7 +48,7 @@ module DiscourseBaleNotifications
       end
 
       raise "DiscourseBaleNotifications::LinkCode could not generate a unique code " \
-            'after #{MAX_GENERATION_ATTEMPTS} attempts'
+            "after #{MAX_GENERATION_ATTEMPTS} attempts"
     end
 
     # اگر ورودی یک کد معتبر و هنوز منقضی‌نشده باشد، user_id مربوطه را

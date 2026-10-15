@@ -440,3 +440,10 @@
 ### نتیجهٔ CI و گام بعدی — ۱۵ اکتبر ۲۰۲۶
 
 اجرای [38713600491](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38713600491) با نتیجهٔ کلی failure پایان یافت: jobهای backend tests و Syntax Tree سبز و job lint قرمز بود. RuboCop تعداد ۱۶۶ تخلف در سه فایل گزارش کرد: `plugin.rb` (۷۱)، `services/discourse_bale_notifications/bale-notifier.rb` (۹۳) و `services/discourse_bale_notifications/link_code.rb` (۲). اصلاح مورد انتظار `CGI.escapeHTML` مشکل RSpec را برطرف کرده است. گام بعد، اصلاح‌های مکانیکی محدود و سپس بازبینی جداگانهٔ نام‌گذاری و ساختار است؛ تغییرات نام APIهای Ruby باید همراه با بررسی همهٔ callerها انجام شود. هیچ merge یا deployment انجام نشده است.
+
+
+### نتیجهٔ اجرای CI روی `cd48fcc` و اصلاح خطای کوتیشن — ۱۵ اکتبر ۲۰۲۶
+
+اجرای [38714371226](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38714371226) با نتیجهٔ کلی failure پایان یافت. `ci / check_for_tests` و `ci / backend_tests` موفق شدند؛ `ci / linting` ناموفق ماند. لاگ RuboCop: ۷ فایل بررسی‌شده، **۱۶۶ تخلف**، ۸۵ مورد قابل اصلاح خودکار. دو تخلف `link_code.rb` به این علت باقی مانده بود که در اصلاح قبلی، رشتهٔ دوم دارای interpolation به کوتیشن تکی تبدیل شده بود. این خطا در commit بعدی به کوتیشن دوتایی برگردانده می‌شود؛ بنابراین نتیجهٔ ۱۶۶ مربوط به commit `cd48fcc` است و شمار جدید باید از اجرای بعدی ثبت شود.
+
+**گام اجرایی:** ادامهٔ پاک‌سازی مکانیکی با تغییرات کوچک و بازبینی diff؛ سپس تغییر نام متدهای داخلی فقط پس از جست‌وجوی همهٔ callerها و آزمون‌ها. هنوز ادغام یا استقرار انجام نشده است.
