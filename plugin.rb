@@ -358,7 +358,7 @@ after_initialize do
       # URL برگشتی API بله شامل secret مسیر /bale/hook/:key است.
       # پنل وضعیت فقط به مسیر ثبت‌شده نیاز دارد؛ secret نباید در پاسخ JSON
       # قابل مشاهده برای مدیران نمایش داده شود.
-      if webhook_info.is_a?(Hash) && webhook_info.dig("result", "url").present?
+      if webhook_info.is_a?(Hash) && webhook_info["result"].is_a?(Hash) && webhook_info["result"]["url"].present?
         webhook_info = webhook_info.deep_dup
         registered_url = webhook_info["result"]["url"].to_s
         redacted_url = registered_url.sub(%r{(/bale/hook/)[^/?#]+}, '\\1[REDACTED]')
