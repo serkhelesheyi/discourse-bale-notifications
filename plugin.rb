@@ -190,7 +190,7 @@ after_initialize do
                 errors = escape_html(result.errors.full_messages.join("\n"))
                 I18n.t("discourse_bale_notifications.reply-failed", errors: errors)
               else
-                I18n.t("discourse_bale_notifications.reply-success", post_url: result.post.full_url)
+                I18n.t("discourse_bale_notifications.reply-success", post_url: CGI::escapeHTML(result.post.full_url))
               end
             else
               I18n.t("discourse_bale_notifications.reply-error")
@@ -536,11 +536,11 @@ after_initialize do
             "discourse_bale_notifications.message.#{notification_type_name}",
             site_title: CGI::escapeHTML(SiteSetting.title),
             site_url: Discourse.base_url,
-            post_url: Discourse.base_url + payload[:post_url],
+            post_url: CGI::escapeHTML(Discourse.base_url + payload[:post_url].to_s),
             post_excerpt: CGI::escapeHTML(payload[:excerpt]),
             topic: CGI::escapeHTML(payload[:topic_title]),
             username: CGI::escapeHTML(payload[:username]),
-            user_url: Discourse.base_url + "/u/" + payload[:username]
+            user_url: CGI::escapeHTML(Discourse.base_url + "/u/" + payload[:username].to_s)
           )
         end
 
