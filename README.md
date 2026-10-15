@@ -145,3 +145,14 @@
 ### پیگیری CI: commit `cd48fcc` — ۱۵ اکتبر ۲۰۲۶
 
 اجرای [38714371226](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38714371226) کامل شد: `check_for_tests` و `backend_tests` موفق، اما `linting` ناموفق است. RuboCop همچنان **۱۶۶ تخلف** در ۷ فایل گزارش می‌کند؛ ۸۵ مورد قابل اصلاح خودکارند. بررسی لاگ نشان داد اصلاح قبلی `link_code.rb` به‌اشتباه رشتهٔ دارای interpolation را به کوتیشن تکی تبدیل کرده بود؛ این خطا اکنون با کوتیشن دوتایی اصلاح می‌شود. نام‌گذاری camelCase در `bale-notifier.rb` و تخلفات ساختاری `plugin.rb` هنوز باز هستند.
+
+
+### پیگیری اصلاح دسته‌ای RuboCop — ۱۵ اکتبر ۲۰۲۶
+
+اجرای [CI شمارهٔ 38715094520](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38715094520) روی commit `0a335291f52cbb57872c183937d2067148c95f6f` کامل شد: `check_for_tests` و `backend_tests` موفق، اما `linting` ناموفق بود. RuboCop تعداد **۱۶۵ تخلف در ۷ فایل** (۸۴ مورد قابل اصلاح خودکار) گزارش کرد؛ تفکیک فایل‌ها: `plugin.rb` = ۷۱، `bale-notifier.rb` = ۹۳، `link_code.rb` = ۱.
+
+#### دستهٔ اول: نام‌گذاری متغیرها و اصلاح‌های محلیِ بدون تغییر قرارداد
+
+در `bale-notifier.rb` نام متغیرهای محلی/پارامترهای `responseData`، `methodName`، `likeButtonText` و `likeButtonAction` به صورت `snake_case` تغییر داده شد. همچنین شرط منفی به `unless`، بازگشت نهایی زائد حذف، بررسی شمارنده‌ها به `.positive?` و شرط ثبت لاگ به guard clause تبدیل شد. در `link_code.rb` نیز بخش ثابت رشتهٔ خطا به کوتیشن تکی تغییر کرد و بخش دارای interpolation همچنان دابل‌کوتیشن باقی ماند.
+
+این دسته فقط تغییرهای محدود و قابل ردیابی را شامل می‌شود؛ نام متدهای عمومی camelCase و رشته‌های نام متدهای API بله عمداً هنوز تغییر نکرده‌اند تا فراخوان‌ها و قراردادها در یک مرحلهٔ مستقل بررسی شوند. این commit هنوز باید با CI تأیید شود؛ تعداد تخلف‌های باقی‌مانده تا دریافت گزارش جدید نامعلوم است.

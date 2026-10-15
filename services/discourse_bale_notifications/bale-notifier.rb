@@ -90,15 +90,15 @@ module DiscourseBaleNotifications
       PluginStore.get('bale-notifications', ACTIVITY_LOG_KEY) || []
     end
 
-    def self.record_activity(methodName, chat_id, ok, error_code, description)
-      return unless RECORDABLE_METHODS.include?(methodName)
+    def self.record_activity(method_name, chat_id, ok, error_code, description)
+      return unless RECORDABLE_METHODS.include?(method_name)
 
       entry = {
         # ISO8601 UTC به‌جای timestamp خام عددی ذخیره می‌شود تا در نمایش
         # فرانت‌اند نیازی به حدس زدن واحد (ثانیه/میلی‌ثانیه) نباشد و ریسک
         # نمایش اشتباه تاریخ از بین برود.
         'ts' => Time.now.utc.iso8601,
-        'method' => methodName,
+        'method' => method_name,
         'chat_id' => chat_id,
         'ok' => ok,
         'error_code' => error_code,
@@ -119,7 +119,7 @@ module DiscourseBaleNotifications
       Rails.logger.warn("Bale notifications: failed to record activity log entry: #{e.class}: #{e.message}")
     end
 
-    def self.doRequest(methodName, message)
+    def self.doRequest(method_name, message)
       # تغییر دامنه به سرور بله
       http = Net::HTTP.new('tapi.bale.ai', 443)
       http.use_ssl = true
@@ -130,7 +130,7 @@ module DiscourseBaleNotifications
 
       access_token = SiteSetting.bale_access_token
       # تغییر Base URL به فرمت استاندارد بله
-      uri = URI("https://tapi.bale.ai/bot#{access_token}/#{methodName}")
+      uri = URI("https://tapi.bale.ai/bot#{access_token}/#{method_name}")
 
       req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
       req.body = message.to_json
@@ -144,89 +144,89 @@ module DiscourseBaleNotifications
              Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::EHOSTUNREACH => e
         Rails.logger.error(
           'Bale API request failed before receiving a response ' \
-          "(method=#{methodName}, chat_id=#{chat_id_for_log}): #{e.class}: #{e.message}"
+          "(method=#{method_name}, chat_id=#{chat_id_for_log}): #{e.class}: #{e.message}"
         )
-        record_activity(methodName, chat_id_for_log, false, nil, "#{e.class}: #{e.message}")
+        record_activity(method_name, chat_id_for_log, false, nil, "#{e.class}: #{e.message}")
         return false
       end
 
       begin
-        responseData = JSON.parse(response.body)
+        response_data = JSON.parse(response.body)
       rescue JSON::ParserError => e
         # فاز یک - اصلاح #۵: پاسخ‌های غیر JSON (مثلاً صفحه‌ی خطای پروکسی هنگام
         # قطعی سرویس بله) قبلاً باعث رها شدن یک Exception بدون rescue می‌شدند.
         Rails.logger.error(
           'Bale API returned a non-JSON response ' \
-          "(method=#{methodName}, http_status=#{response.code}): #{e.message}"
+          "(method=#{method_name}, http_status=#{response.code}): #{e.message}"
         )
-        record_activity(methodName, chat_id_for_log, false, response.code, 'non-JSON response')
+        record_activity(method_name, chat_id_for_log, false, response.code, 'non-JSON response')
         return false
       end
 
-      if not responseData['ok'] == true
+      unless response_data['ok'] == true
         # فاز یک - اصلاح #۶: قبلاً کل بدنه‌ی پیام (req.body) که می‌توانست شامل
         # خلاصه‌ی پیام‌های خصوصی کاربران باشد، عیناً در لاگ سرور نوشته می‌شد.
         # اکنون فقط اطلاعات غیرحساس (نام متد، chat_id، وضعیت HTTP، و کد/توضیح
         # خطای خودِ API بله) لاگ می‌شود - نه متن پیام.
         Rails.logger.error(
-          "Bale API call failed (method=#{methodName}, chat_id=#{chat_id_for_log}, " \
-          "http_status=#{response.code}, error_code=#{responseData['error_code']}, " \
-          "description=#{responseData['description']})"
+          "Bale API call failed (method=#{method_name}, chat_id=#{chat_id_for_log}, " \
+          "http_status=#{response.code}, error_code=#{response_data['error_code']}, " \
+          "description=#{response_data['description']})"
         )
 
         # فاز دو - اصلاح #۱۴: اگر بله اعلام کند کاربر ربات را بلاک کرده یا چت
         # دیگر معتبر نیست، تلاش مکرر و بی‌نتیجه برای ارسال پیام به آن چت
         # فایده‌ای ندارد؛ اتصال به‌صورت خودکار قطع می‌شود تا هم لاگ تمیز بماند
         # و هم کاربر (در صورت بازگشت) بداند باید دوباره اتصال را برقرار کند.
-        unlink_chat_if_unreachable(chat_id_for_log, responseData)
-        record_activity(methodName, chat_id_for_log, false, responseData['error_code'], responseData['description'])
+        unlink_chat_if_unreachable(chat_id_for_log, response_data)
+        record_activity(method_name, chat_id_for_log, false, response_data['error_code'], response_data['description'])
 
         return false
       end
 
-      record_activity(methodName, chat_id_for_log, true, nil, nil)
-      return responseData
+      record_activity(method_name, chat_id_for_log, true, nil, nil)
+      response_data
     end
 
     # فاز دو - اصلاح #۱۴: خطاهای استاندارد APIهای سازگار با تلگرام برای
     # «ربات بلاک شده» (error_code 403) یا «چت دیگر وجود ندارد» (error_code 400
     # با توضیح «chat not found») را تشخیص می‌دهد.
-    def self.bot_unreachable?(responseData)
-      code = responseData['error_code']
-      description = responseData['description'].to_s
+    def self.bot_unreachable?(response_data)
+      code = response_data['error_code']
+      description = response_data['description'].to_s
       return true if code == 403
       return true if code == 400 && description.match?(/chat not found/i)
       false
     end
 
-    def self.unlink_chat_if_unreachable(chat_id, responseData)
+    def self.unlink_chat_if_unreachable(chat_id, response_data)
       return if chat_id.blank?
-      return unless bot_unreachable?(responseData)
+      return unless bot_unreachable?(response_data)
 
       removed = UserCustomField.where(name: 'bale_chat_id', value: chat_id.to_s).delete_all
-      if removed > 0
-        Rails.logger.info(
-          "Bale notifications: automatically unlinked chat_id=#{chat_id} " \
-          'after Bale reported it as blocked/unreachable'
-        )
-      end
+      return unless removed.positive?
+
+      Rails.logger.info(
+        "Bale notifications: automatically unlinked chat_id=#{chat_id} " \
+        'after Bale reported it as blocked/unreachable'
+      )
     end
 
     def self.generateReplyMarkup(post, user)
       likes = UserAction.where(action_type: UserAction::LIKE, user_id: user.id, target_post_id: post.id).count
-      if likes > 0
-        likeButtonText = I18n.t('discourse_bale_notifications.unlike')
-        likeButtonAction = "unlike:#{post.id}"
+      if likes.positive?
+        like_button_text = I18n.t('discourse_bale_notifications.unlike')
+        like_button_action = "unlike:#{post.id}"
       else
-        likeButtonText = I18n.t('discourse_bale_notifications.like')
-        likeButtonAction = "like:#{post.id}"
+        like_button_text = I18n.t('discourse_bale_notifications.like')
+        like_button_action = "like:#{post.id}"
       end
 
       post_url = "#{Discourse.base_url}#{post.url(opts={without_slug: true})}"
       {
         inline_keyboard: [
           [
-            { text: likeButtonText, callback_data: likeButtonAction },
+            { text: like_button_text, callback_data: like_button_action },
             { text: I18n.t('discourse_bale_notifications.view_online'), url: post_url },
           ]
         ]

@@ -47,7 +47,7 @@ module DiscourseBaleNotifications
         return candidate if created
       end
 
-      raise "DiscourseBaleNotifications::LinkCode could not generate a unique code " \
+      raise 'DiscourseBaleNotifications::LinkCode could not generate a unique code ' \
             "after #{MAX_GENERATION_ATTEMPTS} attempts"
     end
 
