@@ -633,3 +633,12 @@
 دو مورد نخست با افزودن توضیح روشن کلاس و حذف خط خالی اصلاح شدند. برای مورد سوم، استثنای RuboCop فقط به همان helper آزمون محدود شد و دلیل آن کنار directive ثبت شده است؛ این استثنا به کد اجرایی افزونه یا سایر آزمون‌ها تعمیم ندارد.
 
 اصلاح‌ها در دو commit متوالی روی شاخهٔ `docs/initial-audit-roadmap` ثبت شدند: `5ebb2b7` و `51b78d1`. این تغییرها **هنوز تأییدشده محسوب نمی‌شوند** تا اجرای تازهٔ CI روی آخرین SHA هر دو workflow را بررسی کند. PR شمارهٔ ۱ تا سبزشدن lint و تأیید مجدد smoke tests نباید ادغام شود.
+
+
+### پیگیری CI شمارهٔ 38758938533 — اصلاح directive تکراری RuboCop
+
+اجرای [CI شمارهٔ 38758938533](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38758938533) روی commit `40da46f8576e454c02b9d9aba57a34115a8a73d1` نشان داد که smoke tests و backend/RSpec موفق‌اند، اما lint به‌دلیل **یک تخلف** شکست خورد: `Lint/RedundantCopEnableDirective` در `test/link_code_test.rb`. فعال‌سازی مجدد `Metrics/MethodLength` لازم نبود و RuboCop آن را رد کرد.
+
+اصلاح دوم انجام شد: directive غیرفعال‌سازی به خط تعریف همان helper منتقل شد و directive فعال‌سازی زائد حذف شد؛ در نتیجه استثنا به همان متد محدود است. commit اصلاحی: `006b1235429d3ea9d012d238a22a8b2760473611`.
+
+این تغییر باید با اجرای تازهٔ lint تأیید شود. موفقیت smoke tests در commit پیشین، به‌تنهایی نتیجهٔ commit جدید یا کل CI را اثبات نمی‌کند.
