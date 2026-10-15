@@ -19,9 +19,9 @@ module DiscourseBaleNotifications
     # The key is namespaced explicitly because eval does not pass through
     # DiscourseRedis's per-command key namespacing wrappers.
     CONSUME_SCRIPT = <<~LUA.freeze
-      local user_id = redis.call("GET", KEYS[1])
+      local user_id = redis.call('GET', KEYS[1])
       if user_id then
-        redis.call("DEL", KEYS[1])
+        redis.call('DEL', KEYS[1])
       end
       return user_id
     LUA
@@ -40,7 +40,7 @@ module DiscourseBaleNotifications
     # همان کد قبلاً برای کاربر دیگری فعال است، به‌جای بازنویسی، دوباره تلاش شود.
     def self.generate_for(user)
       MAX_GENERATION_ATTEMPTS.times do
-        candidate = SecureRandom.random_number(10**LENGTH).to_s.rjust(LENGTH, "0")
+        candidate = SecureRandom.random_number(10**LENGTH).to_s.rjust(LENGTH, '0')
         created = Discourse.redis.set(redis_key(candidate), user.id.to_s, nx: true, ex: TTL_SECONDS)
         return candidate if created
       end

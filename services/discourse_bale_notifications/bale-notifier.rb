@@ -30,7 +30,7 @@ module DiscourseBaleNotifications
           chat_id: chat_id,
           photo: avatar_url,
           caption: text,
-          parse_mode: "html",
+          parse_mode: 'html',
           disable_notification: disable_notification,
           reply_markup: reply_markup,
         })
@@ -38,7 +38,7 @@ module DiscourseBaleNotifications
         sendMessage({
           chat_id: chat_id,
           text: text,
-          parse_mode: "html",
+          parse_mode: 'html',
           disable_web_page_preview: true,
           disable_notification: disable_notification,
           reply_markup: reply_markup,
@@ -83,11 +83,11 @@ module DiscourseBaleNotifications
     # ارسال واقعی پیام (sendMessage/sendPhoto) ثبت می‌شوند، نه هر فراخوانی
     # داخلی API (مثل answerCallback)، تا این لاگ برای ادمین معنادار بماند.
     RECORDABLE_METHODS = %w[sendMessage sendPhoto].freeze
-    ACTIVITY_LOG_KEY = "recent-activity"
+    ACTIVITY_LOG_KEY = 'recent-activity'
     ACTIVITY_LOG_MAX_ENTRIES = 50
 
     def self.recent_activity
-      PluginStore.get("bale-notifications", ACTIVITY_LOG_KEY) || []
+      PluginStore.get('bale-notifications', ACTIVITY_LOG_KEY) || []
     end
 
     def self.record_activity(methodName, chat_id, ok, error_code, description)
@@ -97,21 +97,21 @@ module DiscourseBaleNotifications
         # ISO8601 UTC به‌جای timestamp خام عددی ذخیره می‌شود تا در نمایش
         # فرانت‌اند نیازی به حدس زدن واحد (ثانیه/میلی‌ثانیه) نباشد و ریسک
         # نمایش اشتباه تاریخ از بین برود.
-        "ts" => Time.now.utc.iso8601,
-        "method" => methodName,
-        "chat_id" => chat_id,
-        "ok" => ok,
-        "error_code" => error_code,
-        "description" => description,
+        'ts' => Time.now.utc.iso8601,
+        'method' => methodName,
+        'chat_id' => chat_id,
+        'ok' => ok,
+        'error_code' => error_code,
+        'description' => description,
       }
 
       # DistributedMutex چون چند Worker سیدکیک ممکن است هم‌زمان بخواهند این
       # لیست مشترک را بخوانند-و-بنویسند؛ بدون قفل، آخرین نویسنده می‌توانست
       # نوشته‌ی نویسنده‌ی دیگر را از دست بدهد (race condition کلاسیک read-modify-write).
-      DistributedMutex.synchronize("bale-notifications-activity-log") do
-        log = PluginStore.get("bale-notifications", ACTIVITY_LOG_KEY) || []
+      DistributedMutex.synchronize('bale-notifications-activity-log') do
+        log = PluginStore.get('bale-notifications', ACTIVITY_LOG_KEY) || []
         log = ([entry] + log).first(ACTIVITY_LOG_MAX_ENTRIES)
-        PluginStore.set("bale-notifications", ACTIVITY_LOG_KEY, log)
+        PluginStore.set('bale-notifications', ACTIVITY_LOG_KEY, log)
       end
     rescue StandardError => e
       # ثبت لاگ فعالیت (یک قابلیت صرفاً تشخیصی) هرگز نباید باعث شکست ارسال
@@ -121,7 +121,7 @@ module DiscourseBaleNotifications
 
     def self.doRequest(methodName, message)
       # تغییر دامنه به سرور بله
-      http = Net::HTTP.new("tapi.bale.ai", 443)
+      http = Net::HTTP.new('tapi.bale.ai', 443)
       http.use_ssl = true
       # فاز یک - اصلاح #۵: بدون timeout صریح، یک هنگ‌کردن یا کندی سرور بله
       # می‌توانست یک Worker سیدکیک را بی‌نهایت مشغول نگه دارد.
@@ -143,7 +143,7 @@ module DiscourseBaleNotifications
       rescue Net::OpenTimeout, Net::ReadTimeout, SocketError, OpenSSL::SSL::SSLError,
              Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::EHOSTUNREACH => e
         Rails.logger.error(
-          "Bale API request failed before receiving a response " \
+          'Bale API request failed before receiving a response ' \
           "(method=#{methodName}, chat_id=#{chat_id_for_log}): #{e.class}: #{e.message}"
         )
         record_activity(methodName, chat_id_for_log, false, nil, "#{e.class}: #{e.message}")
@@ -156,10 +156,10 @@ module DiscourseBaleNotifications
         # فاز یک - اصلاح #۵: پاسخ‌های غیر JSON (مثلاً صفحه‌ی خطای پروکسی هنگام
         # قطعی سرویس بله) قبلاً باعث رها شدن یک Exception بدون rescue می‌شدند.
         Rails.logger.error(
-          "Bale API returned a non-JSON response " \
+          'Bale API returned a non-JSON response ' \
           "(method=#{methodName}, http_status=#{response.code}): #{e.message}"
         )
-        record_activity(methodName, chat_id_for_log, false, response.code, "non-JSON response")
+        record_activity(methodName, chat_id_for_log, false, response.code, 'non-JSON response')
         return false
       end
 
@@ -203,11 +203,11 @@ module DiscourseBaleNotifications
       return if chat_id.blank?
       return unless bot_unreachable?(responseData)
 
-      removed = UserCustomField.where(name: "bale_chat_id", value: chat_id.to_s).delete_all
+      removed = UserCustomField.where(name: 'bale_chat_id', value: chat_id.to_s).delete_all
       if removed > 0
         Rails.logger.info(
           "Bale notifications: automatically unlinked chat_id=#{chat_id} " \
-          "after Bale reported it as blocked/unreachable"
+          'after Bale reported it as blocked/unreachable'
         )
       end
     end
@@ -215,19 +215,19 @@ module DiscourseBaleNotifications
     def self.generateReplyMarkup(post, user)
       likes = UserAction.where(action_type: UserAction::LIKE, user_id: user.id, target_post_id: post.id).count
       if likes > 0
-        likeButtonText = I18n.t("discourse_bale_notifications.unlike")
+        likeButtonText = I18n.t('discourse_bale_notifications.unlike')
         likeButtonAction = "unlike:#{post.id}"
       else
-        likeButtonText = I18n.t("discourse_bale_notifications.like")
+        likeButtonText = I18n.t('discourse_bale_notifications.like')
         likeButtonAction = "like:#{post.id}"
       end
-      
+
       post_url = "#{Discourse.base_url}#{post.url(opts={without_slug: true})}"
       {
         inline_keyboard: [
           [
             { text: likeButtonText, callback_data: likeButtonAction },
-            { text: I18n.t("discourse_bale_notifications.view_online"), url: post_url },
+            { text: I18n.t('discourse_bale_notifications.view_online'), url: post_url },
           ]
         ]
       }

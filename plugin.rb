@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # name: discourse-bale-notifications
 # about: A plugin which posts all user notifications to a bale message
 # version: 0.1
@@ -8,17 +9,17 @@ require 'cgi'
 
 enabled_site_setting :bale_notifications_enabled
 
-register_asset "stylesheets/common.scss"
+register_asset 'stylesheets/common.scss'
 
 # فاز سه - اصلاح #۱۵: افزودن لینک پنل مدیریتی به فهرست «Plugins» در ادمین.
-add_admin_route "bale_notifications.title", "bale-notifications", use_new_show_route: true
+add_admin_route 'bale_notifications.title', 'bale-notifications', use_new_show_route: true
 
 after_initialize do
   module ::DiscourseBaleNotifications
-    PLUGIN_NAME ||= "discourse-bale-notifications".freeze
+    PLUGIN_NAME ||= 'discourse-bale-notifications'.freeze
     autoload :BaleNotifier, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/bale-notifier"
     autoload :LinkCode, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/link_code"
-    
+
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
       isolate_namespace DiscourseBaleNotifications
@@ -27,22 +28,22 @@ after_initialize do
 
   DiscourseBaleNotifications::Engine.routes.draw do
     # تغییر مسیر وب‌هوک از /telegram به /bale
-    post "/hook/:key" => "bale#hook"
+    post '/hook/:key' => "bale#hook"
     # فاز یک - اصلاح #۸: تولید/حذف کد اتصال یک‌بارمصرف (نیازمند ورود به حساب)
-    post "/link" => "link#create"
-    delete "/link" => "link#destroy"
+    post '/link' => "link#create"
+    delete '/link' => "link#destroy"
     # فاز سه - اصلاح #۱۵: endpointهای JSON پنل مدیریتی (فقط ادمین)
-    get "/admin/status" => "admin#status"
-    post "/admin/test" => "admin#test"
+    get '/admin/status' => "admin#status"
+    post '/admin/test' => "admin#test"
   end
 
   Discourse::Application.routes.append do
-    mount ::DiscourseBaleNotifications::Engine, at: "/bale"
+    mount ::DiscourseBaleNotifications::Engine, at: '/bale'
 
-    scope "/admin/plugins/discourse-bale-notifications",
+    scope '/admin/plugins/discourse-bale-notifications',
           constraints: AdminConstraint.new do
       scope format: false do
-        get "/bale-notifications" => "discourse_bale_notifications/admin#index"
+        get '/bale-notifications' => "discourse_bale_notifications/admin#index"
       end
     end
   end
@@ -53,13 +54,13 @@ after_initialize do
 
     def hook
       unless SiteSetting.bale_notifications_enabled
-        render json: { error: "not_found" }, status: :not_found
+        render json: { error: 'not_found' }, status: :not_found
         return
       end
 
       # توجه (فاز صفر - اصلاح بحرانی #۴):
       # `defined? params['key']` تقریباً همیشه truthy است (چون params['key'] همواره
-      # "تعریف‌شده" محسوب می‌شود، حتی اگر nil باشد)، پس آن بخش عملاً کد مرده بود.
+      # 'تعریف‌شده' محسوب می‌شود، حتی اگر nil باشد)، پس آن بخش عملاً کد مرده بود.
       # مقایسه هم از `==` معمولی (غیر constant-time) به secure_compare تغییر کرد
       # تا در برابر timing attack مقاوم باشد. همچنین صراحتاً بررسی می‌شود که
       # bale_secret خالی نباشد، تا در صورت خالی‌ماندن اتفاقی تنظیمات، هیچ درخواستی
@@ -70,7 +71,7 @@ after_initialize do
       # نمی‌شود؛ can_perform? هم یک بررسی بدون مصرف (peek) است.
       auth_fail_limiter = RateLimiter.new(nil, "bale-hook-auth-fail-#{request.remote_ip}", 20, 1.minute)
       if !auth_fail_limiter.can_perform?
-        render json: { error: "rate_limited" }, status: :too_many_requests
+        render json: { error: 'rate_limited' }, status: :too_many_requests
         return
       end
 
@@ -79,7 +80,7 @@ after_initialize do
       if secret.blank? || !ActiveSupport::SecurityUtils.secure_compare(key, secret)
         auth_fail_limiter.performed!(raise_error: false)
         Rails.logger.error("Bale hook called with incorrect key from #{request.remote_ip}")
-        render json: { error: "forbidden" }, status: :forbidden
+        render json: { error: 'forbidden' }, status: :forbidden
         return
       end
 
@@ -112,13 +113,13 @@ after_initialize do
         known_user = false
 
         begin
-          user_custom_field = UserCustomField.find_by(name: "bale_chat_id", value: chat_id.to_s)
+          user_custom_field = UserCustomField.find_by(name: 'bale_chat_id', value: chat_id.to_s)
           user = User.find(user_custom_field.user_id)
           # فاز دو - اصلاح #۱۳: پیام با زبان انتخابی خودِ کاربر ساخته می‌شود،
           # نه لزوماً زبان پیش‌فرض سایت.
           message_text = I18n.with_locale(user.effective_locale) do
             I18n.t(
-              "discourse_bale_notifications.known-user",
+              'discourse_bale_notifications.known-user',
               site_title: CGI::escapeHTML(SiteSetting.title),
               username: escape_html(user.username)
             )
@@ -136,14 +137,14 @@ after_initialize do
           linked_user = linked_user_id ? User.find_by(id: linked_user_id) : nil
 
           if linked_user
-            linked_user.custom_fields["bale_chat_id"] = chat_id.to_s
+            linked_user.custom_fields['bale_chat_id'] = chat_id.to_s
             linked_user.save_custom_fields
             user = linked_user
             known_user = true
             # فاز دو - اصلاح #۱۳: مطابق بالا.
             message_text = I18n.with_locale(linked_user.effective_locale) do
               I18n.t(
-                "discourse_bale_notifications.link-success",
+                'discourse_bale_notifications.link-success',
                 site_title: CGI::escapeHTML(SiteSetting.title),
                 username: escape_html(linked_user.username)
               )
@@ -152,7 +153,7 @@ after_initialize do
             # اینجا هنوز کاربری شناخته نشده، پس زبان پیش‌فرض سایت به‌کار
             # می‌رود (رفتار طبیعی بدون with_locale).
             message_text = I18n.t(
-              "discourse_bale_notifications.initial-contact",
+              'discourse_bale_notifications.initial-contact',
               site_title: CGI::escapeHTML(SiteSetting.title)
             )
           end
@@ -166,7 +167,7 @@ after_initialize do
             # یکتاست، نه به‌صورت سراسری. کلید ذخیره‌سازی باید حتماً با chat_id
             # namespace شود، وگرنه پیام شماره N در چت یک کاربر با پیام شماره N
             # در چت کاربر دیگر تصادم می‌کند و ممکن است پاسخ روی پست اشتباه پست شود.
-            post_id = PluginStore.get("bale-notifications", "message_#{chat_id}_#{reply_to_message_id}")
+            post_id = PluginStore.get('bale-notifications', "message_#{chat_id}_#{reply_to_message_id}")
             reply_to = Post.find(post_id)
             found_post = true
           rescue ActiveRecord::RecordNotFound
@@ -188,12 +189,12 @@ after_initialize do
                 # Validation messages may include user-controlled input; the
                 # translated reply-failed template is sent with parse_mode=HTML.
                 errors = escape_html(result.errors.full_messages.join("\n"))
-                I18n.t("discourse_bale_notifications.reply-failed", errors: errors)
+                I18n.t('discourse_bale_notifications.reply-failed', errors: errors)
               else
-                I18n.t("discourse_bale_notifications.reply-success", post_url: CGI::escapeHTML(result.post.full_url))
+                I18n.t('discourse_bale_notifications.reply-success', post_url: CGI::escapeHTML(result.post.full_url))
               end
             else
-              I18n.t("discourse_bale_notifications.reply-error")
+              I18n.t('discourse_bale_notifications.reply-error')
             end
           end
         end
@@ -201,7 +202,7 @@ after_initialize do
         message = {
           chat_id: chat_id,
           text: message_text,
-          parse_mode: "html",
+          parse_mode: 'html',
           disable_web_page_preview: true,
         }
         DiscourseBaleNotifications::BaleNotifier.sendMessage(message)
@@ -214,8 +215,8 @@ after_initialize do
             DiscourseBaleNotifications::BaleNotifier.answerCallback(
               callback_id,
               I18n.t(
-                "discourse_bale_notifications.action-unavailable",
-                default: "❌ This action is no longer available."
+                'discourse_bale_notifications.action-unavailable',
+                default: '❌ This action is no longer available.'
               )
             )
           end
@@ -247,16 +248,16 @@ after_initialize do
         # کاربر در بله در حالت خطا/بارگذاری می‌ماند. اکنون هر دو حالت با یک
         # پیام قابل‌فهم به کاربر و بازگشت موفق (success: true) به بله مدیریت می‌شوند.
         begin
-          user_custom_field = UserCustomField.find_by!(name: "bale_chat_id", value: chat_id.to_s)
+          user_custom_field = UserCustomField.find_by!(name: 'bale_chat_id', value: chat_id.to_s)
           user = User.find(user_custom_field.user_id)
-          data = params['callback_query']['data'].to_s.split(":")
+          data = params['callback_query']['data'].to_s.split(':')
           post = Post.find(data[1])
         rescue ActiveRecord::RecordNotFound
           DiscourseBaleNotifications::BaleNotifier.answerCallback(
             callback_id,
             I18n.t(
-              "discourse_bale_notifications.action-unavailable",
-              default: "❌ This action is no longer available."
+              'discourse_bale_notifications.action-unavailable',
+              default: '❌ This action is no longer available.'
             )
           )
           render json: { success: true }
@@ -265,14 +266,14 @@ after_initialize do
 
         # فاز دو - اصلاح #۱۳: پیام‌های لایک/آنلایک هم با زبان کاربر ساخته می‌شوند.
         string = I18n.with_locale(user.effective_locale) do
-          if data[0] == "like"
+          if data[0] == 'like'
             begin
               PostActionCreator.create(user, post, :like)
-              I18n.t("discourse_bale_notifications.like-success")
+              I18n.t('discourse_bale_notifications.like-success')
             rescue PostAction::AlreadyActed
-              I18n.t("discourse_bale_notifications.already-liked")
+              I18n.t('discourse_bale_notifications.already-liked')
             rescue Discourse::InvalidAccess
-              I18n.t("discourse_bale_notifications.like-failed")
+              I18n.t('discourse_bale_notifications.like-failed')
             end
 
           elsif data[0] == 'unlike'
@@ -283,16 +284,16 @@ after_initialize do
               raise Discourse::NotFound if post_action.blank?
               guardian.ensure_can_delete!(post_action)
               PostAction.remove_act(user, post, post_action_type_id)
-              I18n.t("discourse_bale_notifications.unlike-success")
+              I18n.t('discourse_bale_notifications.unlike-success')
             rescue Discourse::NotFound, Discourse::InvalidAccess
-              I18n.t("discourse_bale_notifications.unlike-failed")
+              I18n.t('discourse_bale_notifications.unlike-failed')
             end
           else
-            I18n.t("discourse_bale_notifications.action-unavailable", default: "❌ This action is no longer available.")
+            I18n.t('discourse_bale_notifications.action-unavailable', default: '❌ This action is no longer available.')
           end
         end
 
-        # توجه: قبلاً در شاخه‌ی "like" این متد یک‌بار اینجا و یک‌بار دوباره
+        # توجه: قبلاً در شاخه‌ی 'like' این متد یک‌بار اینجا و یک‌بار دوباره
         # بعد از if/elsif فراخوانی می‌شد (فراخوانی دوگانه‌ی answerCallback
         # برای بله)؛ اکنون فقط یک‌بار و به‌صورت یکنواخت برای هر سه حالت
         # (like/unlike/نامعتبر) صدا زده می‌شود.
@@ -366,7 +367,7 @@ after_initialize do
     before_action :ensure_logged_in
 
     def create
-      RateLimiter.new(current_user, "bale-link-code-generate", 5, 10.minutes).performed!
+      RateLimiter.new(current_user, 'bale-link-code-generate', 5, 10.minutes).performed!
       code = DiscourseBaleNotifications::LinkCode.generate_for(current_user)
       render json: { code: code, expires_in: DiscourseBaleNotifications::LinkCode::TTL_SECONDS }
     rescue RateLimiter::LimitExceeded => e
@@ -374,7 +375,7 @@ after_initialize do
     end
 
     def destroy
-      UserCustomField.where(user_id: current_user.id, name: "bale_chat_id").delete_all
+      UserCustomField.where(user_id: current_user.id, name: 'bale_chat_id').delete_all
       render json: success_json
     end
   end
@@ -386,27 +387,27 @@ after_initialize do
     requires_plugin DiscourseBaleNotifications::PLUGIN_NAME
 
     def index
-      render html: "", layout: "admin"
+      render html: '', layout: 'admin'
     end
 
     def status
-      linked_count = UserCustomField.where(name: "bale_chat_id").count
+      linked_count = UserCustomField.where(name: 'bale_chat_id').count
       activity = DiscourseBaleNotifications::BaleNotifier.recent_activity
 
-      chat_ids = activity.map { |entry| entry["chat_id"] }.compact.map(&:to_s).uniq
+      chat_ids = activity.map { |entry| entry['chat_id'] }.compact.map(&:to_s).uniq
       usernames_by_chat_id =
         if chat_ids.present?
           UserCustomField
-            .joins("INNER JOIN users ON users.id = user_custom_fields.user_id")
-            .where(name: "bale_chat_id", value: chat_ids)
-            .pluck("user_custom_fields.value", "users.username")
+            .joins('INNER JOIN users ON users.id = user_custom_fields.user_id')
+            .where(name: 'bale_chat_id', value: chat_ids)
+            .pluck('user_custom_fields.value', 'users.username')
             .to_h
         else
           {}
         end
 
       activity_with_usernames = activity.map do |entry|
-        entry.merge("username" => usernames_by_chat_id[entry["chat_id"].to_s])
+        entry.merge('username' => usernames_by_chat_id[entry['chat_id'].to_s])
       end
 
       # فراخوانی زنده‌ی getWebhookInfo تا ادمین وضعیت واقعی سمت بله را ببیند،
@@ -416,12 +417,12 @@ after_initialize do
       # URL برگشتی API بله شامل secret مسیر /bale/hook/:key است.
       # پنل وضعیت فقط به مسیر ثبت‌شده نیاز دارد؛ secret نباید در پاسخ JSON
       # قابل مشاهده برای مدیران نمایش داده شود.
-      if webhook_info.is_a?(Hash) && webhook_info["result"].is_a?(Hash) && webhook_info["result"]["url"].present?
+      if webhook_info.is_a?(Hash) && webhook_info['result'].is_a?(Hash) && webhook_info['result']['url'].present?
         webhook_info = webhook_info.deep_dup
-        registered_url = webhook_info["result"]["url"].to_s
+        registered_url = webhook_info['result']['url'].to_s
         redacted_url = registered_url.sub(%r{(/bale/hook/)[^/?#]+}, '\\1[REDACTED]')
-        webhook_info["result"]["url"] =
-          redacted_url == registered_url ? "[URL hidden]" : redacted_url
+        webhook_info['result']['url'] =
+          redacted_url == registered_url ? '[URL hidden]' : redacted_url
       end
 
       render json: {
@@ -437,33 +438,33 @@ after_initialize do
       target_user = username.present? ? User.find_by(username: username) : nil
 
       if target_user.nil?
-        return render_json_error(I18n.t("discourse_bale_notifications.admin.user_not_found"), status: 404)
+        return render_json_error(I18n.t('discourse_bale_notifications.admin.user_not_found'), status: 404)
       end
 
-      chat_id = target_user.custom_fields["bale_chat_id"]
+      chat_id = target_user.custom_fields['bale_chat_id']
       if chat_id.blank?
-        return render_json_error(I18n.t("discourse_bale_notifications.admin.user_not_linked"), status: 422)
+        return render_json_error(I18n.t('discourse_bale_notifications.admin.user_not_linked'), status: 422)
       end
 
       test_text = I18n.with_locale(target_user.effective_locale) do
-        I18n.t("discourse_bale_notifications.admin.test_message", site_title: CGI::escapeHTML(SiteSetting.title))
+        I18n.t('discourse_bale_notifications.admin.test_message', site_title: CGI::escapeHTML(SiteSetting.title))
       end
 
       response = DiscourseBaleNotifications::BaleNotifier.sendMessage({
         chat_id: chat_id,
         text: test_text,
-        parse_mode: "html",
+        parse_mode: 'html',
       })
 
       if response
         render json: success_json
       else
-        render_json_error(I18n.t("discourse_bale_notifications.admin.test_failed"), status: 502)
+        render_json_error(I18n.t('discourse_bale_notifications.admin.test_failed'), status: 502)
       end
     end
   end
 
-  DiscoursePluginRegistry.serialized_current_user_fields << "bale_chat_id"
+  DiscoursePluginRegistry.serialized_current_user_fields << 'bale_chat_id'
   User.register_custom_field_type('bale_chat_id', :text)
   # توجه (فاز یک - اصلاح #۸): این فیلد دیگر مستقیماً توسط کاربر از طریق API
   # به‌روزرسانی پروفایل قابل‌نوشتن نیست (خط register_editable_user_custom_field
@@ -475,7 +476,7 @@ after_initialize do
   # زیرمجموعه‌ی اختیاری از همان فهرست برای هر کاربر مشخص می‌کند). برخلاف
   # bale_chat_id، این فیلد صرفاً یک سلیقه‌ی شخصی است، نه یک باند امنیتی، پس
   # مشکلی ندارد که مستقیماً توسط خودِ کاربر قابل‌ویرایش باشد.
-  DiscoursePluginRegistry.serialized_current_user_fields << "bale_notification_types"
+  DiscoursePluginRegistry.serialized_current_user_fields << 'bale_notification_types'
   User.register_custom_field_type('bale_notification_types', :text)
   register_editable_user_custom_field :bale_notification_types
 
@@ -498,19 +499,19 @@ after_initialize do
     end
   end
 
-  require_dependency "jobs/base"
+  require_dependency 'jobs/base'
   module ::Jobs
     class SendBaleNotifications < ::Jobs::Base
       def execute(args)
         return if !SiteSetting.bale_notifications_enabled?
-        
+
         payload = args[:payload]
         notification_type_name = Notification.types[payload[:notification_type]].to_s
-        return unless SiteSetting.bale_enabled_notification_types.split("|").include?(notification_type_name)
-        
+        return unless SiteSetting.bale_enabled_notification_types.split('|').include?(notification_type_name)
+
         user = User.find(args[:user_id])
-        chat_id = user.custom_fields["bale_chat_id"]
-        
+        chat_id = user.custom_fields['bale_chat_id']
+
         if (not chat_id.present?) || (chat_id.length < 1)
           return
         end
@@ -519,13 +520,13 @@ after_initialize do
         # ثبت کرده باشد، به آن احترام گذاشته می‌شود. اگر فیلد خالی/تنظیم‌نشده
         # باشد (رفتار پیش‌فرض برای همه‌ی کاربران فعلی)، هیچ محدودیت اضافه‌ای
         # اعمال نمی‌شود - یعنی رفتار قبلی (همه‌ی انواع فعال سایت) دقیقاً حفظ می‌شود.
-        user_type_prefs = user.custom_fields["bale_notification_types"]
+        user_type_prefs = user.custom_fields['bale_notification_types']
         if user_type_prefs.present?
-          return unless user_type_prefs.split("|").include?(notification_type_name)
+          return unless user_type_prefs.split('|').include?(notification_type_name)
         end
-        
+
         post = Post.where(post_number: payload[:post_number], topic_id: payload[:topic_id]).first
-        
+
         # فاز دو - اصلاح #۱۳: با وجود ۱۰ فایل ترجمه‌ی موجود در این افزونه، تا
         # پیش از این اصلاح، I18n.t همیشه از زبان پیش‌فرض سایت استفاده می‌کرد
         # (چون در Sidekiq، I18n.locale به‌طور پیش‌فرض روی SiteSetting.default_locale
@@ -541,7 +542,7 @@ after_initialize do
             post_excerpt: CGI::escapeHTML(payload[:excerpt]),
             topic: CGI::escapeHTML(payload[:topic_title]),
             username: CGI::escapeHTML(payload[:username]),
-            user_url: CGI::escapeHTML(Discourse.base_url + "/u/" + payload[:username].to_s)
+            user_url: CGI::escapeHTML(Discourse.base_url + '/u/' + payload[:username].to_s)
           )
         end
 
@@ -552,7 +553,7 @@ after_initialize do
         acting_user = User.find_by(username: payload[:username])
         avatar_url =
           if acting_user
-            Discourse.base_url + acting_user.avatar_template.gsub("{size}", "128")
+            Discourse.base_url + acting_user.avatar_template.gsub('{size}', '128')
           end
 
         # فاز سه - اصلاح #۱۹: «ساعات سکوت» - چیزی حذف/به‌تاخیر نمی‌افتد، فقط
@@ -581,7 +582,7 @@ after_initialize do
             disable_notification = false
           end
         end
-        
+
         response = DiscourseBaleNotifications::BaleNotifier.sendNotification(
           message_text,
           chat_id,
@@ -589,11 +590,11 @@ after_initialize do
           avatar_url: avatar_url,
           disable_notification: disable_notification
         )
-        
+
         if response
           message_id = response['result']['message_id']
           # مطابق اصلاح بحرانی #۲: کلید بر اساس chat_id هم namespace شده است.
-          PluginStore.set("bale-notifications", "message_#{chat_id}_#{message_id}", post.id)
+          PluginStore.set('bale-notifications', "message_#{chat_id}_#{message_id}", post.id)
         end
       end
     end
