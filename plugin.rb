@@ -319,26 +319,27 @@ after_initialize do
       value.is_a?(Hash) || value.is_a?(ActionController::Parameters)
     end
 
+    def valid_private_chat?(chat)
+      webhook_object?(chat) && chat['id'].present? && chat['type'] == 'private'
+    end
+
     def valid_message_payload?(message)
       return false unless webhook_object?(message)
 
-      chat = message["chat"]
-      webhook_object?(chat) && chat["id"].present? && chat["type"] == "private"
+      valid_private_chat?(message['chat'])
     end
 
     def valid_callback_payload?(callback)
       return false unless webhook_object?(callback)
 
-      callback_message = callback["message"]
+      callback_message = callback['message']
       return false unless webhook_object?(callback_message)
+      return false unless valid_private_chat?(callback_message['chat'])
 
-      chat = callback_message["chat"]
-      return false unless webhook_object?(chat) && chat["id"].present? && chat["type"] == "private"
-
-      callback["id"].present? &&
-        callback_message["message_id"].present? &&
-        callback["data"].is_a?(String) &&
-        callback["data"].match?(/\A(?:like|unlike):[1-9]\d*\z/)
+      callback['id'].present? &&
+        callback_message['message_id'].present? &&
+        callback['data'].is_a?(String) &&
+        callback['data'].match?(/\A(?:like|unlike):[1-9]\d*\z/)
     end
 
     # Escape dynamic text before interpolating it into a message sent with
