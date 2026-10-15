@@ -367,3 +367,53 @@
 ۵. تصمیم جداگانه و مستند دربارهٔ ۳۵۲ تخلف RuboCop؛ هیچ تخلفی نباید به‌عنوان حل‌شده علامت‌گذاری شود مگر آنکه log جدید آن را تأیید کند.
 
 **مرز تغییر:** تغییرات در شاخهٔ docs/initial-audit-roadmap هستند؛ main ادغام نشده و هیچ استقراری انجام نشده است.
+
+
+### پیگیری Lint و مرحلهٔ بعدی — ۱۵ اکتبر ۲۰۲۶
+
+#### نتیجهٔ اجرای تأییدی
+
+اجرای [CI شمارهٔ 38709178682](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38709178682) روی commit 4c9020e9aaf084fba024f12891fa5fa2ac33f8af کامل شد:
+- backend tests: **success**.
+- linting: **failure** در مرحلهٔ RuboCop.
+- شمار تخلفات در log: **۳۱۷ تخلف در ۷ فایل، ۲۳۲ مورد قابل اصلاح خودکار**.
+
+عدد ۳۱۷ متعلق به همان commit است و نباید آن را نتیجهٔ کد اصلاح‌شدهٔ بعدی دانست. توزیع تخلفات در آن log:
+- plugin.rb: ۱۷۲
+- services/discourse_bale_notifications/bale-notifier.rb: ۱۱۷
+- specهای موجود/جدید: باقی موارد
+- Gemfile: ۳
+
+قواعد پرتکرار شامل Style/StringLiterals (۱۴۱)، Naming/VariableName (۳۱)، Style/ColonMethodCall (۱۱) و Naming/MethodName (۱۰) بودند. افزون بر style، کد دارای تخلفات ساختاری واقعی مانند طول و پیچیدگی زیاد hook، بلوک after_initialize و چند متد notifier است. بنابراین مشکل صرفاً قالب‌بندی نیست.
+
+#### اصلاحات محدود پس از آن اجرا
+
+در commitهای بعدی شاخه:
+- Gemfile: رشته‌ها به سبک تک‌نقل‌قول تغییر یافتند.
+- spec/requests/discourse_bale_notifications/bale_webhook_spec.rb: trailing comma در دو انتظار callback حذف شد.
+- services/discourse_bale_notifications/bale-notifier.rb: rescue عمومی در ثبت فعالیت به rescue StandardError تبدیل شد.
+- plugin.rb: اعتبارسنجی چت خصوصی به helper مشترک valid_private_chat? منتقل شد و اعتبارسنجی message/callback از نظر ساختاری ساده‌تر شد.
+- README و این نقشه‌راه به‌روزرسانی شدند.
+
+این اصلاحات محدودند و هنوز اجرای CI نهایی پس از آخرین commit لازم است. هیچ‌کدام به‌تنهایی نشان نمی‌دهد lint پاس شده است.
+
+#### برنامهٔ درست برای بستن Lint
+
+۱. ابتدا اجرای CI روی آخرین commit را بررسی و نتیجهٔ backend tests را تثبیت کن.
+۲. تخلفات را به دو گروه تقسیم کن:
+   - قابل اصلاح مکانیکی (نقل‌قول‌ها، فاصله‌ها، trailing comma، return زائد و نام‌گذاری‌های قابل تغییر).
+   - نیازمند تغییر ساختاری/رفتاری (Metrics، تعریف کلاس/ماژول در after_initialize، نام‌های عمومی API مانند sendMessage/answerCallback، rescue و متدهای طولانی).
+۳. اصلاح مکانیکی را در دسته‌های کوچک انجام بده و پس از هر دسته CI را اجرا کن؛ برای نام‌های عمومی API و callbackهای مورد استفادهٔ بیرونی، تغییر نام بدون بررسی همهٔ ارجاع‌ها ممنوع است.
+۴. سپس hook را با استخراج helperهای خصوصی کوچک‌تر کن و برای رفتار هر شاخه آزمون حفظی بنویس؛ این refactor باید جدا از تغییرات style انجام شود.
+۵. از خاموش‌کردن کامل RuboCop، exclude کردن کل plugin.rb یا افزودن baseline مبهم برای پنهان‌کردن تخلفات خودداری کن.
+۶. تنها زمانی Lint را «موفق» ثبت کن که job واقعی سبز باشد؛ اگر تخلفات باقی ماند، شمار و نوع آن‌ها باید دقیق ثبت شود.
+
+#### مرحلهٔ فنی هم‌زمان: URLها و انتقال HTTP
+
+بررسی ایستا نشان می‌دهد:
+- URL دکمهٔ «مشاهده آنلاین» از Discourse.base_url و post.url ساخته می‌شود؛ این مسیر باید با آزمون ثابت شود که URL مطلق معتبر و متعلق به مبدأ انجمن است.
+- avatar_url از Discourse.base_url و avatar_template ساخته می‌شود؛ چون URL در sendPhoto به API بیرونی داده می‌شود، باید آزمون شود که مقدار نهایی URL داخلی HTTPS معتبر است و مسیر آواتار از مقدارهای نامعتبر عبور نمی‌کند.
+- doRequest برای Net::OpenTimeout، Net::ReadTimeout، SocketError، SSLError و چند خطای اتصال rescue دارد؛ اما آزمون مستقیم برای این مسیرها، پاسخ HTTP ناموفق و JSON نامعتبر باید تکمیل شود. خطای HTTP با بدنهٔ JSON معتبر اکنون از طریق responseData['ok'] مدیریت می‌شود.
+- setupWebhook آرگومان key می‌گیرد اما URL از SiteSetting.bale_secret ساخته می‌شود؛ این ناسازگاری باید با بررسی caller و رفتار زمان فعال‌سازی/چرخش secret ارزیابی شود، نه اینکه صرفاً برای حذف هشدار lint تغییر کند.
+
+**وضعیت فعلی:** backend tests در اجرای 38709178682 موفق بودند؛ lint ناموفق است. اجرای جدید برای commitهای بعدی در حال بررسی است. هیچ merge به main و هیچ deployment انجام نشده است.
