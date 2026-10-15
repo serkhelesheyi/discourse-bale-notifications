@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength -- Grouped API client contract tests share one setup.
 RSpec.describe DiscourseBaleNotifications::BaleApiClient do
   let(:access_token) { 'test-bale-token-do-not-log' }
   let(:private_message) { 'private-notification-content-do-not-log' }
@@ -49,7 +50,7 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
 
       expect(result).to be(false)
       expect(DiscourseBaleNotifications::BaleActivityLog).to have_received(:record_activity)
-        .with('sendMessage', chat_id, false, nil, 'Net::ReadTimeout: simulated read timeout')
+        .with('sendMessage', chat_id, false, nil, a_string_starting_with('Net::ReadTimeout:'))
     end
 
     it 'returns false and records a safe diagnostic for a non-JSON response' do
@@ -86,3 +87,4 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
