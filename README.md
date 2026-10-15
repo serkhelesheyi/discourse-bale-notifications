@@ -215,3 +215,7 @@
 ### دستهٔ دوازدهم: حفظ ترتیب مقداردهی Rails Engine
 
 در اجرای [CI شمارهٔ 38747318499](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38747318499)، RuboCop موفق شد؛ اما مرحلهٔ `Check Zeitwerk eager_load` با خطای واقعی `No such middleware to insert before: Rails::Rack::Logger` شکست خورد. این خطا با تشخیص قبلیِ پیدا نشدن `PluginSetup` متفاوت است. بررسی diff نشان می‌دهد تعریف Rails Engine از `after_initialize` به سطح بارگذاری فایل منتقل شده بود و ترتیب ایجاد Engine نسبت به middlewareهای برنامه تغییر کرده بود. اصلاح بعدی ساخت Engine را به callback برمی‌گرداند، بدون تعریف کلاس/ماژول مستقیم درون بلوک و بدون دست‌کاری middleware هسته. این راهکار تا تأیید اجرای CI صرفاً یک اصلاح آزمایشی مبتنی بر خطای ثبت‌شده است.
+
+### دستهٔ سیزدهم: بررسی خطای namespace در Zeitwerk — ۱۵ اکتبر ۲۰۲۶
+
+اجرای [CI شمارهٔ 38747805691](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38747805691) کامل شد و هر دو مرحلهٔ `linting` و `backend_tests` شکست خوردند. گزارش lint دقیقاً یک تخلف مکانیکی در `plugin.rb:40` (خط خالی اضافی) داشت. آزمون eager-load خطای `uninitialized constant #<Class...>::DiscourseBaleNotifications::PluginSetup` را گزارش کرد؛ این خطا نشان می‌دهد ثبت autoload در namespace مورد انتظار انجام نشده است. در اصلاح بعدی، ثبت autoloadها و ارجاع‌های Engine به‌صورت صریح با namespace ریشه‌ای `::DiscourseBaleNotifications` انجام می‌شود و خط خالی گزارش‌شده حذف می‌گردد. این تغییر هنوز باید با CI تازه تأیید شود.
