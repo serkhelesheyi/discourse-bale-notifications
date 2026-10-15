@@ -31,6 +31,8 @@ after_initialize do
     autoload :BaleController, "#{controllers_path}/bale_controller"
     autoload :LinkController, "#{controllers_path}/link_controller"
     autoload :AdminController, "#{controllers_path}/admin_controller"
+    autoload :WebhookMessageHandler, "#{controllers_path}/webhook_message_handler"
+    autoload :WebhookCallbackHandler, "#{controllers_path}/webhook_callback_handler"
 
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
