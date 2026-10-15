@@ -17,8 +17,11 @@ add_admin_route 'bale_notifications.title', 'bale-notifications', use_new_show_r
 after_initialize do
   module ::DiscourseBaleNotifications
     PLUGIN_NAME ||= 'discourse-bale-notifications'
-    autoload :BaleNotifier, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/bale_notifier"
-    autoload :LinkCode, "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications/link_code"
+    services_path = "#{Rails.root}/plugins/discourse-bale-notifications/services/discourse_bale_notifications"
+    autoload :BaleNotifier, "#{services_path}/bale_notifier"
+    autoload :LinkCode, "#{services_path}/link_code"
+    autoload :BaleActivityLog, "#{services_path}/bale_activity_log"
+    autoload :BaleReplyMarkup, "#{services_path}/bale_reply_markup"
 
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
