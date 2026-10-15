@@ -86,13 +86,13 @@
 
 ## توسعه و آزمون
 
-- نقشه‌راه، یافته‌های ممیزی، معیارهای خروج و سوابق CI در [ROADMAP.md](ROADMAP.md) ثبت می‌شوند.
-- workflow شاخهٔ حاضر از گردش‌کار رسمی افزونه‌های Discourse استفاده می‌کند: [`.github/workflows/discourse-plugin.yml`](.github/workflows/discourse-plugin.yml).
-- آزمون‌های RSpec فعلی شامل مصرف اتمیک کد اتصال، escape کردن HTML، ورودی‌های وب‌هوک و API client هستند.
-- آزمون API client پاسخ موفق، تنظیم HTTPS و timeout، timeout شبکه، پاسخ غیر JSON، JSON با ساختار نامعتبر، خطای API و عدم افشای توکن/متن پیام خروجی در لاگ‌های سناریوهای پوشش‌داده‌شده را بررسی می‌کند.
-- پاسخ JSON که شیء نباشد، از جمله `null`، به‌صورت شکست کنترل‌شده رد می‌شود. خطاهای غیر JSON و ساختار نامعتبر تشخیص‌های جداگانه دارند.
-- اجرای کامل CI در [Actions](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/workflows/discourse-plugin.yml) لازم است؛ آخرین اجرای بررسی‌شده پیش از اصلاحات جدید شکست داشت و اجرای تازه هنوز باید تأیید شود. وجود آزمون در مخزن به‌تنهایی به معنای سبز بودن آن نیست.
-- شاخهٔ `docs/initial-audit-roadmap` نسبت به `main` بازآرایی ساختاری گسترده‌ای دارد. طبق نقشه‌راه، هدف این است که پس از بررسی اختلاف‌ها و موفقیت CI، همهٔ تغییرات لازم از طریق PR به `main` ادغام شوند؛ شاخه تا تأیید ادغام حذف نمی‌شود.
+- نقشه‌راه، یافته‌های ممیزی، معیارهای خروج، اختلاف شاخه‌ها و سوابق CI در [ROADMAP.md](ROADMAP.md) ثبت می‌شوند.
+- CI اصلی افزونه از workflow رسمی Discourse استفاده می‌کند: [`.github/workflows/discourse-plugin.yml`](.github/workflows/discourse-plugin.yml). این workflow lint و آزمون‌های backend/RSpec را اجرا می‌کند.
+- آزمون‌های سبک مستقل در [`.github/workflows/plugin-smoke-tests.yml`](.github/workflows/plugin-smoke-tests.yml) اجرا می‌شوند و شامل syntax check و `test/link_code_test.rb` هستند. این workflow اکنون برای `main` و شاخهٔ ممیزی فعال است.
+- آزمون‌های RSpec شامل مصرف اتمیک کد اتصال، escape کردن HTML، ورودی‌های وب‌هوک و API client هستند. آزمون API client مسیر موفق، HTTPS و timeout، timeout شبکه، پاسخ غیر JSON، JSON با ساختار نامعتبر، خطای API و عدم افشای توکن/متن پیام خروجی در لاگ‌های سناریوهای پوشش‌داده‌شده را بررسی می‌کند.
+- پاسخ JSON که شیء نباشد، از جمله `null`، به‌صورت شکست کنترل‌شده رد می‌شود. قالب دقیق متن داخلی استثنا در آزمون timeout معیار نیست؛ نوع خطا و نتیجهٔ امن آن بررسی می‌شود.
+- آخرین CI بررسی‌شده پیش از اصلاحات اخیر شکست داشت؛ اصلاحات و انتقال آزمون مستقل انجام شده‌اند، اما تا موفقیت اجرای تازهٔ هر دو workflow نباید این دسته را تأییدشده دانست. وضعیت جاری در [Actions](https://github.com/serkhelesheyi/discourse-bale-notifications/actions) قابل مشاهده است.
+- شاخهٔ `docs/initial-audit-roadmap` حاوی بازآرایی گسترده است و نسبت به `main` واگراست. هدف نهایی، ادغام همهٔ تغییرات لازم به `main` از طریق PR پس از بازبینی diff و CI موفق است؛ شاخه پیش از تأیید ادغام حذف نمی‌شود.
 - این آزمون‌ها جایگزین آزمون پذیرش روی staging، بررسی قرارداد واقعی API بله یا تأیید سازگاری با همهٔ نسخه‌های Discourse نیستند.
 
 ## حذف افزونه
