@@ -22,6 +22,7 @@ after_initialize do
     autoload :LinkCode, "#{services_path}/link_code"
     autoload :BaleActivityLog, "#{services_path}/bale_activity_log"
     autoload :BaleReplyMarkup, "#{services_path}/bale_reply_markup"
+    autoload :BaleApiClient, "#{services_path}/bale_api_client"
 
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
