@@ -59,7 +59,7 @@ module DiscourseBaleNotifications
 
     def self.parse_response(response, method_name, chat_id)
       JSON.parse(response.body)
-    rescue JSON::ParserError => error
+    rescue JSON::ParserError => e
       Rails.logger.error(
         'Bale API returned a non-JSON response ' \
         "(method=#{method_name}, http_status=#{response.code}): #{e.message}"

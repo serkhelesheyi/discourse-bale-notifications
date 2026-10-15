@@ -51,16 +51,29 @@ module DiscourseBaleNotifications
     end
 
     def test
-      username = params[:username].to_s.strip
-      target_user = username.present? ? User.find_by(username: username) : nil
-      return render_json_error(I18n.t('discourse_bale_notifications.admin.user_not_found'), status: 404) unless target_user
+      target_user = find_test_user
+      return render_user_not_found unless target_user
 
       chat_id = target_user.custom_fields['bale_chat_id']
-      return render_json_error(I18n.t('discourse_bale_notifications.admin.user_not_linked'), status: 422) if chat_id.blank?
+      return render_user_not_linked if chat_id.blank?
+      return render json: success_json if send_test_message(target_user, chat_id)
 
-      response = send_test_message(target_user, chat_id)
-      return render json: success_json if response
+      render_test_failure
+    end
 
+    def find_test_user
+      User.find_by(username: params[:username].to_s.strip)
+    end
+
+    def render_user_not_found
+      render_json_error(I18n.t('discourse_bale_notifications.admin.user_not_found'), status: 404)
+    end
+
+    def render_user_not_linked
+      render_json_error(I18n.t('discourse_bale_notifications.admin.user_not_linked'), status: 422)
+    end
+
+    def render_test_failure
       render_json_error(I18n.t('discourse_bale_notifications.admin.test_failed'), status: 502)
     end
 
