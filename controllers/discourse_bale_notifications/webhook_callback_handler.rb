@@ -62,8 +62,16 @@ module DiscourseBaleNotifications
     end
 
     def unlike_action_text(user, post)
-      guardian = Guardian.new(user)
       action_type_id = PostActionType.types[:like]
+      post_action = find_like_action(user, post, action_type_id)
+      Guardian.new(user).ensure_can_delete!(post_action)
+      PostAction.remove_act(user, post, action_type_id)
+      I18n.t('discourse_bale_notifications.unlike-success')
+    rescue Discourse::NotFound, Discourse::InvalidAccess
+      I18n.t('discourse_bale_notifications.unlike-failed')
+    end
+
+    def find_like_action(user, post, action_type_id)
       post_action = user.post_actions.find_by(
         post_id: post.id,
         post_action_type_id: action_type_id,
@@ -71,11 +79,7 @@ module DiscourseBaleNotifications
       )
       raise Discourse::NotFound if post_action.blank?
 
-      guardian.ensure_can_delete!(post_action)
-      PostAction.remove_act(user, post, action_type_id)
-      I18n.t('discourse_bale_notifications.unlike-success')
-    rescue Discourse::NotFound, Discourse::InvalidAccess
-      I18n.t('discourse_bale_notifications.unlike-failed')
+      post_action
     end
 
     def unavailable_action_text

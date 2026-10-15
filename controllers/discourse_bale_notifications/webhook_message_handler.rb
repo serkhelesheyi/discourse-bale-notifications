@@ -13,6 +13,10 @@ module DiscourseBaleNotifications
       user, known_user, message_text = resolve_message_user(chat_id, incoming)
       message_text = reply_message_text(user, chat_id, incoming) if known_user && incoming.key?('reply_to_message')
 
+      send_incoming_message(chat_id, message_text)
+    end
+
+    def send_incoming_message(chat_id, message_text)
       DiscourseBaleNotifications::BaleNotifier.send_message(
         {
           chat_id: chat_id,
@@ -71,18 +75,21 @@ module DiscourseBaleNotifications
     def reply_message_text(user, chat_id, incoming)
       I18n.with_locale(user.effective_locale) do
         post = reply_to_post(chat_id, incoming)
-        if post
-          new_post = {
-            raw: incoming['text'],
-            topic_id: post.topic_id,
-            reply_to_post_number: post.post_number
-          }
-          result = NewPostManager.new(user, new_post).perform
-          reply_result_text(result)
-        else
-          I18n.t('discourse_bale_notifications.reply-error')
-        end
+        post ? create_reply(user, incoming, post) : I18n.t('discourse_bale_notifications.reply-error')
       end
+    end
+
+    def create_reply(user, incoming, post)
+      result = NewPostManager.new(user, reply_attributes(incoming, post)).perform
+      reply_result_text(result)
+    end
+
+    def reply_attributes(incoming, post)
+      {
+        raw: incoming['text'],
+        topic_id: post.topic_id,
+        reply_to_post_number: post.post_number
+      }
     end
 
     def reply_to_post(chat_id, incoming)

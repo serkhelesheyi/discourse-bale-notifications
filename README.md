@@ -203,3 +203,10 @@
 اجرای [CI شمارهٔ 38725027999](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38725027999) کامل شد و شکست خورد: `check_for_tests` موفق بود، اما `linting` با **۱۳ تخلف در ۱۹ فایل** و `backend_tests` در `zeitwerk:check` شکست خورد. خطای بارگذاری به پیدا نشدن `DiscourseBaleNotifications::PluginSetup` مربوط بود؛ همچنین i18n lint دو مقدار ترجمه را به‌علت عبارت ممنوع «private message» رد کرد.
 
 در commit اصلاحی بعدی، مسیر autoload به‌صورت plugin-relative و در سطح ماژول تعریف می‌شود تا بارگذاری `PluginSetup` به `require_dependency` داخل callback وابسته نباشد. متن نمایشی ترجمه از «Private messages» به «Personal messages» تغییر می‌کند، اما کلید فنی `private_message` حفظ می‌شود. اصلاح‌های سبک کم‌خطر نیز محدود به حذف `begin` زائد، `return` زائد و خط خالی اضافی است. این تغییرها هنوز منتظر اجرای CI هستند و نباید رفع‌شده تلقی شوند.
+
+
+### دستهٔ یازدهم: کاهش پنج تخلف باقی‌ماندهٔ RuboCop
+
+اجرای [CI شمارهٔ 38746914696](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38746914696) روی commit `153a78b` گزارش داد که تخلف‌های RuboCop از ۱۳ به **۵** کاهش یافته‌اند. سه تخلف به طول/پیچیدگی متدها در کنترلر وب‌هوک و دو تخلف به متدهای `authenticate_webhook_request`، `unlike_action_text` و `handle_message` مربوط بود. در این دسته فقط منطق موجود به متدهای کوچک‌تر استخراج می‌شود؛ محدودیت نرخ، پاسخ‌های HTTP، متن‌های ترجمه، ترتیب عملیات و payload ارسالی حفظ شده‌اند.
+
+این تغییر هنوز تأیید CI ندارد؛ اجرای کامل آزمون backend مربوط به دستهٔ قبلی در زمان ثبت این یادداشت در جریان بود. نتیجهٔ نهایی باید با اجرای تازهٔ CI بررسی شود.

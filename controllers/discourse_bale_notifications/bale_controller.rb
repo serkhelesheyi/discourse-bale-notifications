@@ -26,16 +26,26 @@ module DiscourseBaleNotifications
     private
 
     def authenticate_webhook_request
-      auth_fail_limiter = RateLimiter.new(nil, "bale-hook-auth-fail-#{request.remote_ip}", 20, 1.minute)
-      unless auth_fail_limiter.can_perform?
-        render json: { error: 'rate_limited' }, status: :too_many_requests
-        return false
-      end
+      auth_fail_limiter = webhook_auth_rate_limiter
+      return render_auth_rate_limit_error unless auth_fail_limiter.can_perform?
 
       key = params['key'].to_s
       secret = SiteSetting.bale_secret.to_s
       return true if secret.present? && ActiveSupport::SecurityUtils.secure_compare(key, secret)
 
+      reject_webhook_authentication(auth_fail_limiter)
+    end
+
+    def webhook_auth_rate_limiter
+      RateLimiter.new(nil, "bale-hook-auth-fail-#{request.remote_ip}", 20, 1.minute)
+    end
+
+    def render_auth_rate_limit_error
+      render json: { error: 'rate_limited' }, status: :too_many_requests
+      false
+    end
+
+    def reject_webhook_authentication(auth_fail_limiter)
       auth_fail_limiter.performed!(raise_error: false)
       Rails.logger.error("Bale hook called with incorrect key from #{request.remote_ip}")
       render json: { error: 'forbidden' }, status: :forbidden
