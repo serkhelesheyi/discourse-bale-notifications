@@ -18,6 +18,15 @@ RSpec.describe 'Bale webhook', type: :request do
       expect(response.parsed_body).to eq('error' => 'forbidden')
     end
 
+    it 'rejects requests when the configured webhook secret is blank' do
+      SiteSetting.bale_secret = ''
+
+      post '/bale/hook/test-webhook-secret', params: { message: {} }
+
+      expect(response).to have_http_status(:forbidden)
+      expect(response.parsed_body).to eq('error' => 'forbidden')
+    end
+
     it 'acknowledges a message payload with no chat object without raising' do
       post '/bale/hook/test-webhook-secret', params: { message: { text: 'hello' } }
 
