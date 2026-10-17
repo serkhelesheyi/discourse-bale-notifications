@@ -40,6 +40,8 @@ module Jobs
 
     def user_notification_enabled?(user, type_name)
       preferences = user.custom_fields['bale_notification_types']
+      return false if preferences == '__none__'
+
       preferences.blank? || preferences.split('|').include?(type_name)
     end
 
