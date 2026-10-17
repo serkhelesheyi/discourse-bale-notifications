@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength -- Covers stale jobs and malformed API results together.
 RSpec.describe Jobs::SendBaleNotifications do
   subject(:job) { described_class.new }
 
@@ -44,3 +45,4 @@ RSpec.describe Jobs::SendBaleNotifications do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
