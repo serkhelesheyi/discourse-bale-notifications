@@ -317,3 +317,8 @@ Both workflows passed on candidate commit `fef00db7c44ad997156fb5d2c2d850c08c489
 ## CI follow-up — 17 October 2026
 
 On [Discourse Plugin CI run 39030352207](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39030352207), `backend_tests` and `check_for_tests` passed. The only failure was RuboCop's `Layout/EmptyLines` offense at `spec/jobs/send_bale_notifications_spec.rb:114`. The extra blank line has been removed as a formatting-only fix; a fresh CI run must pass before this stage is considered verified. No production deployment was performed.
+
+
+## Preference filtering regression tests — 17 October 2026
+
+The previous CI failure was fixed, and both workflows passed on commit `b98c7c3e71fd17fa27c9045d7acd47d50adac10e`: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031028624) and [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031028524). The next regression stage adds job-level coverage that saves `bale_notification_types` to user custom fields, reloads the recipient from the database, and verifies that the job context excludes unselected types and accepts selected types. These backend tests do not by themselves prove that the browser preferences form persists changes correctly; that UI path still needs frontend/staging acceptance. No production deployment was performed.

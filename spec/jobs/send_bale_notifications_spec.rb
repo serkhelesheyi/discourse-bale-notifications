@@ -152,6 +152,30 @@ RSpec.describe Jobs::SendBaleNotifications do
   end
 
   describe '#delivery_context' do
+    let(:post) { Fabricate(:post, user: user) }
+
+    it 'skips a notification excluded by a persisted personal preference' do
+      user.custom_fields['bale_notification_types'] = 'replied'
+      user.save_custom_fields
+      recipient = User.find(user.id)
+      notification_payload = payload.merge(post_number: post.post_number, topic_id: post.topic_id)
+
+      expect(
+        job.delivery_context({ user_id: recipient.id }, notification_payload, 'mentioned')
+      ).to be_nil
+    end
+
+    it 'delivers a selected notification using the persisted user preference' do
+      user.custom_fields['bale_notification_types'] = 'mentioned|replied'
+      user.save_custom_fields
+      recipient = User.find(user.id)
+      notification_payload = payload.merge(post_number: post.post_number, topic_id: post.topic_id)
+
+      expect(
+        job.delivery_context({ user_id: recipient.id }, notification_payload, 'mentioned')
+      ).to eq([recipient, '123456', post])
+    end
+
     it 'skips a notification when its post no longer exists' do
       allow(Post).to receive(:find_by)
         .with(post_number: payload[:post_number], topic_id: payload[:topic_id])
