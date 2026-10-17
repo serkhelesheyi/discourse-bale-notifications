@@ -45,6 +45,7 @@ Record the date/time and timezone, staging URL (do not publish secrets), Discour
 | A13 | Secret and content redaction | Tokens, secrets, private message bodies, and sensitive payloads do not appear in logs | Pending staging run |
 | A14 | Disable plugin | New plugin activity stops as expected; no recurring job/error storm remains | Pending staging run |
 | A15 | Regression and resource health | Core forum actions still work; web and Sidekiq remain healthy; no growing queue or repeated errors | Pending staging run |
+| A16 | Bale preference persistence | Toggle one notification type off, save, reload and confirm it remains off; toggle it on and repeat; select all types, save/reload and confirm legacy unrestricted behavior | Pending staging run |
 
 For each row record **Pass / Fail / Blocked / Not applicable**, test account(s), timestamp, concise observations, and links to redacted logs. Never mark a row Pass solely because a unit test or GitHub Actions workflow passed.
 
@@ -101,3 +102,8 @@ The following workflows completed successfully for candidate commit `fef00db7c44
 - [ ] Record the exact SHA actually installed on staging. The CI candidate above is the tested code revision; documentation-only commits may advance `main` after it.
 
 No production deployment has been performed. Production release requires separate explicit authorization.
+
+
+## Additional preference persistence check — 17 October 2026
+
+A16 specifically validates the GJS-to-Discourse model save path. Run it only on staging with a linked test account and record the exact plugin SHA and Discourse version. Check both the rendered checkbox state after reload and, where safely available, the persisted `bale_notification_types` custom field. When every enabled type is selected, the expected stored value is an empty string (legacy unrestricted behavior). Do not treat CI or backend job specs as a substitute for this browser check. This test has not yet been executed.
