@@ -7,6 +7,8 @@ RSpec.describe 'Bale account linking', type: :request do
   let(:user) { Fabricate(:user) }
   let(:other_user) { Fabricate(:user) }
 
+  before { SiteSetting.bale_notifications_enabled = true }
+
   describe 'POST /bale/link' do
     it 'requires an authenticated user and returns a short-lived one-time code to that user' do
       sign_in(user)
