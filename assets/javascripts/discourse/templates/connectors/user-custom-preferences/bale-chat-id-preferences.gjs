@@ -25,11 +25,11 @@ export default class BaleChatIdPreferences extends Component {
 
   constructor() {
     super(...arguments);
-    // فاز سه - اصلاح #۱۸: خالی‌بودن bale_notification_types یعنی «بدون
-    // محدودیت شخصی» - یعنی کاربر همه‌ی انواعی که خودِ سایت فعال کرده را
-    // دریافت می‌کند (دقیقاً همان رفتاری که پیش از افزودن این قابلیت وجود داشت).
+    // Empty/missing preserves the legacy unrestricted default. A dedicated
+    // sentinel represents an explicit choice to disable every notification type.
     const raw = this.args.model?.custom_fields?.bale_notification_types;
-    this.selectedTypes = raw ? raw.split("|").filter(Boolean) : [...this.availableTypes];
+    this.selectedTypes =
+      raw === "__none__" ? [] : raw ? raw.split("|").filter(Boolean) : [...this.availableTypes];
   }
 
   get availableTypes() {
@@ -62,11 +62,18 @@ export default class BaleChatIdPreferences extends Component {
     // Build a new object and set the model attribute through Ember Data. Mutating
     // a nested custom_fields property in place may not mark the attribute dirty,
     // so the user-preferences form may omit it from the save request.
-    // An empty value preserves the legacy "no personal restriction" behavior.
+    // Empty/missing means legacy unrestricted behavior, so store an explicit
+    // sentinel when the user deliberately deselects every notification type.
+    const preferenceValue =
+      this.selectedTypes.length === 0
+        ? "__none__"
+        : this.selectedTypes.length === all.length
+          ? ""
+          : this.selectedTypes.join("|");
+
     this.args.model.set("custom_fields", {
       ...(this.args.model.custom_fields || {}),
-      bale_notification_types:
-        this.selectedTypes.length === all.length ? "" : this.selectedTypes.join("|"),
+      bale_notification_types: preferenceValue,
     });
   }
 
