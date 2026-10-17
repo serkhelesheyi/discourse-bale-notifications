@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe DiscourseBaleNotifications::BaleNotificationPayload do
+  # rubocop:disable Metrics/BlockLength -- Keep payload contract examples together.
   describe '.photo?' do
     before { allow(SiteSetting).to receive(:bale_notifications_show_avatar?).and_return(true) }
 
@@ -58,4 +59,5 @@ RSpec.describe DiscourseBaleNotifications::BaleNotificationPayload do
       )
     end
   end
+  # rubocop:enable Metrics/BlockLength
 end

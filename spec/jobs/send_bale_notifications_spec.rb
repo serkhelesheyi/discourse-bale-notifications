@@ -29,7 +29,6 @@ RSpec.describe Jobs::SendBaleNotifications do
     end
   end
 
-
   describe '#user_notification_enabled?' do
     it 'preserves the legacy default when no personal preference is stored' do
       expect(job.user_notification_enabled?(user, 'mentioned')).to be(true)
@@ -105,7 +104,7 @@ RSpec.describe Jobs::SendBaleNotifications do
 
     it 'fails open if the configured timezone cannot be resolved' do
       SiteSetting.bale_notifications_quiet_hours_enabled = true
-      user.user_option.update!(timezone: 'Invalid/Zone')
+      allow(user.user_option).to receive(:timezone).and_return('Invalid/Zone')
       allow(Time).to receive(:find_zone!).with('Invalid/Zone').and_raise(ArgumentError)
 
       expect(job.quiet_hours?(user)).to be(false)
