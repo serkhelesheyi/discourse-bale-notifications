@@ -111,6 +111,47 @@ RSpec.describe Jobs::SendBaleNotifications do
     end
   end
 
+
+  describe '#deliver_notification' do
+    let(:post) { Fabricate(:post, user: user) }
+
+    before do
+      allow(job).to receive(:notification_text).and_return('rendered notification')
+      allow(job).to receive(:avatar_url_for).and_return('https://example.com/avatar.png')
+      allow(DiscourseBaleNotifications::BaleNotifier).to receive(:generate_reply_markup)
+        .with(post, user)
+        .and_return({ inline_keyboard: [] })
+    end
+
+    it 'passes quiet-hours suppression to the outgoing notification' do
+      allow(job).to receive(:quiet_hours?).with(user).and_return(true)
+
+      expect(DiscourseBaleNotifications::BaleNotifier).to receive(:send_notification).with(
+        'rendered notification',
+        '123456',
+        { inline_keyboard: [] },
+        avatar_url: 'https://example.com/avatar.png',
+        disable_notification: true
+      )
+
+      job.deliver_notification(payload.merge(username: user.username), 'mentioned', user, '123456', post)
+    end
+
+    it 'keeps normal delivery notifications enabled outside quiet hours' do
+      allow(job).to receive(:quiet_hours?).with(user).and_return(false)
+
+      expect(DiscourseBaleNotifications::BaleNotifier).to receive(:send_notification).with(
+        'rendered notification',
+        '123456',
+        { inline_keyboard: [] },
+        avatar_url: 'https://example.com/avatar.png',
+        disable_notification: false
+      )
+
+      job.deliver_notification(payload.merge(username: user.username), 'mentioned', user, '123456', post)
+    end
+  end
+
   describe '#delivery_context' do
     it 'skips a notification when its post no longer exists' do
       allow(Post).to receive(:find_by)
