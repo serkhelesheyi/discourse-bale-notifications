@@ -26,13 +26,6 @@ module DiscourseBaleNotifications
       response_data = parse_response(response, method_name, chat_id)
       return false if response_data == :invalid_json
 
-      if %w[sendMessage sendPhoto].include?(method_name) && response_data['ok'] == true
-        result = response_data['result']
-        unless result.is_a?(Hash) && result['message_id'].present?
-          log_invalid_response_structure(response, method_name, chat_id)
-          return false
-        end
-      end
       return handle_api_failure(method_name, chat_id, response, response_data) unless response_data['ok'] == true
 
       BaleActivityLog.record_activity(method_name, chat_id, true, nil, nil)
@@ -41,18 +34,14 @@ module DiscourseBaleNotifications
 
     def self.build_request(method_name, message)
       http = Net::HTTP.new('tapi.bale.ai', 443)
-      configure_http(http)
+      http.use_ssl = true
+      http.open_timeout = 5
+      http.read_timeout = 10
       uri = URI("https://tapi.bale.ai/bot#{SiteSetting.bale_access_token}/#{method_name}")
       request = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
       request.body = message.to_json
       chat_id = message[:chat_id] || message['chat_id']
       [http, request, chat_id]
-    end
-
-    def self.configure_http(http)
-      http.use_ssl = true
-      http.open_timeout = 5
-      http.read_timeout = 10
     end
 
     def self.perform_request(http, request, method_name, chat_id)
@@ -68,13 +57,20 @@ module DiscourseBaleNotifications
 
     def self.parse_response(response, method_name, chat_id)
       response_data = JSON.parse(response.body)
-      return response_data if response_data.is_a?(Hash)
+      return response_data if response_data.is_a?(Hash) && valid_response_structure?(method_name, response_data)
 
       log_invalid_response_structure(response, method_name, chat_id)
       :invalid_json
     rescue JSON::ParserError => e
       log_non_json_response(response, method_name, chat_id, e)
       :invalid_json
+    end
+
+    def self.valid_response_structure?(method_name, response_data)
+      return true unless %w[sendMessage sendPhoto].include?(method_name) && response_data['ok'] == true
+
+      result = response_data['result']
+      result.is_a?(Hash) && result['message_id'].present?
     end
 
     def self.log_invalid_response_structure(response, method_name, chat_id)
