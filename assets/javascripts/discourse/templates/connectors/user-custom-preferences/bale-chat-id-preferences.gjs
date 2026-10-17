@@ -59,13 +59,15 @@ export default class BaleChatIdPreferences extends Component {
     const all = this.availableTypes;
     this.selectedTypes = all.filter((t) => current.has(t));
 
-    if (!this.args.model.custom_fields) {
-      this.args.model.custom_fields = {};
-    }
-    // اگر همه‌ی گزینه‌ها انتخاب باقی بمانند، فیلد را خالی ذخیره می‌کنیم تا
-    // معنای «بدون محدودیت شخصی» حفظ شود (نه یک رشته‌ی طولانیِ برابر با پیش‌فرض).
-    this.args.model.custom_fields.bale_notification_types =
-      this.selectedTypes.length === all.length ? "" : this.selectedTypes.join("|");
+    // Build a new object and set the model attribute through Ember Data. Mutating
+    // a nested custom_fields property in place may not mark the attribute dirty,
+    // so the user-preferences form may omit it from the save request.
+    // An empty value preserves the legacy "no personal restriction" behavior.
+    this.args.model.set("custom_fields", {
+      ...(this.args.model.custom_fields || {}),
+      bale_notification_types:
+        this.selectedTypes.length === all.length ? "" : this.selectedTypes.join("|"),
+    });
   }
 
   @action
