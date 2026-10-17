@@ -93,10 +93,10 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
     it 'rejects a successful message response without a message ID' do
       allow(response).to receive(:body).and_return({ ok: true, result: {} }.to_json)
       expect(Rails.logger).to receive(:error).with(
-        'Bale API returned a JSON response with an invalid structure (method=sendMessage, http_status=200)'
+        'Bale API returned an invalid response (method=sendMessage, http_status=200)'
       )
       expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
-        .with('sendMessage', chat_id, false, '200', 'invalid response structure')
+        .with('sendMessage', chat_id, false, '200', 'invalid response')
 
       expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
     end
