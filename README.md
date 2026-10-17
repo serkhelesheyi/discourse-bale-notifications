@@ -5,7 +5,7 @@
 > **وضعیت:** مخزن در حال ممیزی و بهبود مرحله‌ای است. نقشه‌راه و وضعیت آزمون‌ها را در [ROADMAP.md](ROADMAP.md) و محدودیت انواع اعلان را در [NOTIFICATION_COVERAGE.md](NOTIFICATION_COVERAGE.md) ببینید. وجود یک گزینه یا ترجمه به‌تنهایی تضمین نمی‌کند که رویداد آن در نسخهٔ جاری Discourse تولید شود.
 
 
-> **وضعیت عملیاتی و ممیزی، ۱۷ اکتبر ۲۰۲۶:** افزونه در تولید روی SHA `b75d69a190184b5c62aae4fba2364e2c8f79eb0b` استقرار یافته بود؛ هستهٔ Discourse تغییر نکرد و پیام آزمایشی دریافت شد. کارهای اخیر ممیزی فقط روی GitHub انجام شده‌اند و هنوز روی تولید نصب نشده‌اند. اصلاح بررسی پاسخ HTTP در SHA `7844886f5aadd6b5d803dd9e3fb724ab058ed19a` ثبت شده؛ smoke tests موفق است اما CI اصلی هنگام آخرین بررسی هنوز در حال اجرا بود. آزمون‌های پنل مدیریت و allowlist اعلان‌ها اضافه شده‌اند؛ ماتریس کامل اعلان‌ها، فیلترهای push، ترجیحات/ساعات سکوت، بازیابی پشتیبان و پذیرش staging همچنان باز هستند. جزئیات و محدودیت‌ها در [ROADMAP.md](ROADMAP.md) و [NOTIFICATION_COVERAGE.md](NOTIFICATION_COVERAGE.md) آمده است.
+> **وضعیت عملیاتی و ممیزی، ۱۷ اکتبر ۲۰۲۶:** طبق گزارش عملیاتی قبلی، نسخهٔ تولیدی افزونه روی SHA `b75d69a190184b5c62aae4fba2364e2c8f79eb0b` بوده، هستهٔ Discourse تغییر نکرده و پیام آزمایشی دریافت شده است. کارهای اخیر فقط در GitHub انجام شده‌اند و روی تولید نصب نشده‌اند. HEAD جاری مخزن `5d56a2d3cf1c5e424094a604616ec1b1150c8e5e` است و [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031804664) و [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031804370) هر دو موفق‌اند. آزمون‌های backend ترجیحات ذخیره‌شده و فیلتر job را نیز پوشش می‌دهند؛ تأیید مسیر واقعی رابط کاربری، پذیرش staging، آزمون بازیابی پشتیبان و هرگونه انتشار هنوز باز است. جزئیات در [ROADMAP.md](ROADMAP.md)، [NOTIFICATION_COVERAGE.md](NOTIFICATION_COVERAGE.md) و [STAGING_ACCEPTANCE.md](STAGING_ACCEPTANCE.md) ثبت می‌شوند.
 
 ## قابلیت‌ها
 
@@ -322,3 +322,12 @@ On [Discourse Plugin CI run 39030352207](https://github.com/serkhelesheyi/discou
 ## Preference filtering regression tests — 17 October 2026
 
 The previous CI failure was fixed, and both workflows passed on commit `b98c7c3e71fd17fa27c9045d7acd47d50adac10e`: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031028624) and [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031028524). The next regression stage adds job-level coverage that saves `bale_notification_types` to user custom fields, reloads the recipient from the database, and verifies that the job context excludes unselected types and accepts selected types. These backend tests do not by themselves prove that the browser preferences form persists changes correctly; that UI path still needs frontend/staging acceptance. No production deployment was performed.
+
+
+## آخرین وضعیت تأییدشده — ۱۷ اکتبر ۲۰۲۶
+
+HEAD شاخهٔ `main` برابر [`5d56a2d3cf1c5e424094a604616ec1b1150c8e5e`](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/5d56a2d3cf1c5e424094a604616ec1b1150c8e5e) است. [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031804664) با موفقیت کامل شده و jobهای linting، کشف آزمون‌ها و backend/RSpec سبز هستند؛ [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031804370) نیز موفق است.
+
+آزمون‌های job اکنون ترجیحات `bale_notification_types` را پس از ذخیره در custom_fields و بارگذاری مجدد کاربر بررسی می‌کنند. آزمون‌های ساعات سکوت و انتقال پرچم `disable_notification` نیز در مجموعه وجود دارند. این شواهد آزمون backend هستند و به‌تنهایی ثابت نمی‌کنند که چک‌باکس‌های فرم GJS در مرورگر به‌درستی ذخیره و پس از بارگذاری مجدد بازیابی می‌شوند.
+
+**گام بعدی:** ممیزی و آزمون مسیر UI ترجیحات تا ذخیره‌سازی Discourse؛ سپس تکمیل آزمون callbackها و اجرای چک‌لیست [STAGING_ACCEPTANCE.md](STAGING_ACCEPTANCE.md). هیچ تغییر یا استقرار تولیدی در این مرحله انجام نشده است.
