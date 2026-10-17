@@ -78,7 +78,7 @@ NOTIFIABLE_TYPES = [
 از طریق فراخوانی مستقیم `PostAlerter.push_notification` توسط افزونه‌ای دیگر
 نیست؛ برای هر مورد باید مسیر واقعی تولید payload بررسی شود:
 
-| نوع | چرا غیرممکن است |
+| نوع | محدودیت مسیر فعلی |
 |---|---|
 | `liked` | صراحتاً از `NOTIFIABLE_TYPES` هسته کنار گذاشته شده (تایید مستقیم از سورس) |
 | `liked_consolidated` | همانند بالا؛ علاوه‌براین از طریق `Notification.create!` مستقیم ساخته می‌شود، نه `create_notification` |
@@ -90,7 +90,7 @@ NOTIFIABLE_TYPES = [
 | `bookmark_reminder` | توسط جاب زمان‌بندی‌شده‌ی یادآوری بوکمارک ساخته می‌شود |
 | `custom` | یک نوع عمومی که افزونه‌های دیگر (مثل discourse-solved) مستقیماً با `Notification.create!` می‌سازند |
 | `post_approved`, `membership_request_accepted`, `membership_request_consolidated`, `votes_released` | هرکدام از جریان‌های اختصاصی خودشان می‌آیند، نه `PostAlerter` |
-| `chat_mention`, `chat_message`, `chat_invitation` و سایر انواع چت | افزونه‌ی Discourse Chat یک سیستم اعلان کاملاً مجزا و مستقل از `PostAlerter` دارد |
+| `chat_mention`, `chat_message`, `voice_invitation` | مسیرهای مشخص Chat/Voice مستقیماً `PostAlerter.push_notification` را صدا می‌زنند؛ پس رویداد قابل‌اجراست، اما payload فعلی فاقد `post_number`/`topic_id` لازم برای job است و handler/قالب اختصاصی وجود ندارد. این نوع‌ها در پیش‌فرض فعال نیستند. |
 
 ## اگر پوشش بیشتری لازم است
 
