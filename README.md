@@ -4,6 +4,9 @@
 
 > **وضعیت:** مخزن در حال ممیزی و بهبود مرحله‌ای است. نقشه‌راه و وضعیت آزمون‌ها را در [ROADMAP.md](ROADMAP.md) و محدودیت انواع اعلان را در [NOTIFICATION_COVERAGE.md](NOTIFICATION_COVERAGE.md) ببینید. وجود یک گزینه یا ترجمه به‌تنهایی تضمین نمی‌کند که رویداد آن در نسخهٔ جاری Discourse تولید شود.
 
+
+> **وضعیت عملیاتی، ۱۷ اکتبر ۲۰۲۶:** افزونه روی سایت عملیاتی به SHA `b75d69a190184b5c62aae4fba2364e2c8f79eb0b` به‌روزرسانی شد؛ هستهٔ Discourse تغییر نکرد و پیام آزمایشی به حساب مدیر در بله رسید. بررسی لاگ‌های پس از به‌روزرسانی و ممیزی کامل رفتارها هنوز باز است. جزئیات و محدودیت شواهد در انتهای [ROADMAP.md](ROADMAP.md) ثبت شده است.
+
 ## قابلیت‌ها
 
 - ارسال انواع اعلان پشتیبانی‌شده به چت خصوصی بله.
@@ -91,8 +94,8 @@
 - آزمون‌های سبک مستقل در [`.github/workflows/plugin-smoke-tests.yml`](.github/workflows/plugin-smoke-tests.yml) اجرا می‌شوند و شامل syntax check و `test/link_code_test.rb` هستند. این workflow اکنون برای `main` و شاخهٔ ممیزی فعال است.
 - آزمون‌های RSpec شامل مصرف اتمیک کد اتصال، escape کردن HTML، ورودی‌های وب‌هوک و API client هستند. آزمون API client مسیر موفق، HTTPS و timeout، timeout شبکه، پاسخ غیر JSON، JSON با ساختار نامعتبر، خطای API و عدم افشای توکن/متن پیام خروجی در لاگ‌های سناریوهای پوشش‌داده‌شده را بررسی می‌کند.
 - پاسخ JSON که شیء نباشد، از جمله `null`، به‌صورت شکست کنترل‌شده رد می‌شود. قالب دقیق متن داخلی استثنا در آزمون timeout معیار نیست؛ نوع خطا و نتیجهٔ امن آن بررسی می‌شود.
-- آخرین CI بررسی‌شده پیش از اصلاحات اخیر شکست داشت؛ اصلاحات و انتقال آزمون مستقل انجام شده‌اند، اما تا موفقیت اجرای تازهٔ هر دو workflow نباید این دسته را تأییدشده دانست. وضعیت جاری در [Actions](https://github.com/serkhelesheyi/discourse-bale-notifications/actions) قابل مشاهده است.
-- شاخهٔ `docs/initial-audit-roadmap` حاوی بازآرایی گسترده است و نسبت به `main` واگراست. هدف نهایی، ادغام همهٔ تغییرات لازم به `main` از طریق PR پس از بازبینی diff و CI موفق است؛ شاخه پیش از تأیید ادغام حذف نمی‌شود.
+- وضعیت CI روی HEAD ثبت‌شده در ۱۷ اکتبر ۲۰۲۶: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38820273999) و [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38820273684) هر دو موفق بوده‌اند. این نتایج فقط SHA مربوط به همان اجرا را پوشش می‌دهند؛ پس از تغییر مستندات، نتیجهٔ HEAD جدید باید دوباره بررسی شود. وضعیت جاری در [Actions](https://github.com/serkhelesheyi/discourse-bale-notifications/actions) قابل مشاهده است.
+- تغییرات شاخهٔ ممیزی از طریق PR شمارهٔ [#1](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/1) ادغام شده‌اند. تاریخچهٔ قدیمی‌تر این README ممکن است وضعیت‌های پیش از ادغام را توصیف کند؛ برای وضعیت جاری، انتهای [ROADMAP.md](ROADMAP.md) مرجع است.
 - این آزمون‌ها جایگزین آزمون پذیرش روی staging، بررسی قرارداد واقعی API بله یا تأیید سازگاری با همهٔ نسخه‌های Discourse نیستند.
 
 ## حذف افزونه
