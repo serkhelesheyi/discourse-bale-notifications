@@ -51,6 +51,14 @@ RSpec.describe Jobs::SendBaleNotifications do
 
       expect(job.user_notification_enabled?(user, 'quoted')).to be(true)
     end
+
+    it 'disables every notification type when the user explicitly deselects all types' do
+      user.custom_fields['bale_notification_types'] = '__none__'
+      user.save_custom_fields
+
+      expect(job.user_notification_enabled?(user, 'mentioned')).to be(false)
+      expect(job.user_notification_enabled?(user, 'replied')).to be(false)
+    end
   end
 
   describe '#quiet_hours_for_hour?' do
@@ -174,6 +182,17 @@ RSpec.describe Jobs::SendBaleNotifications do
       expect(
         job.delivery_context({ user_id: recipient.id }, notification_payload, 'mentioned')
       ).to eq([recipient, '123456', post])
+    end
+
+    it 'skips delivery when the persisted preference explicitly disables all types' do
+      user.custom_fields['bale_notification_types'] = '__none__'
+      user.save_custom_fields
+      recipient = User.find(user.id)
+      notification_payload = payload.merge(post_number: post.post_number, topic_id: post.topic_id)
+
+      expect(
+        job.delivery_context({ user_id: recipient.id }, notification_payload, 'mentioned')
+      ).to be_nil
     end
 
     it 'skips a notification when its post no longer exists' do
