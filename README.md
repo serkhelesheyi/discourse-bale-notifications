@@ -291,3 +291,12 @@ The next release gate is live staging acceptance. Follow [`STAGING_ACCEPTANCE.md
 ## Latest CI verification — 16 October 2026
 
 Both workflows passed on candidate commit `fef00db7c44ad997156fb5d2c2d850c08c489185`: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38818772655) and [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38818772243). Live staging acceptance remains pending; follow [STAGING_ACCEPTANCE.md](STAGING_ACCEPTANCE.md) and record actual evidence before making a release decision. No production deployment has been performed.
+
+
+## وضعیت ممیزی و آزمون‌ها — ۱۷ اکتبر ۲۰۲۶
+
+اجرای کامل [Discourse Plugin CI شمارهٔ 39027925986](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39027925986) و [Plugin smoke tests شمارهٔ 39027925701](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39027925701) روی commit مستندات c96916378248acebf32d597891b79843ef24c32d موفق شد. CI کامل شامل linting، کشف آزمون‌ها و آزمون‌های backend/RSpec بود. قرارداد پاسخ API اکنون برای پاسخ‌های موفق‌نما با HTTP status ناموفق و پاسخ‌های ناقص آزمون رگرسیون دارد.
+
+در مرحلهٔ بعد، آزمون‌های رگرسیون برای ترجیحات شخصی اعلان، بازه‌های ساعات سکوت (از جمله عبور از نیمه‌شب و منطقهٔ زمانی گیرنده) و انتقال پرچم سکوت به payload پیام متنی/عکس افزوده شده‌اند. **این آزمون‌های تازه هنوز منتظر اجرای CI هستند**؛ تا اعلام نتیجهٔ workflowها، آن‌ها را تأییدشده محسوب نکنید.
+
+این آزمون‌های خودکار، تحویل واقعی در بله، رفتار UI روی نصب زنده یا پذیرش staging را اثبات نمی‌کنند. ماتریس [STAGING_ACCEPTANCE.md](STAGING_ACCEPTANCE.md) همچنان باید در محیط staging اجرا و با شواهد ثبت شود. هیچ استقرار یا تغییری روی تولید در این مرحله انجام نشده است.
