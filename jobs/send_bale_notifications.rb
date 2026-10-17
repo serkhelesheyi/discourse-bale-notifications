@@ -30,7 +30,12 @@ module Jobs
       return if chat_id.blank?
       return unless user_notification_enabled?(user, type_name)
 
-      [user, chat_id, Post.where(post_number: payload[:post_number], topic_id: payload[:topic_id]).first]
+      post = Post.find_by(post_number: payload[:post_number], topic_id: payload[:topic_id])
+      return unless post
+
+      [user, chat_id, post]
+    rescue ActiveRecord::RecordNotFound
+      nil
     end
 
     def user_notification_enabled?(user, type_name)
@@ -107,9 +112,14 @@ module Jobs
     end
 
     def store_message_id(response, chat_id, post)
-      return unless response
+      return unless response.is_a?(Hash)
 
-      message_id = response['result']['message_id']
+      result = response['result']
+      return unless result.is_a?(Hash)
+
+      message_id = result['message_id']
+      return if message_id.blank? || post.blank?
+
       PluginStore.set('bale-notifications', "message_#{chat_id}_#{message_id}", post.id)
     end
   end

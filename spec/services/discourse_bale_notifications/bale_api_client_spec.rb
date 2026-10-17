@@ -72,6 +72,17 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
     end
 
+    it 'rejects a successful message response without a message ID' do
+      allow(response).to receive(:body).and_return({ ok: true, result: {} }.to_json)
+      expect(Rails.logger).to receive(:error).with(
+        'Bale API returned a JSON response with an invalid structure (method=sendMessage, http_status=200)'
+      )
+      expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
+        .with('sendMessage', chat_id, false, '200', 'invalid response structure')
+
+      expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
+    end
+
     it 'does not include the token or outgoing message in API error logs' do
       allow(response).to receive(:body).and_return(
         { ok: false, error_code: 500, description: 'simulated API failure' }.to_json
