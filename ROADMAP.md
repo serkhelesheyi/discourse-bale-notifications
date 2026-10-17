@@ -1039,13 +1039,14 @@
 در اجرای [Discourse Plugin CI شمارهٔ 39030352207](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39030352207)، `backend_tests` و `check_for_tests` موفق شدند؛ تنها job مربوط به lint به‌علت یک خط خالی اضافی در `spec/jobs/send_bale_notifications_spec.rb:114` شکست خورد. این تخلف صرفاً قالب‌بندی بود و خط خالی اضافی حذف شد. اصلاح در commit بعدی ثبت و CI تازه برای تأیید کامل پیگیری می‌شود. این شکست نشان‌دهندهٔ خطای آزمون رفتاری نبود؛ هیچ استقرار تولیدی انجام نشده است.
 
 
-## آزمون یکپارچهٔ ترجیحات ذخیره‌شده و فیلتر job — ۱۷ اکتبر ۲۰۲۶
+## تکمیل آزمون یکپارچهٔ ترجیحات ذخیره‌شده و فیلتر job — ۱۷ اکتبر ۲۰۲۶
 
 - [x] اجرای کامل [Discourse Plugin CI شمارهٔ 39031028624](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031028624) روی commit `b98c7c3e71fd17fa27c9045d7acd47d50adac10e` موفق شد؛ هر سه job یعنی linting، check_for_tests و backend_tests سبز هستند.
 - [x] Smoke tests روی همان commit نیز موفق شدند: [run 39031028524](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031028524).
-- [x] مرحلهٔ قبلی بسته شد: خطای `Layout/EmptyLines` فقط قالب‌بندی بود و با حذف خط خالی اضافی رفع شد.
-- [ ] گام جاری: آزمون‌های job برای مسیر واقعیِ فیلتر ترجیحات اضافه می‌شوند. آزمون‌ها فیلد `bale_notification_types` را در custom_fields ذخیره می‌کنند، کاربر را از پایگاه داده دوباره بار می‌کنند و بررسی می‌کنند که نوع انتخاب‌نشده از delivery_context کنار گذاشته شود و نوع انتخاب‌شده از آن عبور کند.
-- [ ] این آزمون backend قرارداد UI را به‌تنهایی ثابت نمی‌کند؛ ذخیره‌سازی از فرم کاربر و تعامل واقعی در مرورگر هنوز باید در staging یا با آزمون frontend مناسب بررسی شود. مخزن فعلاً چارچوب آزمون frontend مشخصی برای این کامپوننت ندارد.
+- [x] آزمون‌های job برای مسیر فیلتر ترجیحات افزوده شدند: `bale_notification_types` در custom_fields ذخیره می‌شود، کاربر از پایگاه داده دوباره بارگذاری می‌شود و آزمون بررسی می‌کند که نوع انتخاب‌نشده از `delivery_context` کنار گذاشته و نوع انتخاب‌شده پذیرفته شود.
+- [x] آزمون‌های جدید در commit [`5d56a2d3`](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/5d56a2d3cf1c5e424094a604616ec1b1150c8e5e) اضافه شدند؛ [Discourse Plugin CI شمارهٔ 39031804664](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031804664) و [Plugin smoke tests شمارهٔ 39031804370](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031804370) هر دو روی همان SHA موفق شدند.
+- [x] شکست قبلی `Layout/EmptyLines` صرفاً قالب‌بندی بود و با حذف خط خالی اضافی رفع شد؛ اجرای بعدی CI موفق است.
+- [ ] آزمون backend قرارداد UI را به‌تنهایی ثابت نمی‌کند؛ ذخیره‌سازی از فرم GJS کاربر و بازگردانی انتخاب‌ها پس از reload هنوز باید با آزمون frontend مناسب یا پذیرش staging بررسی شود. در مخزن فعلاً چارچوب آزمون frontend مشخصی برای این کامپوننت تأیید نشده است.
 - [ ] هیچ تغییری روی سایت عملیاتی انجام نشده است.
 
 
