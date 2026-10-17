@@ -111,7 +111,6 @@ RSpec.describe Jobs::SendBaleNotifications do
     end
   end
 
-
   describe '#deliver_notification' do
     let(:post) { Fabricate(:post, user: user) }
 

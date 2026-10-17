@@ -312,3 +312,8 @@ Both workflows passed on candidate commit `fef00db7c44ad997156fb5d2c2d850c08c489
 ## آزمون انتقال ساعات سکوت به لایهٔ ارسال — ۱۷ اکتبر ۲۰۲۶
 
 دو آزمون job به مجموعه افزوده شده‌اند تا بررسی کنند نتیجهٔ محاسبهٔ ساعات سکوت در فراخوانی notifier به پارامتر disable_notification تبدیل می‌شود؛ در ساعات سکوت باید true و در ساعات عادی false باشد. این آزمون‌ها به شبکهٔ بله متصل نمی‌شوند. نتیجهٔ CI اصلاحات قبلی و این commit جدید باید جداگانه بررسی شود؛ تا سبزشدن workflowها این مرحله تأییدشده نیست. مسیر UI ترجیحات و آزمون end-to-end در staging همچنان باقی است و هیچ استقرار تولیدی انجام نشده است.
+
+
+## CI follow-up — 17 October 2026
+
+On [Discourse Plugin CI run 39030352207](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39030352207), `backend_tests` and `check_for_tests` passed. The only failure was RuboCop's `Layout/EmptyLines` offense at `spec/jobs/send_bale_notifications_spec.rb:114`. The extra blank line has been removed as a formatting-only fix; a fresh CI run must pass before this stage is considered verified. No production deployment was performed.
