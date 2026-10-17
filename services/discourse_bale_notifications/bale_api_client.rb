@@ -62,7 +62,7 @@ module DiscourseBaleNotifications
 
     def self.parse_response(response, method_name, chat_id)
       response_data = JSON.parse(response.body)
-      return response_data if response_data.is_a?(Hash) && valid_response_structure?(method_name, response_data)
+      return response_data if response_data.is_a?(Hash) && valid_success_response?(method_name, response_data, response)
 
       log_invalid_response_structure(response, method_name, chat_id)
       :invalid_json
@@ -71,8 +71,10 @@ module DiscourseBaleNotifications
       :invalid_json
     end
 
-    def self.valid_response_structure?(method_name, response_data)
-      return true unless %w[sendMessage sendPhoto].include?(method_name) && response_data['ok'] == true
+    def self.valid_success_response?(method_name, response_data, response)
+      return true unless response_data['ok'] == true
+      return false unless response.code.to_i.between?(200, 299)
+      return true unless %w[sendMessage sendPhoto].include?(method_name)
 
       result = response_data['result']
       result.is_a?(Hash) && result['message_id'].present?

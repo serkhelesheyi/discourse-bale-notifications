@@ -82,10 +82,10 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
     it 'returns false and records a safe diagnostic for valid JSON that is not an API response object' do
       allow(response).to receive(:body).and_return('null')
       expect(Rails.logger).to receive(:error).with(
-        'Bale API returned a JSON response with an invalid structure (method=sendMessage, http_status=200)'
+        'Bale API returned an invalid response (method=sendMessage, http_status=200)'
       )
       expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
-        .with('sendMessage', chat_id, false, '200', 'invalid response structure')
+        .with('sendMessage', chat_id, false, '200', 'invalid response')
 
       expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
     end
@@ -97,6 +97,20 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       )
       expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
         .with('sendMessage', chat_id, false, '200', 'invalid response structure')
+
+      expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
+    end
+
+    it 'rejects a success-shaped response with a non-success HTTP status' do
+      allow(response).to receive(:code).and_return('500')
+      allow(response).to receive(:body).and_return(
+        { ok: true, result: { message_id: 123 } }.to_json
+      )
+      expect(Rails.logger).to receive(:error).with(
+        'Bale API returned an invalid response (method=sendMessage, http_status=500)'
+      )
+      expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
+        .with('sendMessage', chat_id, false, '500', 'invalid response')
 
       expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
     end
