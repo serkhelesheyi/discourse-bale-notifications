@@ -11,7 +11,7 @@ RSpec.describe 'Bale account linking', type: :request do
     it 'requires an authenticated user and returns a short-lived one-time code to that user' do
       sign_in(user)
 
-      post '/bale/link'
+      post '/bale/link', headers: { 'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest', 'ACCEPT' => 'application/json' }
 
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq('application/json')
@@ -33,7 +33,7 @@ RSpec.describe 'Bale account linking', type: :request do
       expect(UserCustomField.where(user_id: user.id, name: 'bale_chat_id').pluck(:value)).to eq(['111111'])
       sign_in(user)
 
-      delete '/bale/link'
+      delete '/bale/link', headers: { 'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest', 'ACCEPT' => 'application/json' }
 
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq('application/json')
