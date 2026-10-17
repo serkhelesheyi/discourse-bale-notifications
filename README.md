@@ -339,3 +339,8 @@ The previous CI failure was fixed, and both workflows passed on commit `b98c7c3e
 - خطای lint از نوع `Layout/EmptyLines` اصلاح شد. CI کامل و smoke tests روی commit کد/آزمون `5d56a2d3` موفق‌اند و هر دو workflow روی commit مستنداتی پیشین `47b193ba` نیز سبز شده‌اند؛ اجرای CI برای این به‌روزرسانی مستندات باید جداگانه بررسی شود.
 - گام بعد، بررسی قرارداد واقعی ذخیره‌سازی فرم ترجیحات GJS است؛ تغییر مستقیم `model.custom_fields` نباید بدون اثبات قرارداد Discourse معادل ذخیره‌سازی پایدار فرض شود.
 - تا پذیرش staging و آزمون restore، این وضعیت به معنی آمادگی انتشار نیست. هیچ استقرار تازه‌ای روی تولید انجام نشده است. برای ترتیب کار و معیارهای خروج، [نقشه‌راه](ROADMAP.md) و [چک‌لیست پذیرش staging](STAGING_ACCEPTANCE.md) را ببینید.
+
+
+## پیگیری تازهٔ ذخیره‌سازی ترجیحات — ۱۷ اکتبر ۲۰۲۶
+
+در بازبینی فرم GJS ترجیحات کاربر، تغییر مستقیم ویژگی تو‌در‌توی `model.custom_fields` به‌عنوان خطری برای ثبت تغییر در dirty tracking مدل شناسایی شد. در commit `5ba8662e9f6473c38bcd2c88b0a89a36bcd7df7e`، مقدار `custom_fields` با یک شیء جدید از طریق `model.set(...)` ثبت می‌شود. این اصلاح هنوز منتظر CI روی commit مربوط و آزمون عملی ذخیره/بارگذاری مجدد در staging است؛ بنابراین پایداری واقعی UI هنوز تأییدشده نیست. هیچ استقرار تولیدی انجام نشده است. جزئیات و معیارهای خروج در [ROADMAP.md](ROADMAP.md) و [STAGING_ACCEPTANCE.md](STAGING_ACCEPTANCE.md) ثبت می‌شوند.
