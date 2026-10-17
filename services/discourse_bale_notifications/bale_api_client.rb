@@ -9,11 +9,16 @@ module DiscourseBaleNotifications
   NETWORK_ERRORS = [
     Net::OpenTimeout,
     Net::ReadTimeout,
+    Net::HTTPBadResponse,
     SocketError,
     OpenSSL::SSL::SSLError,
     Errno::ECONNREFUSED,
     Errno::ECONNRESET,
-    Errno::EHOSTUNREACH
+    Errno::EHOSTUNREACH,
+    Errno::ENETUNREACH,
+    Errno::EPIPE,
+    Errno::ETIMEDOUT,
+    EOFError
   ].freeze
 
   # Sends requests to the Bale Bot API and normalizes responses and failures.

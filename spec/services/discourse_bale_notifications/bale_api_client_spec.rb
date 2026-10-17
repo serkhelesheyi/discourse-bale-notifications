@@ -39,6 +39,24 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
         .with('sendMessage', chat_id, true, nil, nil)
     end
 
+    [
+      Errno::ETIMEDOUT,
+      Errno::EPIPE,
+      Errno::ENETUNREACH,
+      EOFError,
+      Net::HTTPBadResponse
+    ].each do |error_class|
+      it "returns false for #{error_class}" do
+        allow(http).to receive(:request).and_raise(error_class, 'simulated network failure')
+        expect(Rails.logger).to receive(:error) do |message|
+          expect(message).to include(error_class.name)
+          expect(message).not_to include(access_token, private_message)
+        end
+
+        expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
+      end
+    end
+
     it 'returns false on network timeout and does not log the token or private message' do
       allow(http).to receive(:request).and_raise(Net::ReadTimeout, 'simulated read timeout')
       expect(Rails.logger).to receive(:error) do |message|
