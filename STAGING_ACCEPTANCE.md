@@ -107,3 +107,14 @@ No production deployment has been performed. Production release requires separat
 ## Additional preference persistence check — 17 October 2026
 
 A16 specifically validates the GJS-to-Discourse model save path. Run it only on staging with a linked test account and record the exact plugin SHA and Discourse version. Check both the rendered checkbox state after reload and, where safely available, the persisted `bale_notification_types` custom field. When every enabled type is selected, the expected stored value is an empty string (legacy unrestricted behavior). Do not treat CI or backend job specs as a substitute for this browser check. This test has not yet been executed.
+
+
+## Clarification for A16 — explicit empty selection
+
+The persisted preference contract distinguishes three states:
+
+- Missing/empty string: legacy unrestricted behavior (all site-enabled types).
+- `__none__`: user explicitly deselected every type; no Bale notification type should be delivered.
+- A pipe-separated list: only those listed types may be delivered.
+
+For A16, verify that selecting no checkboxes survives save/reload as all unchecked and that a supported test notification is not delivered to that account. Also verify selecting all checkboxes survives reload and continues to use the legacy empty-string value. This clarification describes the candidate implementation; it is not evidence that the staging test has run.
