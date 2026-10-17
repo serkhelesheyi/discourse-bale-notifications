@@ -20,6 +20,15 @@ RSpec.describe Jobs::SendBaleNotifications do
     user.save_custom_fields
   end
 
+  describe '#site_notification_enabled?' do
+    it 'accepts only notification types in the site allowlist' do
+      SiteSetting.bale_enabled_notification_types = 'mentioned|replied'
+
+      expect(job.site_notification_enabled?('mentioned')).to be(true)
+      expect(job.site_notification_enabled?('chat_message')).to be(false)
+    end
+  end
+
   describe '#delivery_context' do
     it 'skips a notification when its post no longer exists' do
       allow(Post).to receive(:find_by)
