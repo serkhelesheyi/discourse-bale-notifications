@@ -1,6 +1,6 @@
 # نقشه‌راه بازبینی و بهبود افزونهٔ اعلان‌های بله
 
-> **وضعیت سند:** به‌روزرسانی‌شده در ۱۷ اکتبر ۲۰۲۶ بر مبنای HEAD شاخهٔ `main` یعنی `5d56a2d3cf1c5e424094a604616ec1b1150c8e5e`. آخرین Discourse Plugin CI و Plugin smoke tests روی همین SHA هر دو موفق‌اند؛ پذیرش staging و آزمون مسیر واقعی رابط کاربری هنوز انجام نشده‌اند.
+> **وضعیت سند:** به‌روزرسانی‌شده در ۱۷ اکتبر ۲۰۲۶. آخرین commit دارای تغییرات کد/آزمون که هر دو workflow روی آن موفق شده‌اند `5d56a2d3cf1c5e424094a604616ec1b1150c8e5e` است؛ به‌روزرسانی‌های اخیر پس از آن فقط مستندات‌اند. پذیرش staging و آزمون مسیر واقعی رابط کاربری هنوز انجام نشده‌اند.
 > **هدف:** افزونه‌ای قابل‌اعتماد، امن، قابل‌نگهداری و خوش‌استفاده برای یک انجمن دیسکورس معمولی تا متوسط؛ نه یک سامانهٔ سازمانی پرهزینه.
 > **قاعدهٔ اجرا:** هر مرحله باید با شواهد، تغییر محدود، آزمون متناسب و به‌روزرسانی همین سند و `README.md` پایان یابد. تا وقتی مرحله‌ای واقعاً اجرا و آزموده نشده، آن را «انجام‌شده» اعلام نمی‌کنیم.
 
@@ -1053,7 +1053,7 @@
 
 ### خط مبنای تأییدشده
 
-- HEAD شاخهٔ `main`: [`5d56a2d3cf1c5e424094a604616ec1b1150c8e5e`](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/5d56a2d3cf1c5e424094a604616ec1b1150c8e5e).
+- آخرین commit دارای تغییرات کد/آزمون که CI کامل روی آن سبز است: [`5d56a2d3cf1c5e424094a604616ec1b1150c8e5e`](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/5d56a2d3cf1c5e424094a604616ec1b1150c8e5e).
 - [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031804664): `completed / success`؛ هر سه job یعنی `linting`، `check_for_tests` و `backend_tests` موفق شدند.
 - [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39031804370): `completed / success`.
 - اصلاح شکست قبلی RuboCop در `spec/jobs/send_bale_notifications_spec.rb` با حذف خط خالی اضافه انجام شد؛ اجرای بعدی CI موفق است.
