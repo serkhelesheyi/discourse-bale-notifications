@@ -82,10 +82,10 @@ module DiscourseBaleNotifications
 
     def self.log_invalid_response_structure(response, method_name, chat_id)
       Rails.logger.error(
-        'Bale API returned a JSON response with an invalid structure ' \
+        'Bale API returned an invalid response ' \
         "(method=#{method_name}, http_status=#{response.code})"
       )
-      BaleActivityLog.record_activity(method_name, chat_id, false, response.code, 'invalid response structure')
+      BaleActivityLog.record_activity(method_name, chat_id, false, response.code, 'invalid response')
     end
 
     def self.log_non_json_response(response, method_name, chat_id, error)
