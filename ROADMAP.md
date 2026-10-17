@@ -971,3 +971,16 @@
 - [ ] این آزمون‌ها کنترل‌های منتخب را پوشش می‌دهند؛ ممیزی امنیتی کامل هنوز بسته نشده است.
 
 **گام بعدی:** ادامهٔ بررسی قرارداد HTTP status و سیاست خطاها، سپس آزمون‌های یکپارچهٔ ترجیحات کاربر و ساعات سکوت. هیچ تغییری در نصب عملیاتی انجام نشده است.
+
+
+## تکمیل اصلاح تشخیص پاسخ API — ۱۷ اکتبر ۲۰۲۶
+
+- [x] گزارش job شکست‌خوردهٔ [Discourse Plugin run 39018994030](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39018994030) بررسی شد؛ سه آزمون در `bale_api_client_spec.rb` فقط به‌علت اختلاف متن تشخیصی شکست خورده بودند. آزمون پاسخ با HTTP 500 و payload ظاهراً موفق نیز همان اختلاف را نشان داد.
+- [x] علت مشخص شد: کد پیام «JSON response ... invalid structure» و شرح activity «invalid response structure» ثبت می‌کرد، ولی آزمون‌ها قرارداد عمومی و کم‌جزئیات‌تر «invalid response» را انتظار داشتند.
+- [x] در `services/discourse_bale_notifications/bale_api_client.rb` پیام لاگ و activity با آزمون‌ها هم‌تراز شد؛ منطق رد کردن پاسخ موفق‌نما با status غیرموفق HTTP حفظ شد.
+- [x] Commit اصلاح: `7844886f5aadd6b5d803dd9e3fb724ab058ed19a`.
+- [x] [Plugin smoke tests run 39027812796](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39027812796) روی SHA اصلاح‌شده موفق شد.
+- [ ] [Discourse Plugin run 39027812963](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39027812963) هنگام ثبت این یادداشت هنوز `in_progress` بود؛ بنابراین موفقیت نهایی RSpec/lint هنوز تأیید نشده و این مرحله از نظر CI کاملاً بسته نیست.
+- [ ] پس از اتمام CI، باید نتیجهٔ نهایی این SHA ثبت شود. این اصلاح و آزمون‌ها صرفاً در مخزن‌اند؛ نصب عملیاتی تغییر نکرده است.
+
+**گام بعدی:** تأیید نتیجهٔ نهایی CI برای SHA بالا؛ فقط در صورت موفقیت، بستن مرحلهٔ قرارداد پاسخ HTTP و ادامهٔ آزمون‌های ترجیحات و ساعات سکوت.
