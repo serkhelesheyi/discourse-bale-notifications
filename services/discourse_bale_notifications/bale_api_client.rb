@@ -25,6 +25,7 @@ module DiscourseBaleNotifications
 
       response_data = parse_response(response, method_name, chat_id)
       return false if response_data == :invalid_json
+
       if %w[sendMessage sendPhoto].include?(method_name) && response_data['ok'] == true
         result = response_data['result']
         unless result.is_a?(Hash) && result['message_id'].present?
@@ -75,7 +76,6 @@ module DiscourseBaleNotifications
       log_non_json_response(response, method_name, chat_id, e)
       :invalid_json
     end
-
 
     def self.log_invalid_response_structure(response, method_name, chat_id)
       Rails.logger.error(
