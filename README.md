@@ -436,12 +436,13 @@ The user additionally confirmed that all eight notification preferences remained
 
 - [x] تعیین وضعیت دکمه بر پایهٔ وجود `PostAction` فعال برای همان کاربر و پست.
 - [x] افزودن آزمون رفت‌وبرگشت: پسندیدن ← لغو پسندیدن ← بازگشت به پسندیدن.
-- [ ] تأیید CI کامل و smoke tests روی شاخهٔ اصلاح.
-- [ ] پس از ادغام و به‌روزرسانی افزونه از پنل مدیریت، آزمون زندهٔ پسندیدن و لغو پسندیدن در همان اعلان.
+- [x] CI کامل شامل RuboCop و backend tests و نیز smoke tests روی HEAD `c3e767fa31bc75f0b70d82be15ecdfef2e7c28d0` موفق شد ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39116604058)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39116603883)).
+- [x] PR شمارهٔ [۳](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/3) ادغام شد؛ merge commit: `07cac311c5061d4e8b6d29a42df21b345bddde7a`.
+- [ ] به‌روزرسانی افزونه از پنل مدیریت و آزمون زندهٔ پسندیدن و لغو پسندیدن در همان اعلان.
 
-این تغییر در شاخهٔ `fix-bale-like-button-state` است و هنوز به انجمن تولیدی اعمال نشده است.
+این تغییر در `main` ادغام شده اما هنوز به انجمن تولیدی اعمال نشده است.
 
 
 ## وضعیت اصلاح دکمهٔ پسندیدن — ۱۸ اکتبر ۲۰۲۶
 
-در PR [شمارهٔ ۳](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/3)، وضعیت دکمه بر اساس پسندیدن فعال در PostAction تعیین می‌شود. در نخستین اجرای CI، RuboCop سه تخلف طول متد/بلوک را گزارش کرد؛ کد و آزمون‌ها بازآرایی شده‌اند تا با قواعد موجود سازگار باشند، بدون غیرفعال‌کردن lint. اجرای تأییدی روی HEAD جدید هنوز لازم است. این تغییر هنوز ادغام یا روی انجمن تولیدی مستقر نشده است؛ جزئیات و معیار پذیرش در ROADMAP.md آمده است.
+در PR [شمارهٔ ۳](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/3)، وضعیت دکمه بر اساس پسندیدن فعال در PostAction تعیین می‌شود. در نخستین اجرای CI، RuboCop سه تخلف طول متد/بلوک را گزارش کرد؛ کد و آزمون‌ها بازآرایی شدند، بدون غیرفعال‌کردن lint. CI کامل و smoke tests روی HEAD نهایی موفق شدند و PR شمارهٔ ۳ ادغام شده است. این تغییر هنوز روی انجمن تولیدی مستقر نشده است؛ جزئیات و معیار پذیرش در ROADMAP.md آمده است.
