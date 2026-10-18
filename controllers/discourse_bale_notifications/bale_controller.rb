@@ -81,10 +81,9 @@ module DiscourseBaleNotifications
         callback['data'].match?(/\A(?:like|unlike):[1-9]\d*\z/)
     end
 
-    # Escape dynamic text before interpolating it into a message sent with
-    # parse_mode=HTML. This also handles nil defensively.
-    def escape_html(value)
-      CGI.escapeHTML(value.to_s)
+    # Escape dynamic text for Bale's Markdown message renderer.
+    def escape_markdown(value)
+      value.to_s.gsub(/[\\_*()\[\]]/) { |character| "\\#{character}" }
     end
 
     # فاز یک - اصلاح #۷: محدودکننده‌ی نرخ اقدامات هر چت (پیام/کلیک دکمه).

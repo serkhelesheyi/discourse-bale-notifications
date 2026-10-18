@@ -18,7 +18,7 @@ RSpec.describe DiscourseBaleNotifications::BaleController do
   describe '#escape_markdown' do
     it 'escapes Markdown punctuation in dynamic text' do
       expect(described_class.new.send(:escape_markdown, 'a_b *c* [d]'))
-        .to eq('a\\_b \\*c\\* \\[d\\]')
+        .to eq('a\_b \*c\* \[d\]')
     end
 
     it 'returns an empty string for nil' do

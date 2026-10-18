@@ -232,7 +232,7 @@ RSpec.describe Jobs::SendBaleNotifications do
     end
 
     it 'escapes Markdown syntax in dynamic text' do
-      expect(job.markdown_escape('a_b *c* [d]')).to eq('a\\_b \\*c\\* \\[d\\]')
+      expect(job.markdown_escape('a_b *c* [d]')).to eq('a\_b \*c\* \[d\]')
     end
   end
 
