@@ -54,7 +54,7 @@ module DiscourseBaleNotifications
     rescue *DiscourseBaleNotifications::NETWORK_ERRORS => e
       Rails.logger.error(
         'Bale API request failed before receiving a response ' \
-        "(method=#{method_name}, chat_id=#{chat_id}): #{e.class}: #{e.message}"
+        "(method=#{method_name}): #{e.class}: #{e.message}"
       )
       BaleActivityLog.record_activity(method_name, chat_id, false, nil, "#{e.class}: #{e.message}")
       false
@@ -111,7 +111,7 @@ module DiscourseBaleNotifications
 
     def self.log_api_failure(method_name, chat_id, response, response_data)
       Rails.logger.error(
-        "Bale API call failed (method=#{method_name}, chat_id=#{chat_id}, " \
+        "Bale API call failed (method=#{method_name}, " \
         "http_status=#{response.code}, error_code=#{response_data['error_code']}, " \
         "description=#{response_data['description']})"
       )
@@ -134,7 +134,7 @@ module DiscourseBaleNotifications
       return unless removed.positive?
 
       Rails.logger.info(
-        "Bale notifications: automatically unlinked chat_id=#{chat_id} " \
+        'Bale notifications: automatically unlinked an unreachable chat ' \
         'after Bale reported it as blocked/unreachable'
       )
     end
