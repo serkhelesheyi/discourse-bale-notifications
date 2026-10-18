@@ -1161,3 +1161,16 @@
 - [ ] پس از سبزشدن CI، بررسی `push_notification_filters` و پوشش واقعی ترجیحات.
 - [ ] اجرای پذیرش staging برای لایک، آنلایک، پاسخ، ترجیحات و دکمه‌های قدیمی؛ این موارد هنوز روی staging تأیید نشده‌اند.
 - [ ] عدم استقرار روی تولید تا مجوز جداگانه و تکمیل معیارهای پذیرش.
+
+## تأیید CI و فیلترهای اعلان Discourse — ۱۸ اکتبر ۲۰۲۶
+
+- [x] اصلاح نهایی RuboCop در commit [`34d7d5e`](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/34d7d5e600f7cfcee642bd38ec2b2c4b6b47ad7c): دستور `Metrics/BlockLength` پس از محدودهٔ آزمون دوباره فعال می‌شود؛ منطق افزونه تغییر نکرد.
+- [x] [Discourse Plugin CI run 39099280010](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39099280010) روی SHA `34d7d5e600f7cfcee642bd38ec2b2c4b6b47ad7c` با نتیجهٔ `success` پایان یافت.
+- [x] [Plugin smoke tests run 39099279900](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39099279900) روی همان SHA با نتیجهٔ `success` پایان یافت.
+- [x] ممیزی `push_notification_filters`: رویداد افزونه پیش از فیلترهای اصلی Discourse رخ می‌دهد؛ بنابراین برای هم‌راستایی تحویل Bale با سیاست فیلترهای ثبت‌شده، افزونه آن‌ها را پیش از enqueue اجرا می‌کند.
+- [x] آزمون سرویس افزوده شده تا ارسال job در صورت اجازهٔ همهٔ فیلترها و عدم ارسال job در صورت ردشدن توسط یک فیلتر را بررسی کند.
+- [ ] آزمون‌های مرورگر و پذیرش واقعی ترجیحات، لایک/آنلایک، پاسخ، دکمه‌های کهنه و جداسازی حساب‌ها در staging هنوز اجرا نشده‌اند.
+- [ ] آزمون بازیابی پشتیبان و تأیید مسیر rollback در staging هنوز باز است.
+- [x] هیچ استقرار یا تغییری روی انجمن تولید انجام نشده است.
+
+**گام بعدی:** بازبینی diff و قرارداد فیلترها روی هستهٔ هدف، سپس اجرای چک‌لیست staging روی محیط غیرتولیدی با SHA دقیق و اعتبارنامه‌های اختصاصی staging. سبزشدن CI به‌تنهایی اجازهٔ انتشار یا اثبات رفتار end-to-end نیست.
