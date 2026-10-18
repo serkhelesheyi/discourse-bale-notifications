@@ -438,9 +438,9 @@ The user additionally confirmed that all eight notification preferences remained
 - [x] افزودن آزمون رفت‌وبرگشت: پسندیدن ← لغو پسندیدن ← بازگشت به پسندیدن.
 - [x] CI کامل شامل RuboCop و backend tests و نیز smoke tests روی HEAD `c3e767fa31bc75f0b70d82be15ecdfef2e7c28d0` موفق شد ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39116604058)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39116603883)).
 - [x] PR شمارهٔ [۳](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/3) ادغام شد؛ merge commit: `07cac311c5061d4e8b6d29a42df21b345bddde7a`.
-- [ ] به‌روزرسانی افزونه از پنل مدیریت و آزمون زندهٔ پسندیدن و لغو پسندیدن در همان اعلان.
+- [x] کاربر افزونه را از پنل مدیریت به‌روزرسانی و پسندیدن/لغو پسندیدن را در انجمن واقعی آزمایش کرده است؛ نتیجه را ظاهراً موفق گزارش کرده است.
 
-این تغییر در `main` ادغام شده اما هنوز به انجمن تولیدی اعمال نشده است.
+**وضعیت استقرار:** پذیرش دستی کاربر ثبت شده است؛ این نتیجه بررسی مستقیم سرور نیست.
 
 
 ## وضعیت اصلاح دکمهٔ پسندیدن — ۱۸ اکتبر ۲۰۲۶
