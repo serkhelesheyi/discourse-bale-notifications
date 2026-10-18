@@ -1,6 +1,6 @@
 # نقشه‌راه بازبینی و بهبود افزونهٔ اعلان‌های بله
 
-> **وضعیت جاری سند — ۱۸ اکتبر ۲۰۲۶:** PR تشخیصی [#2](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/2) و اصلاح وضعیت دکمهٔ پسندیدن [#3](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/3) ادغام شده‌اند؛ کاربر آزمون زندهٔ دکمه را انجام داده و ظاهراً همهٔ مسیرها درست‌اند. مرحلهٔ بعدی ممیزی حریم خصوصی، PR [#4](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/4)، برای حذف شناسهٔ چت از لاگ‌های Rails است. CI در نسخهٔ اولیه به‌دلیل آرگومان استفاده‌نشده در logger شکست خورد؛ آرگومان و فراخوانی آن اصلاح شده‌اند و اجرای CI برای SHA `e391e330e5663ff79382f8435feb4e2857c5e067` هنوز در جریان است ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39146201932)). PR تا تأیید کامل CI نباید ادغام شود. علت ریشه‌ای مشکل ریپلای اول همچنان اثبات نشده است.
+> **وضعیت جاری سند — ۱۸ اکتبر ۲۰۲۶:** PR تشخیصی [#2](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/2)، اصلاح وضعیت دکمهٔ پسندیدن [#3](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/3) و ممیزی حریم خصوصی لاگ‌ها [#4](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/4) ادغام شده‌اند. CI کامل روی SHA `e391e330e5663ff79382f8435feb4e2857c5e067` و smoke tests همان SHA هر دو موفق‌اند ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39146201932)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39146205319)). merge commit مربوط به PR شمارهٔ ۴: `0c8ed8ef7bca1e4e3032dd5dea00f1db633db7f5`. شناسهٔ چت از سه پیام عمومی Rails حذف شده و آزمون رگرسیون برای جلوگیری از بازگشت آن افزوده شده است؛ رکورد داخلی محدود فعالیت‌ها تغییر نکرده است. README و این نقشه‌راه باید وضعیت ادغام را از استقرار تولیدی جدا نگه دارند: هیچ استقرار جدیدی در این مرحله انجام نشده است. علت ریشه‌ای مشکل ریپلای اول همچنان اثبات نشده است و تنظیم تشخیصی باید در حالت خاموش بماند مگر برای آزمون هدفمند.
 > **هدف:** افزونه‌ای قابل‌اعتماد، امن، قابل‌نگهداری و خوش‌استفاده برای یک انجمن دیسکورس معمولی تا متوسط؛ نه یک سامانهٔ سازمانی پرهزینه.
 > **قاعدهٔ اجرا:** هر مرحله باید با شواهد، تغییر محدود، آزمون متناسب و به‌روزرسانی همین سند و `README.md` پایان یابد. تا وقتی مرحله‌ای واقعاً اجرا و آزموده نشده، آن را «انجام‌شده» اعلام نمی‌کنیم.
 
@@ -1383,11 +1383,15 @@ The user reports that all eight notification preferences were disabled and saved
 ## ممیزی حریم خصوصی: حذف شناسهٔ چت از لاگ‌های Rails — ۱۸ اکتبر ۲۰۲۶
 
 - [x] شناسایی ثبت `chat_id` در لاگ خطای شبکه، خطای API و پیام اطلاعاتی قطع اتصال خودکار.
-- [x] حذف `chat_id` از این پیام‌های لاگ؛ اطلاعات لازم برای عیب‌یابی عمومی حفظ شده است.
+- [x] حذف `chat_id` از این پیام‌های عمومی Rails؛ اطلاعات لازم برای عیب‌یابی عمومی حفظ شده است.
 - [x] افزودن assertion به آزمون‌های API client برای جلوگیری از بازگشت شناسهٔ چت به لاگ‌های خطا.
-- [x] اجرای اولیهٔ CI نشان داد یک آرگومان `chat_id` پس از حذف از پیام لاگ بلااستفاده مانده بود (`Lint/UnusedMethodArgument`). این مورد رفع شد و امضای متد و فراخوانی آن هماهنگ شدند.
-- [ ] اجرای CI روی SHA `e391e330e5663ff79382f8435feb4e2857c5e067` باید کامل و سبز شود.
-- [ ] بازبینی نهایی و ادغام PR [#4](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/4) فقط پس از موفقیت همهٔ بررسی‌های الزامی.
-- [ ] پس از ادغام، README و این نقشه‌راه با SHA ادغام‌شده و نتیجهٔ CI به‌روزرسانی شوند.
+- [x] رفع خطای اولیهٔ `Lint/UnusedMethodArgument` با هماهنگ‌کردن امضای متد و فراخوانی logger.
+- [x] CI کامل روی SHA `e391e330e5663ff79382f8435feb4e2857c5e067` موفق شد؛ linting، check_for_tests و backend tests همگی سبز هستند ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39146201932)).
+- [x] smoke tests روی همان SHA موفق شدند ([smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39146205319)).
+- [x] بازبینی نهایی و ادغام PR [#4](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/4) با روش squash انجام شد؛ merge commit: `0c8ed8ef7bca1e4e3032dd5dea00f1db633db7f5`.
+- [x] README و این نقشه‌راه برای ثبت نتیجهٔ CI، SHA تغییر و مرز استقرار به‌روزرسانی شدند.
+- [ ] پس از تصمیم و زمان‌بندی جداگانه، افزونه در انجمن تولیدی به‌روزرسانی و با یک آزمون کنترل‌شده، لاگ‌های زنده بررسی شوند.
 
-**مرز ادعا:** smoke tests روی نسخهٔ اولیهٔ تغییر موفق شدند و backend tests نیز موفق بودند؛ linting شکست خورد و اصلاح شد. تا زمان سبز شدن CI روی SHA اصلاح‌شده، PR باز می‌ماند و این تغییر مستقرشده محسوب نمی‌شود.
+**نتیجهٔ فنی:** سه پیام عمومی Rails دیگر `chat_id` را در متن خود درج نمی‌کنند. `BaleActivityLog` داخلی عمداً تغییر نکرده است، چون پنل مدیریت برای پیوند دادن رویدادها به کاربران به آن نیاز دارد.
+
+**مرز ادعا:** CI و smoke tests موفق‌اند و PR ادغام شده؛ این به معنی استقرار روی سرور یا آزمون لاگ‌های زنده نیست. مسئلهٔ ریپلای اول همچنان تشخیص قطعی ندارد و تنظیم تشخیصی آن باید خاموش بماند تا هنگام آزمون هدفمند.
