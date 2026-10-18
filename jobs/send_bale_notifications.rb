@@ -90,7 +90,8 @@ module Jobs
       value.to_s.gsub(/[\\_*()\[\]]/) { |character| "\\#{character}" }
     end
 
-    def avatar_url_for(username)\n      acting_user = User.find_by(username: username)
+    def avatar_url_for(username)
+      acting_user = User.find_by(username: username)
       return unless acting_user
 
       "#{Discourse.base_url}#{acting_user.avatar_template.gsub('{size}', '128')}"
