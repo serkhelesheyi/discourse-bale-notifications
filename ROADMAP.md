@@ -1174,3 +1174,17 @@
 - [x] هیچ استقرار یا تغییری روی انجمن تولید انجام نشده است.
 
 **گام بعدی:** بازبینی diff و قرارداد فیلترها روی هستهٔ هدف، سپس اجرای چک‌لیست staging روی محیط غیرتولیدی با SHA دقیق و اعتبارنامه‌های اختصاصی staging. سبزشدن CI به‌تنهایی اجازهٔ انتشار یا اثبات رفتار end-to-end نیست.
+
+
+## اصلاح قرارداد ذخیره‌سازی ترجیحات GJS — ۱۸ اکتبر ۲۰۲۶
+
+- [x] ممیزی سورس رسمی Discourse نشان داد که API رسمی `addSaveableCustomFields(page)` برای گنجاندن کل `custom_fields` در درخواست ذخیره‌سازی یک صفحهٔ ترجیحات است؛ این API از نسخه‌های جدید Discourse (از جمله شاخه‌های ۲۰۲۶) وجود دارد. [مستندات API در سورس هسته](https://github.com/discourse/discourse/blob/main/frontend/discourse/app/lib/plugin-api.gjs) و [یادداشت انتشار API در Discourse 2026.1](https://releases.discourse.org/changelog/v2026.1.0-latest/) بررسی شد.
+- [x] تأیید شد که connector افزونه در بخش ترجیحات پروفایل رندر می‌شود؛ بنابراین صفحهٔ درست برای ثبت ذخیره‌سازی `profile` است، نه `notifications` یا `account`.
+- [x] initializer محدود و مستقل در commit [`e2f5b08`](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/e2f5b08b11e59bc4add138c5a2b82b8fc84f6d19) افزوده شد: `api.addSaveableCustomFields("profile")`. این کار مکمل `model.set("custom_fields", ...)` در کامپوننت است و تضمین می‌کند فیلد در فهرست ویژگی‌های قابل‌ذخیرهٔ صفحه ثبت شود.
+- [x] بررسی ساختار مخزن: آزمون‌های موجود عمدتاً RSpec/Ruby و smoke test مستقل Ruby هستند؛ مخزن زیرساخت مستقل frontend/GJS یا پوشهٔ `test/javascripts` ندارد. برای یک ثبت API کوچک، چارچوب جدیدی اضافه نشد.
+- [x] [Plugin smoke tests run 39100026940](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39100026940) روی SHA `e2f5b08b11e59bc4add138c5a2b82b8fc84f6d19` موفق شد.
+- [ ] نتیجهٔ نهایی Discourse Plugin CI روی همین SHA باید پیش از تأیید خودکار کد بررسی شود.
+- [ ] ذخیره و بازخوانی واقعی در مرورگر staging (یک نوع، چند نوع، همه، و هیچ‌کدام پس از reload) همچنان پذیرش دستیِ الزامی است؛ این تغییر هنوز با آزمون زندهٔ مرورگر اثبات نشده است.
+- [x] هیچ استقرار یا تغییری روی انجمن تولید انجام نشده است.
+
+**گام بعدی:** تأیید CI روی SHA نهایی، سپس آزمون مرورگر staging با مقدارهای مورد انتظار: رشتهٔ خالی برای همهٔ انواع، `__none__` برای هیچ‌کدام، و فهرست جداشده با `|` برای انتخاب جزئی.
