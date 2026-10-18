@@ -14,7 +14,6 @@ module DiscourseBaleNotifications
         chat_id: chat_id,
         photo: avatar_url,
         caption: text,
-        parse_mode: 'html',
         disable_notification: disable_notification,
         reply_markup: reply_markup
       }
@@ -24,7 +23,6 @@ module DiscourseBaleNotifications
       {
         chat_id: chat_id,
         text: text,
-        parse_mode: 'html',
         disable_web_page_preview: true,
         disable_notification: disable_notification,
         reply_markup: reply_markup

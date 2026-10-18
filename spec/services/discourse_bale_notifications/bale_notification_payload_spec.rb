@@ -25,13 +25,12 @@ RSpec.describe DiscourseBaleNotifications::BaleNotificationPayload do
   end
 
   describe '.text' do
-    it 'includes the selected chat, HTML mode, reply markup and quiet-hours flag' do
+    it 'includes the selected chat, reply markup and quiet-hours flag' do
       result = described_class.text('hello', '123456', { inline_keyboard: [] }, true)
 
       expect(result).to eq(
         chat_id: '123456',
         text: 'hello',
-        parse_mode: 'html',
         disable_web_page_preview: true,
         disable_notification: true,
         reply_markup: { inline_keyboard: [] }
@@ -53,7 +52,6 @@ RSpec.describe DiscourseBaleNotifications::BaleNotificationPayload do
         chat_id: '123456',
         photo: 'https://example.com/avatar.png',
         caption: 'caption',
-        parse_mode: 'html',
         disable_notification: false,
         reply_markup: { inline_keyboard: [] }
       )
