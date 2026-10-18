@@ -1,6 +1,7 @@
 fa_IR:
   site_settings:
     bale_notifications_enabled: "فعال‌سازی اعلان‌های بله؟"
+    bale_notifications_webhook_diagnostics_enabled: "ثبت موقت ساختار امن پیام‌های وب‌هوک بله برای عیب‌یابی (بدون متن پیام یا شناسه‌ها)"
     bale_access_token: "توکن دسترسی ربات خود را از BotFather بله (@botfather) دریافت کنید"
     bale_enabled_notification_types: "نوع اعلان‌هایی که به بله ارسال می‌شوند را با این انتخاب محدود کنید"
     bale_notifications_show_avatar: "آواتار کاربر عامل اعلان را به‌همراه پیام به‌صورت عکس ارسال کن (فقط وقتی متن پیام در محدودیت طول کپشن بله جا شود)"

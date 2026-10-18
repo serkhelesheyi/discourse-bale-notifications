@@ -10,6 +10,8 @@ module DiscourseBaleNotifications
       chat_id = incoming['chat']['id']
       return render json: { success: true } if rate_limited_chat?(chat_id)
 
+      DiscourseBaleNotifications::WebhookMessageDiagnostics.log(params, incoming)
+
       user, known_user, message_text = resolve_message_user(chat_id, incoming)
       message_text = reply_message_text(user, chat_id, incoming) if known_user && incoming.key?('reply_to_message')
 

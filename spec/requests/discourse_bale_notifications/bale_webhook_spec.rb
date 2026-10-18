@@ -50,6 +50,35 @@ RSpec.describe 'Bale webhook', type: :request do
       expect(response.parsed_body).to eq('success' => true)
     end
 
+    it 'logs only safe message shape details when webhook diagnostics are enabled' do
+      SiteSetting.bale_notifications_webhook_diagnostics_enabled = true
+      actor = Fabricate(:user)
+      actor.custom_fields['bale_chat_id'] = '987654399'
+      actor.save_custom_fields
+
+      Rails.logger.expects(:info).once.with do |line|
+        line.include?('[BaleNotifications diagnostic]') &&
+          line.include?('"reply_to_message_present":false') &&
+          line.include?('"text_present":true') &&
+          !line.include?('987654399') &&
+          !line.include?('private diagnostic text')
+      end
+      DiscourseBaleNotifications::BaleNotifier.expects(:send_message).with do |payload|
+        payload[:chat_id] == '987654399' && payload[:text].include?('To reply')
+      end
+
+      post '/bale/hook/test-webhook-secret',
+           params: {
+             message: {
+               text: 'private diagnostic text',
+               chat: { id: 987_654_399, type: 'private' }
+             }
+           }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq('success' => true)
+    end
+
     it 'answers and acknowledges a callback without a message object' do
       DiscourseBaleNotifications::BaleNotifier.expects(:answer_callback).with(
         'callback-1',

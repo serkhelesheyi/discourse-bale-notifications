@@ -1,6 +1,7 @@
 en:
   site_settings:
     bale_notifications_enabled: Enable Bale notifications?
+    bale_notifications_webhook_diagnostics_enabled: Temporarily log safe Bale webhook message structure for troubleshooting (no message text or IDs)
     bale_access_token: Obtain your bot's access token from the Bale botfather (@botfather)
     bale_enabled_notification_types: Limit notifications sent to Bale by this selection of types
     bale_notifications_show_avatar: Send the notifying user's avatar as a photo alongside the message, when the resulting caption fits Bale's caption length limit

@@ -6,6 +6,10 @@ plugins:
   bale_secret:
     default: ''
     hidden: true
+  # Enable temporarily when diagnosing inbound Bale webhook payload shape.
+  # Logs field names and presence/types only; never message text or identifier values.
+  bale_notifications_webhook_diagnostics_enabled:
+    default: false
   # فقط ۸ نوع اعلان استاندارد پست که در سورس هسته تأیید شده‌اند، به‌صورت پیش‌فرض فعال‌اند.
   # انواع وابسته به افزونه‌های دیگر یا payloadهای غیرپستی تا زمان آزمون عملی
   # و پیاده‌سازی اختصاصی به‌طور پیش‌فرض فعال نمی‌شوند. برای جزئیات به
