@@ -15,8 +15,13 @@ module DiscourseBaleNotifications
     end
 
     def self.like_button(post, user)
-      likes = UserAction.where(action_type: UserAction::LIKE, user_id: user.id, target_post_id: post.id).count
-      if likes.positive?
+      active_like = PostAction.exists?(
+        user_id: user.id,
+        post_id: post.id,
+        post_action_type_id: PostActionType.types[:like],
+        deleted_at: nil
+      )
+      if active_like
         { text: I18n.t('discourse_bale_notifications.unlike'), callback_data: "unlike:#{post.id}" }
       else
         { text: I18n.t('discourse_bale_notifications.like'), callback_data: "like:#{post.id}" }
