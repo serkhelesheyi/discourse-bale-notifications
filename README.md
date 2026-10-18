@@ -389,3 +389,8 @@ The previous CI failure was fixed, and both workflows passed on commit `b98c7c3e
 CI و smoke tests برای SHA مستندات 0cbdb51fa39536818dac71edc28381bb72074ad1 نیز موفق‌اند: [CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39101182350) و [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39101182110).
 
 این نتیجه‌ها پذیرش اولیهٔ زنده را تقویت می‌کنند، اما هنوز اثبات نمی‌کنند که با خاموش‌بودن هر هشت گزینه هیچ نوع اعلانی ارسال نمی‌شود؛ همچنین پاسخ از داخل بله، callbackهای کهنه، جداسازی حساب‌ها و restore/rollback هنوز بررسی نشده‌اند. برای جزئیات و گام‌های بعد، [نقشه‌راه](ROADMAP.md) و [چک‌لیست پذیرش](STAGING_ACCEPTANCE.md) را ببینید.
+
+
+## Live acceptance update — 18 October 2026
+
+The user additionally confirmed that all eight notification preferences remained off after save/reload, a new private message produced no Bale notification while all were off, and another private message produced a notification after the preferences were re-enabled. This confirms the all-off preference state and suppression/delivery behavior for the tested private-message event on the live forum. Other notification types have not thereby been individually validated. Bale reply, stale/deleted-post callbacks, cross-account isolation, and backup restore/rollback remain outstanding live checks.
