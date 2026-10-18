@@ -394,3 +394,8 @@ CI و smoke tests برای SHA مستندات 0cbdb51fa39536818dac71edc28381bb72
 ## Live acceptance update — 18 October 2026
 
 The user additionally confirmed that all eight notification preferences remained off after save/reload, a new private message produced no Bale notification while all were off, and another private message produced a notification after the preferences were re-enabled. This confirms the all-off preference state and suppression/delivery behavior for the tested private-message event on the live forum. Other notification types have not thereby been individually validated. Bale reply, stale/deleted-post callbacks, cross-account isolation, and backup restore/rollback remain outstanding live checks.
+
+
+## قالب پیام‌ها در بله
+
+متن پیام‌های ارسالی بله با Markdown قالب‌بندی می‌شود؛ برای لینک از ساختار `[متن](آدرس)` استفاده می‌شود. قالب‌های اعلان فارسی و انگلیسی به Markdown تبدیل شده‌اند. اعلان پیام خصوصی عنوان گفتگو را با برچسب «موضوع پیام خصوصی» نشان می‌دهد و پیام راهنمای اتصال توضیح می‌دهد که می‌توان با Reply به اعلان در بله پاسخ داد تا پاسخ در انجمن ثبت شود. پس از به‌روزرسانی این نسخه، این موارد باید در محیط واقعی دوباره بررسی شوند.

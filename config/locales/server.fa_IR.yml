@@ -12,7 +12,7 @@ fa_IR:
     link-success: "✅ اتصال برقرار شد! سلام %{username}، از این پس هر زمان اعلان جدیدی در «%{site_title}» داشته باشید، اینجا به شما پیام خواهم داد."
     known-user: |-
      سلام %{username}، هر زمان اعلان جدیدی در «%{site_title}» داشته باشید به شما پیام خواهم داد.
-     پاسخ دادن به یک اعلان، به‌عنوان پاسخ در «%{site_title}» ارسال می‌شود.
+     برای پاسخ‌دادن، روی پیام اعلان در بله Reply بزنید و متن پاسخ را ارسال کنید؛ پاسخ در «%{site_title}» ثبت می‌شود.
      برای غیرفعال‌سازی، به تنظیمات کاربری خود در انجمن بروید.
     view_online: "مشاهده آنلاین"
     like: "❤️ پسندیدن"
@@ -25,7 +25,7 @@ fa_IR:
     action-unavailable: "❌ این عملیات دیگر در دسترس نیست (ممکن است پست حذف شده یا اتصال حساب شما قطع شده باشد)"
     reply-error: "❌ خطایی هنگام پردازش پاسخ رخ داد"
     reply-failed: "❌ ارسال پاسخ ناموفق بود: \n\n %{errors}"
-    reply-success: "✅ پاسخ با موفقیت ارسال شد - آن را <a href='%{post_url}'>اینجا</a> ببینید"
+    reply-success: "✅ پاسخ با موفقیت ثبت شد. [مشاهدهٔ پاسخ](%{post_url})"
     # فاز سه - اصلاح #۱۵: پیام‌های سمت سرور پنل مدیریتی.
     admin:
       user_not_found: "کاربری با این نام کاربری پیدا نشد."
@@ -34,64 +34,64 @@ fa_IR:
       test_failed: "ارسال پیام آزمایشی ناموفق بود. برای جزئیات، لاگ سرور را بررسی کنید."
     message:
       mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> شما را <b>منشن</b> کرد
-                در <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) شما را منشن کرد
+                در [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       group_mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> شما را <b>منشن</b> کرد
-                در <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) شما را منشن کرد
+                در [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       quoted: |-
-                💬 <a href="%{user_url}">@%{username}</a> از شما <b>نقل‌قول</b> کرد
-                در <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) از شما نقل‌قول کرد
+                در [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       replied: |-
-                ↩️ <a href="%{user_url}">@%{username}</a> به شما <b>پاسخ</b> داد
-                در <a href="%{post_url}">%{topic}</a>
+                ↩️ [@%{username}](%{user_url}) به شما پاسخ داد
+                در [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       posted: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>مطلبی منتشر کرد</b>
-                در <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) مطلبی منتشر کرد
+                در [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       private_message: |-
-                ✉️ <a href="%{user_url}">@%{username}</a> برای شما یک <b>پیام خصوصی</b> فرستاد
-                در <a href="%{post_url}">%{topic}</a>
+                ✉️ [@%{username}](%{user_url}) برای شما یک پیام خصوصی فرستاد
+                موضوع پیام خصوصی: [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       linked: |-
-                🔗 <a href="%{user_url}">@%{username}</a> به پست شما <b>لینک داد</b>
-                در <a href="%{post_url}">%{topic}</a>
+                🔗 [@%{username}](%{user_url}) به پست شما لینک داد
+                در [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       watching_first_post: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>پستی ارسال کرد</b>
-                در <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) پستی ارسال کرد
+                در [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       following_replied: |-
-                ↩️👥 <a href="%{user_url}">@%{username}</a> <b>پاسخ داد</b>
-                در <a href="%{post_url}">%{topic}</a>
+                ↩️👥 [@%{username}](%{user_url}) پاسخ داد
+                در [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       following_posted: |-
-                💬👥 <a href="%{user_url}">@%{username}</a> <b>پستی ارسال کرد</b>
-                در <a href="%{post_url}">%{topic}</a>
+                💬👥 [@%{username}](%{user_url}) پستی ارسال کرد
+                در [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       # افزونه Discourse Calendar - طبق NOTIFICATION_COVERAGE.md، مشخص نیست این دو
       # نوع در این محیط واقعاً به این تمپلیت می‌رسند یا خیر؛ نیاز به تست عملی دارد.
       event_reminder: |-
-                📅 <b>یادآوری:</b> رویدادی در <a href="%{post_url}">%{topic}</a> نزدیک است
+                📅 یادآوری: رویدادی در [%{topic}](%{post_url}) نزدیک است
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       event_invitation: |-
-                🗓️ <a href="%{user_url}">@%{username}</a> شما را به یک رویداد <b>دعوت</b> کرد
-                در <a href="%{post_url}">%{topic}</a>
+                🗓️ [@%{username}](%{user_url}) شما را به یک رویداد دعوت کرد
+                در [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
 

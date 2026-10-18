@@ -210,3 +210,10 @@ This is evidence of initial live acceptance, not full acceptance. Still verify e
 **Reported outcome: PASS for the tested private-message event on the existing live forum.** The user saved all eight notification preferences as off, reloaded the profile and confirmed they remained off, then sent a private message and received no Bale notification. After re-enabling the preferences, a second private message generated the expected notification.
 
 This validates persistence of the explicit all-off selection and delivery suppression/enabled delivery for the private-message route only. It does not establish that all eight notification types have each been tested individually. The result is based on the user's direct report, not independent log inspection. Exact installed plugin SHA and Discourse version have not yet been recorded.
+
+
+## UX acceptance follow-up — 18 October 2026
+
+The user confirmed that replying to an existing private-message notification in Bale successfully posted a reply to the correct private topic and under the correct account. The user then identified three presentation issues: the success-message link was not clickable, the notification did not explain the Reply workflow, and the phrase equivalent to “in [title]” was ambiguous.
+
+The candidate changes use Bale's documented Markdown link syntax, label the private-message topic explicitly, add a concise Reply instruction, and escape dynamic text for Markdown. **These presentation fixes are not yet live-verified.** After updating the plugin through the forum admin UI, check that (1) the success link opens the created reply, (2) the initial private-message notification has a clickable topic link and a clear “Private-message topic” label, (3) the Reply instruction is visible, and (4) the private-message body remains readable. Do not mark this follow-up as passed before those checks.

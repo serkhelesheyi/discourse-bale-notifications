@@ -1251,3 +1251,19 @@ The user reports that all eight notification preferences were disabled and saved
 - [ ] Do not infer that each of the eight notification types has been individually tested; only the private-message event was used for this suppression/delivery comparison.
 - [ ] Bale reply, stale/deleted-post callback, cross-account isolation, and backup restore/rollback remain untested live.
 - [ ] Confirm the exact installed plugin SHA and Discourse version when convenient; this report does not identify them.
+
+
+## اصلاح قالب‌بندی و وضوح اعلان‌ها — ۱۸ اکتبر ۲۰۲۶
+
+کاربر در پذیرش زنده تأیید کرد که پاسخ به پیام خصوصی از داخل بله به گیرنده می‌رسد و در موضوع و حساب درست ثبت می‌شود. او سه بهبود را گزارش کرد: لینک پاسخ موفق قابل کلیک نبود؛ اعلان اولیه روش پاسخ‌دادن با Reply را توضیح نمی‌داد؛ و عبارت «در [عنوان]» در اعلان پیام خصوصی مبهم بود.
+
+مستندات رسمی بله می‌گوید متن پیام‌ها با Markdown قالب‌بندی می‌شود و قالب لینک `[متن](آدرس)` است. در این مرحله قالب‌های اعلان انگلیسی و فارسی از تگ‌های HTML به Markdown تبدیل شده‌اند، عنوان پیام خصوصی برچسب روشن «موضوع پیام خصوصی» گرفته، راهنمای Reply افزوده شده و متن‌های پویا برای Markdown escape می‌شوند.
+
+- [x] اصلاح قالب‌های پیام اعلان فارسی و انگلیسی برای لینک‌های Markdown و حذف تگ‌های HTML.
+- [x] روشن‌کردن برچسب عنوان پیام خصوصی.
+- [x] افزودن راهنمای پاسخ با Reply به پیام راهنمای کاربر متصل‌شده.
+- [x] افزودن آزمون رگرسیون برای قالب پیام خصوصی، لینک پاسخ موفق و escape کاراکترهای Markdown.
+- [ ] نتیجهٔ CI روی commit این مرحله هنوز باید بررسی شود.
+- [ ] پس از به‌روزرسانی افزونه از رابط مدیریت، لینک پاسخ موفق و متن اعلان پیام خصوصی در بله به‌صورت زنده بررسی شوند؛ این تغییرات هنوز آزمون زندهٔ موفق محسوب نمی‌شوند.
+
+مرجع: [مستندات رسمی بازوی بله، بخش قالب‌بندی متن](https://docs.bale.ai/). این commit به‌تنهایی هیچ تغییری روی انجمن تولیدی اعمال نمی‌کند.

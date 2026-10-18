@@ -69,23 +69,22 @@ module Jobs
 
     def basic_notification_variables(payload)
       {
-        site_title: CGI.escapeHTML(SiteSetting.title),
+        site_title: markdown_escape(SiteSetting.title),
         site_url: Discourse.base_url,
-        username: CGI.escapeHTML(payload[:username])
+        username: markdown_escape(payload[:username])
       }
     end
 
     def post_notification_variables(payload)
       {
-        post_url: CGI.escapeHTML(Discourse.base_url + payload[:post_url].to_s),
-        post_excerpt: CGI.escapeHTML(payload[:excerpt]),
-        topic: CGI.escapeHTML(payload[:topic_title]),
-        user_url: CGI.escapeHTML("#{Discourse.base_url}/u/#{payload[:username]}")
+        post_url: Discourse.base_url + payload[:post_url].to_s,
+        post_excerpt: markdown_escape(payload[:excerpt]),
+        topic: markdown_escape(payload[:topic_title]),
+        user_url: "#{Discourse.base_url}/u/#{payload[:username]}"
       }
     end
 
-    def avatar_url_for(username)
-      acting_user = User.find_by(username: username)
+    # Bale renders message text as Markdown; escape dynamic text to keep\n    # user-controlled content from changing links or formatting.\n    def markdown_escape(value)\n      value.to_s.gsub(/[\\_*()\[\]]/) { |character| "\\#{character}" }\n    end\n\n    def avatar_url_for(username)\n      acting_user = User.find_by(username: username)
       return unless acting_user
 
       "#{Discourse.base_url}#{acting_user.avatar_template.gsub('{size}', '128')}"

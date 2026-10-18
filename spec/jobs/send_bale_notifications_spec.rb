@@ -211,6 +211,31 @@ RSpec.describe Jobs::SendBaleNotifications do
     end
   end
 
+
+  describe '#notification_text' do
+    it 'uses a clear Markdown link and label for private-message notifications' do
+      allow(user).to receive(:effective_locale).and_return('fa_IR')
+      rendered = job.notification_text(
+        {
+          username: 'sender_name',
+          topic_title: 'عنوان پیام خصوصی',
+          post_url: '/t/private-topic/123/1',
+          excerpt: 'متن پیام'
+        },
+        'private_message',
+        user
+      )
+
+      expect(rendered).to include("موضوع پیام خصوصی: [عنوان پیام خصوصی](#{Discourse.base_url}/t/private-topic/123/1)")
+      expect(rendered).to include('برای شما یک پیام خصوصی فرستاد')
+      expect(rendered).not_to include('<a ', '<b>', '<pre>')
+    end
+
+    it 'escapes Markdown syntax in dynamic text' do
+      expect(job.markdown_escape('a_b *c* [d]')).to eq('a\\_b \\*c\\* \\[d\\]')
+    end
+  end
+
   describe '#store_message_id' do
     it 'ignores incomplete API responses and missing posts' do
       expect(PluginStore).not_to receive(:set)

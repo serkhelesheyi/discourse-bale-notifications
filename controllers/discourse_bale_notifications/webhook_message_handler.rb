@@ -39,8 +39,8 @@ module DiscourseBaleNotifications
       I18n.with_locale(user.effective_locale) do
         I18n.t(
           'discourse_bale_notifications.known-user',
-          site_title: CGI.escapeHTML(SiteSetting.title),
-          username: escape_html(user.username)
+          site_title: escape_markdown(SiteSetting.title),
+          username: escape_markdown(user.username)
         )
       end
     end
@@ -59,8 +59,8 @@ module DiscourseBaleNotifications
       I18n.with_locale(user.effective_locale) do
         I18n.t(
           'discourse_bale_notifications.link-success',
-          site_title: CGI.escapeHTML(SiteSetting.title),
-          username: escape_html(user.username)
+          site_title: escape_markdown(SiteSetting.title),
+          username: escape_markdown(user.username)
         )
       end
     end
@@ -68,7 +68,7 @@ module DiscourseBaleNotifications
     def initial_contact_text
       I18n.t(
         'discourse_bale_notifications.initial-contact',
-        site_title: CGI.escapeHTML(SiteSetting.title)
+        site_title: escape_markdown(SiteSetting.title)
       )
     end
 
@@ -102,10 +102,10 @@ module DiscourseBaleNotifications
 
     def reply_result_text(result)
       if result.errors.any?
-        errors = escape_html(result.errors.full_messages.join("\n"))
+        errors = escape_markdown(result.errors.full_messages.join("\n"))
         I18n.t('discourse_bale_notifications.reply-failed', errors: errors)
       else
-        I18n.t('discourse_bale_notifications.reply-success', post_url: CGI.escapeHTML(result.post.full_url))
+        I18n.t('discourse_bale_notifications.reply-success', post_url: result.post.full_url)
       end
     end
   end
