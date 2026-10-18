@@ -133,3 +133,15 @@ The request suite now includes success-path cases for like, unlike, and replying
 ## Automated interaction coverage update — 18 October 2026
 
 The request suite now also covers callback account isolation (the linked account identified by the incoming private chat must be the actor; another linked account must not receive the action) and an unlike callback when no active like exists. CI previously exposed and prompted fixes for an unsupported `PostAction.remove_act` class call, keyboard expectation argument types, reply-manager mocking, and two RuboCop line-length offenses. These fixes are committed, but this section is not a staging pass: wait for green CI on the final candidate SHA, then run A07–A09 with staging-only credentials and record actual evidence.
+
+## Latest automated verification — 18 October 2026
+
+Candidate SHA: `34d7d5e600f7cfcee642bd38ec2b2c4b6b47ad7c`.
+
+- [x] [Discourse Plugin CI run 39099280010](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39099280010) completed successfully.
+- [x] [Plugin smoke tests run 39099279900](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39099279900) completed successfully.
+- [x] Automated service specs cover both cases for `push_notification_filters`: all filters allow delivery, and a blocking filter prevents the Bale job from being enqueued.
+- [ ] A07–A09 and the real preference/browser flow remain pending staging execution. Include stale callback buttons and cross-account isolation in the run; do not mark these rows passed based on mocked tests.
+- [ ] Backup restoration and plugin disable/rollback still require staging evidence.
+
+These CI checks apply to the exact candidate SHA above. They do not prove live Bale delivery, browser persistence, webhook configuration, or rollback. Staging acceptance has not been performed, and production has not been changed.
