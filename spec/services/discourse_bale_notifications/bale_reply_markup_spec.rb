@@ -3,37 +3,41 @@
 require 'rails_helper'
 
 RSpec.describe DiscourseBaleNotifications::BaleReplyMarkup do
-  describe '.like_button' do
-    let(:actor) { Fabricate(:user) }
-    let(:author) { Fabricate(:user) }
-    let(:target_post) { Fabricate(:post, user: author) }
+  let(:actor) { Fabricate(:user) }
+  let(:author) { Fabricate(:user) }
+  let(:target_post) { Fabricate(:post, user: author) }
 
-    it 'shows like when no active like exists' do
-      expect(described_class.like_button(target_post, actor)).to eq(
-        text: I18n.t('discourse_bale_notifications.like'),
-        callback_data: "like:#{target_post.id}"
-      )
-    end
+  it 'shows like when no active like exists' do
+    expect(described_class.like_button(target_post, actor)).to eq(
+      text: I18n.t('discourse_bale_notifications.like'),
+      callback_data: "like:#{target_post.id}"
+    )
+  end
+end
 
-    it 'returns to like after an existing like is removed' do
-      PostActionCreator.create(actor, target_post, :like)
+RSpec.describe DiscourseBaleNotifications::BaleReplyMarkup do
+  let(:actor) { Fabricate(:user) }
+  let(:author) { Fabricate(:user) }
+  let(:target_post) { Fabricate(:post, user: author) }
 
-      expect(described_class.like_button(target_post, actor)).to eq(
-        text: I18n.t('discourse_bale_notifications.unlike'),
-        callback_data: "unlike:#{target_post.id}"
-      )
+  it 'returns to like after an existing like is removed' do
+    PostActionCreator.create(actor, target_post, :like)
 
-      like_action = actor.post_actions.find_by!(
-        post_id: target_post.id,
-        post_action_type_id: PostActionType.types[:like],
-        deleted_at: nil
-      )
-      like_action.remove_act!(actor)
+    expect(described_class.like_button(target_post, actor)).to eq(
+      text: I18n.t('discourse_bale_notifications.unlike'),
+      callback_data: "unlike:#{target_post.id}"
+    )
 
-      expect(described_class.like_button(target_post, actor)).to eq(
-        text: I18n.t('discourse_bale_notifications.like'),
-        callback_data: "like:#{target_post.id}"
-      )
-    end
+    like_action = actor.post_actions.find_by!(
+      post_id: target_post.id,
+      post_action_type_id: PostActionType.types[:like],
+      deleted_at: nil
+    )
+    like_action.remove_act!(actor)
+
+    expect(described_class.like_button(target_post, actor)).to eq(
+      text: I18n.t('discourse_bale_notifications.like'),
+      callback_data: "like:#{target_post.id}"
+    )
   end
 end
