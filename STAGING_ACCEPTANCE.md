@@ -36,7 +36,7 @@ Record the date/time and timezone, staging URL (do not publish secrets), Discour
 | A04 | Normal notification route | Supported notification reaches only the linked test account | Pending staging run |
 | A05 | Private/personal-message route | Supported message notification is delivered according to settings and privacy expectations | Pending staging run |
 | A06 | Preferences and notification types | Each supported preference changes delivery as documented; unsupported/unverified types are recorded, not assumed | Pending staging run |
-| A07 | Like then unlike | Both paths are handled correctly; no duplicate or stale action is emitted | Pending staging run |
+| A07 | Like then unlike | Like creates an active like, unlike removes it, callback feedback is correct, and the inline keyboard reflects the resulting state | Pending staging run |
 | A08 | Invalid callback / malformed update | Request is rejected or safely ignored; no exception loop or unintended state change | Pending staging run |
 | A09 | Deleted post / disconnected account | Missing content or disconnected account is handled safely without leaking content | Pending staging run |
 | A10 | Quiet hours, including midnight crossover | Messages are deferred/suppressed according to configured timezone and policy | Pending staging run |
@@ -123,3 +123,8 @@ For A16, verify that selecting no checkboxes survives save/reload as all uncheck
 ## Callback regression note — 18 October 2026
 
 Automated request coverage now includes a syntactically valid callback from an unlinked private chat and a callback referencing a missing/deleted post. These cases must be acknowledged safely and answered as unavailable. This does not replace staging checks for successful like/unlike, replies, stale keyboard buttons, or cross-account isolation. Record actual outcomes and redacted evidence before marking any acceptance row as passed.
+
+
+## Automated interaction coverage — 18 October 2026
+
+The request suite now includes success-path cases for like, unlike, and replying to a stored notification. They verify the local like state, callback feedback/keyboard refresh calls, mapping of a Bale message ID to the original post, and the arguments passed to Discourse's `NewPostManager`. The Bale API calls are mocked. These tests are not a staging pass: A07 and the real Bale reply flow remain **Pending staging run** until exercised with staging-only credentials and accounts. Also verify stale buttons and cross-account isolation before marking interaction acceptance complete.
