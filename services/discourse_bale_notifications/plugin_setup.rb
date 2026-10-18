@@ -53,9 +53,15 @@ module DiscourseBaleNotifications
     # The current push_notification event intentionally respects Discourse's DND behavior.
     def self.register_notification_event
       DiscourseEvent.on(:push_notification) do |user, payload|
-        if SiteSetting.bale_notifications_enabled?
-          Jobs.enqueue(:send_bale_notifications, user_id: user.id, payload: payload)
+        next unless SiteSetting.bale_notifications_enabled?
+
+        # Discourse fires this event before applying these filters to push delivery.
+        # Apply them here too so Bale respects the site's notification policy.
+        next unless DiscoursePluginRegistry.push_notification_filters.all? do |filter|
+          filter.call(user, payload)
         end
+
+        Jobs.enqueue(:send_bale_notifications, user_id: user.id, payload: payload)
       end
     end
 
