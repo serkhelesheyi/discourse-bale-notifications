@@ -5,7 +5,7 @@
 > **وضعیت:** مخزن در حال ممیزی و بهبود مرحله‌ای است. نقشه‌راه و وضعیت آزمون‌ها را در [ROADMAP.md](ROADMAP.md) و محدودیت انواع اعلان را در [NOTIFICATION_COVERAGE.md](NOTIFICATION_COVERAGE.md) ببینید. وجود یک گزینه یا ترجمه به‌تنهایی تضمین نمی‌کند که رویداد آن در نسخهٔ جاری Discourse تولید شود.
 
 
-> **وضعیت عملیاتی و ممیزی، ۱۸ اکتبر ۲۰۲۶:** PR تشخیصی [#2](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/2) و اصلاح دکمهٔ پسندیدن [#3](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/3) ادغام شده‌اند. آخرین CI کامل و smoke tests روی `main` و commit `0ab203e881267e240621c58bde2bae99b984b409` موفق‌اند ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39134113783)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39134113523)). کاربر اصلاح دکمه را روی انجمن واقعی آزمایش کرده و گزارش داده که همهٔ مراحل ظاهراً درست کار می‌کنند؛ این نتیجه پذیرش دستی کاربر است، نه بررسی مستقیم سرور. اصلاح دکمه فعلاً پذیرفته شده است. مسئلهٔ ریپلای اول موضوع جداگانه‌ای است: در آزمون‌های قبلی بازتولید نشد و علت ریشه‌ای اثبات نشده؛ تنظیم تشخیصی `bale_notifications_webhook_diagnostics_enabled` باید خاموش بماند مگر آن‌که برای آزمون هدفمند دیگری موقتاً لازم شود. گام بعدی ممیزی امنیت/حریم خصوصی در وب‌هوک، اتصال حساب و callbackهاست.
+> **وضعیت عملیاتی و ممیزی، ۱۸ اکتبر ۲۰۲۶:** PR تشخیصی [#2](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/2)، اصلاح دکمهٔ پسندیدن [#3](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/3) و اصلاح حریم خصوصی لاگ‌ها [#4](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/4) ادغام شده‌اند. برای PR شمارهٔ ۴، CI کامل روی SHA `e391e330e5663ff79382f8435feb4e2857c5e067` و smoke tests هر دو موفق شدند ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39146201932)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39146205319)); merge commit برابر `0c8ed8ef7bca1e4e3032dd5dea00f1db633db7f5` است. در سه پیام عمومی Rails برای خطای شبکه، خطای API و قطع اتصال خودکار، شناسهٔ چت ثبت نمی‌شود؛ ثبت داخلی محدود فعالیت‌ها برای پنل مدیریت عمداً حفظ شده است. این ادغام به‌خودی‌خود تغییری روی انجمن تولیدی اعمال نمی‌کند. کاربر اصلاح دکمه را پس از به‌روزرسانی افزونه در انجمن واقعی آزمایش کرده و نتیجه را موفق گزارش کرده است؛ این پذیرش دستی کاربر است، نه بررسی مستقیم سرور. مسئلهٔ ریپلای اول هنوز علت ریشه‌ای اثبات‌شده ندارد و تنظیم تشخیصی `bale_notifications_webhook_diagnostics_enabled` باید خاموش بماند مگر برای آزمون هدفمند و موقت. گام بعدی، بررسی سایر مسیرهای لاگ و ممیزی هدفمند امنیت/حریم خصوصی با شواهد است.
 
 ## قابلیت‌ها
 
@@ -92,7 +92,7 @@
 - نقشه‌راه، یافته‌های ممیزی، معیارهای خروج، اختلاف شاخه‌ها و سوابق CI در [ROADMAP.md](ROADMAP.md) ثبت می‌شوند.
 - CI اصلی افزونه از workflow رسمی Discourse استفاده می‌کند: [`.github/workflows/discourse-plugin.yml`](.github/workflows/discourse-plugin.yml). این workflow lint و آزمون‌های backend/RSpec را اجرا می‌کند.
 - آزمون‌های سبک مستقل در [`.github/workflows/plugin-smoke-tests.yml`](.github/workflows/plugin-smoke-tests.yml) اجرا می‌شوند و شامل syntax check و `test/link_code_test.rb` هستند. این workflow اکنون برای `main` و شاخهٔ ممیزی فعال است.
-- آزمون‌های RSpec شامل مصرف اتمیک کد اتصال، escape کردن HTML، ورودی‌های وب‌هوک و API client هستند. آزمون API client مسیر موفق، HTTPS و timeout، timeout شبکه، پاسخ غیر JSON، JSON با ساختار نامعتبر، خطای API و عدم افشای توکن/متن پیام خروجی در لاگ‌های سناریوهای پوشش‌داده‌شده را بررسی می‌کند.
+- آزمون‌های RSpec شامل مصرف اتمیک کد اتصال، escape کردن HTML، ورودی‌های وب‌هوک و API client هستند. آزمون API client مسیر موفق، HTTPS و timeout، timeout شبکه، پاسخ غیر JSON، JSON با ساختار نامعتبر، خطای API و عدم افشای توکن/متن پیام خروجی/شناسهٔ چت در لاگ‌های خطای سناریوهای پوشش‌داده‌شده را بررسی می‌کند.
 - پاسخ JSON که شیء نباشد، از جمله `null`، به‌صورت شکست کنترل‌شده رد می‌شود. قالب دقیق متن داخلی استثنا در آزمون timeout معیار نیست؛ نوع خطا و نتیجهٔ امن آن بررسی می‌شود.
 - وضعیت CI روی HEAD ثبت‌شده در ۱۷ اکتبر ۲۰۲۶: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38820273999) و [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/38820273684) هر دو موفق بوده‌اند. این نتایج فقط SHA مربوط به همان اجرا را پوشش می‌دهند؛ پس از تغییر مستندات، نتیجهٔ HEAD جدید باید دوباره بررسی شود. وضعیت جاری در [Actions](https://github.com/serkhelesheyi/discourse-bale-notifications/actions) قابل مشاهده است.
 - تغییرات شاخهٔ ممیزی از طریق PR شمارهٔ [#1](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/1) ادغام شده‌اند. تاریخچهٔ قدیمی‌تر این README ممکن است وضعیت‌های پیش از ادغام را توصیف کند؛ برای وضعیت جاری، انتهای [ROADMAP.md](ROADMAP.md) مرجع است.
@@ -451,3 +451,15 @@ The user additionally confirmed that all eight notification preferences remained
 ## پذیرش زندهٔ اصلاح دکمهٔ پسندیدن — ۱۸ اکتبر ۲۰۲۶
 
 کاربر پس از به‌روزرسانی افزونه در انجمن واقعی، مسیرهای پسندیدن و لغو پسندیدن را آزمایش کرد و گزارش داد که ظاهراً همهٔ مراحل درست کار می‌کنند. بنابراین اصلاح PR شمارهٔ [۳](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/3) از نظر CI و آزمون دستی کاربر پذیرفته شده است. این نتیجه را نباید به آزمون سایر قابلیت‌ها یا علت‌یابی ریپلای اول تعمیم داد؛ وضعیت‌های باز در [ROADMAP.md](ROADMAP.md) پیگیری می‌شوند.
+
+
+## حذف شناسهٔ چت از لاگ‌های Rails — ۱۸ اکتبر ۲۰۲۶
+
+PR [شمارهٔ ۴](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/4) با merge commit `0c8ed8ef7bca1e4e3032dd5dea00f1db633db7f5` ادغام شد. در پیام‌های عمومی Rails برای شکست شبکه، شکست API و قطع اتصال خودکار، مقدار `chat_id` ثبت نمی‌شود؛ اطلاعات عیب‌یابی مانند نام متد، نوع استثنا، وضعیت HTTP و شرح خطای API حفظ می‌شوند. رکوردهای داخلی محدود `BaleActivityLog` عمداً تغییر نکرده‌اند، زیرا پنل فعالیت برای نمایش رویدادهای مربوط به کاربران به آن‌ها نیاز دارد.
+
+- [x] CI کامل روی SHA `e391e330e5663ff79382f8435feb4e2857c5e067` موفق شد ([Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39146201932)).
+- [x] smoke tests روی همان SHA موفق شدند ([Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39146205319)).
+- [x] آزمون‌های رگرسیون بررسی می‌کنند که شناسهٔ چت در پیام‌های خطای شبکه و API ظاهر نشود.
+- [ ] به‌روزرسانی افزونه در انجمن تولیدی و بررسی لاگ پس از یک آزمون کنترل‌شده؛ این مرحله جدا از ادغام GitHub است.
+
+**مرز استقرار:** PR ادغام شده است، اما در این مرحله هیچ تغییری روی سرور تولیدی انجام نشده و حذف شناسه از لاگ‌های زنده هنوز با آزمون عملی تأیید نشده است.
