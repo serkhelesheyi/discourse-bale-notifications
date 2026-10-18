@@ -65,7 +65,7 @@ module DiscourseBaleNotifications
       action_type_id = PostActionType.types[:like]
       post_action = find_like_action(user, post, action_type_id)
       Guardian.new(user).ensure_can_delete!(post_action)
-      PostAction.remove_act(user, post, action_type_id)
+      post_action.remove_act!(user)
       I18n.t('discourse_bale_notifications.unlike-success')
     rescue Discourse::NotFound, Discourse::InvalidAccess
       I18n.t('discourse_bale_notifications.unlike-failed')
