@@ -211,7 +211,6 @@ RSpec.describe Jobs::SendBaleNotifications do
     end
   end
 
-
   describe '#notification_text' do
     it 'uses a clear Markdown link and label for private-message notifications' do
       allow(user).to receive(:effective_locale).and_return('fa_IR')
