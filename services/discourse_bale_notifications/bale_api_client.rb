@@ -97,7 +97,7 @@ module DiscourseBaleNotifications
     end
 
     def self.handle_api_failure(method_name, chat_id, response, response_data)
-      log_api_failure(method_name, chat_id, response, response_data)
+      log_api_failure(method_name, response, response_data)
       unlink_chat_if_unreachable(chat_id, response_data)
       BaleActivityLog.record_activity(
         method_name,
@@ -109,7 +109,7 @@ module DiscourseBaleNotifications
       false
     end
 
-    def self.log_api_failure(method_name, chat_id, response, response_data)
+    def self.log_api_failure(method_name, response, response_data)
       Rails.logger.error(
         "Bale API call failed (method=#{method_name}, " \
         "http_status=#{response.code}, error_code=#{response_data['error_code']}, " \
