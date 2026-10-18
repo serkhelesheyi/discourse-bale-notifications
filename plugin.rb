@@ -42,6 +42,7 @@ controllers_path = File.join(plugin_root, 'controllers/discourse_bale_notificati
   LinkController: 'link_controller',
   AdminController: 'admin_controller',
   WebhookMessageHandler: 'webhook_message_handler',
+  WebhookMessageDiagnostics: 'webhook_message_diagnostics',
   WebhookCallbackHandler: 'webhook_callback_handler'
 }.each do |constant_name, file_name|
   ::DiscourseBaleNotifications.autoload(constant_name, File.join(controllers_path, file_name))
