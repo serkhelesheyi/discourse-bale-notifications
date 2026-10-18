@@ -84,6 +84,54 @@ RSpec.describe 'Bale webhook', type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq('success' => true)
     end
+
+    it 'answers a valid callback from an unlinked chat without raising' do
+      DiscourseBaleNotifications::BaleNotifier.expects(:answer_callback).with(
+        'callback-unlinked',
+        I18n.t('discourse_bale_notifications.action-unavailable')
+      )
+
+      post '/bale/hook/test-webhook-secret',
+           params: {
+             callback_query: {
+               id: 'callback-unlinked',
+               data: 'like:1',
+               message: {
+                 message_id: 11,
+                 chat: { id: 987_654_321, type: 'private' }
+               }
+             }
+           }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq('success' => true)
+    end
+
+    it 'answers a callback for a deleted post without raising' do
+      user = Fabricate(:user)
+      user.custom_fields['bale_chat_id'] = '987654322'
+      user.save_custom_fields
+
+      DiscourseBaleNotifications::BaleNotifier.expects(:answer_callback).with(
+        'callback-deleted-post',
+        I18n.t('discourse_bale_notifications.action-unavailable')
+      )
+
+      post '/bale/hook/test-webhook-secret',
+           params: {
+             callback_query: {
+               id: 'callback-deleted-post',
+               data: 'like:999999999',
+               message: {
+                 message_id: 12,
+                 chat: { id: 987_654_322, type: 'private' }
+               }
+             }
+           }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq('success' => true)
+    end
   end
 end
 
