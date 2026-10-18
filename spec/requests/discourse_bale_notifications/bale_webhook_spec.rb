@@ -145,10 +145,12 @@ RSpec.describe 'Bale webhook', type: :request do
         'callback-like',
         I18n.t('discourse_bale_notifications.like-success')
       )
-      DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup).with(target_post, actor).returns(reply_markup)
+      DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup)
+        .with(target_post, actor)
+        .returns(reply_markup)
       DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).with(
-        chat_id: 987_654_323,
-        message_id: 13,
+        chat_id: '987654323',
+        message_id: '13',
         reply_markup: reply_markup
       )
 
@@ -190,8 +192,8 @@ RSpec.describe 'Bale webhook', type: :request do
       )
       DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup).with(target_post, actor).returns(reply_markup)
       DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).with(
-        chat_id: 987_654_324,
-        message_id: 14,
+        chat_id: '987654324',
+        message_id: '14',
         reply_markup: reply_markup
       )
 
@@ -231,6 +233,7 @@ RSpec.describe 'Bale webhook', type: :request do
       reply_url = 'https://forum.example/t/example/1'
       reply_post = double(full_url: reply_url)
       result = double(errors: [], post: reply_post)
+      manager = double(perform: result)
       expected_text = I18n.t(
         'discourse_bale_notifications.reply-success',
         post_url: CGI.escapeHTML(reply_url)
@@ -242,7 +245,7 @@ RSpec.describe 'Bale webhook', type: :request do
           topic_id: target_post.topic_id,
           reply_to_post_number: target_post.post_number
         }
-      ).returns(result)
+      ).returns(manager)
       DiscourseBaleNotifications::BaleNotifier.expects(:send_message).with(
         chat_id: chat_id,
         text: expected_text,
