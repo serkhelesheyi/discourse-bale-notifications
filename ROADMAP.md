@@ -1,6 +1,6 @@
 # نقشه‌راه بازبینی و بهبود افزونهٔ اعلان‌های بله
 
-> **وضعیت سند:** به‌روزرسانی‌شده در ۱۸ اکتبر ۲۰۲۶. هر دو workflow روی commit مستندات قبلی `8ccca0e58137481f9361d9252f90d44bcbf2ffc2` موفق شده‌اند: [Discourse Plugin CI #39095250538](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39095250538) و [Plugin smoke tests #39095250413](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39095250413). commit آزمون جدید `f5ebce8fc2b9720355bc12adb8b01866b441e673` مسیرهای موفق لایک/آنلایک و پاسخ را به آزمون‌های request اضافه می‌کند؛ نتیجهٔ CI این تغییر و مستندات تازه هنوز باید بررسی شود. آزمون مرورگر ترجیحات، پذیرش staging و بازیابی پشتیبان همچنان باز هستند.
+> **وضعیت سند:** به‌روزرسانی‌شده در ۱۸ اکتبر ۲۰۲۶. روی HEAD شاخهٔ `diagnose-first-bale-reply` با SHA `35a7f7b88c7cf71d19dc6553d0764ed447cafadf` هر دو workflow موفق‌اند: [Discourse Plugin CI #39110944230](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39110944230) و [Plugin smoke tests #39110944285](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39110944285). PR شمارهٔ ۲ از حالت Draft خارج و برای بازبینی آماده شده است؛ هنوز ادغام یا استقرار نشده. آزمون مرورگر ترجیحات، پذیرش staging و بازیابی پشتیبان همچنان باز هستند.
 > **هدف:** افزونه‌ای قابل‌اعتماد، امن، قابل‌نگهداری و خوش‌استفاده برای یک انجمن دیسکورس معمولی تا متوسط؛ نه یک سامانهٔ سازمانی پرهزینه.
 > **قاعدهٔ اجرا:** هر مرحله باید با شواهد، تغییر محدود، آزمون متناسب و به‌روزرسانی همین سند و `README.md` پایان یابد. تا وقتی مرحله‌ای واقعاً اجرا و آزموده نشده، آن را «انجام‌شده» اعلام نمی‌کنیم.
 
@@ -1319,7 +1319,7 @@ The user reports that all eight notification preferences were disabled and saved
 - [x] انتقال ثبت لاگ تشخیصی به ماژول مستقل `WebhookMessageDiagnostics` و ثبت autoload صریح آن در `plugin.rb`.
 - [x] شکستن ساخت جزئیات لاگ به متدهای کوچک‌تر برای کاهش پیچیدگی و طول متد.
 - [x] اصلاح literal آزمایشی به `987_654_399`؛ مقدار عددی تغییر نکرده است.
-- [ ] تأیید نتیجهٔ اجرای تازهٔ RuboCop و کل backend tests.
-- [ ] تأیید smoke tests پس از اصلاح.
+- [x] تأیید نتیجهٔ اجرای تازهٔ RuboCop و کل backend tests در CI شمارهٔ [39110944230](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39110944230) روی HEAD `35a7f7b`.
+- [x] تأیید smoke tests پس از اصلاح در [run #39110944285](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39110944285) روی همان HEAD.
 
-این تغییر فقط ساختار داخلی کد تشخیصی و قالب عددی آزمون را تغییر می‌دهد؛ تنظیم تشخیصی همچنان پیش‌فرض خاموش است و هیچ استقرار تولیدی انجام نشده است. تا سبزشدن CI، این مرحله تأییدشده نیست.
+این تغییر فقط ساختار داخلی کد تشخیصی و قالب عددی آزمون را تغییر می‌دهد؛ تنظیم تشخیصی همچنان پیش‌فرض خاموش است و هیچ استقرار تولیدی انجام نشده است. CI و smoke tests روی HEAD کنونی سبز هستند؛ PR برای بازبینی آماده است، اما تشخیص زنده و اصلاح نهایی علت همچنان باز هستند.
