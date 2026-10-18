@@ -5,7 +5,7 @@
 > **وضعیت:** مخزن در حال ممیزی و بهبود مرحله‌ای است. نقشه‌راه و وضعیت آزمون‌ها را در [ROADMAP.md](ROADMAP.md) و محدودیت انواع اعلان را در [NOTIFICATION_COVERAGE.md](NOTIFICATION_COVERAGE.md) ببینید. وجود یک گزینه یا ترجمه به‌تنهایی تضمین نمی‌کند که رویداد آن در نسخهٔ جاری Discourse تولید شود.
 
 
-> **وضعیت عملیاتی و ممیزی، ۱۸ اکتبر ۲۰۲۶:** طبق گزارش عملیاتی قبلی، نسخهٔ تولیدی افزونه روی SHA `b75d69a190184b5c62aae4fba2364e2c8f79eb0b` بوده و تغییرات اخیر GitHub روی تولید نصب نشده‌اند. اصلاح‌های قبلی مربوط به RuboCop، آرگومان‌های keyboard، mock مربوط به NewPostManager و مسیر آنلایک انجام شده‌اند. برای عیب‌یابی ریپلای اول، شاخهٔ `diagnose-first-bale-reply` روی HEAD `9f8ce4adc70190b49a7e9ed4bb9438dd9d1fdafa` CI کامل و smoke tests موفق داشته‌اند: [CI #39112355656](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39112355656) و [smoke #39112355372](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39112355372). PR شمارهٔ ۲ برای بازبینی آماده است اما هنوز ادغام نشده؛ هیچ تغییر تولیدی انجام نشده است. آزمون واقعی UI، پذیرش staging، بازیابی پشتیبان و انتشار همچنان باز هستند. جزئیات در [ROADMAP.md](ROADMAP.md)، [NOTIFICATION_COVERAGE.md](NOTIFICATION_COVERAGE.md) و [STAGING_ACCEPTANCE.md](STAGING_ACCEPTANCE.md) ثبت می‌شود.
+> **وضعیت عملیاتی و ممیزی، ۱۸ اکتبر ۲۰۲۶:** PR شمارهٔ [۲](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/2) با موفقیت ادغام شد؛ commit ادغام `df5089736b51f7f696efad1333b32272188c4142` است. CI کامل و smoke tests روی HEAD شاخهٔ تشخیصی موفق بودند. این ادغام فقط ابزار عیب‌یابی اختیاری را به مخزن اضافه کرده است و به‌معنای نصب یا استقرار آن روی سرور نیست. طبق آخرین وضعیت ثبت‌شده، نسخهٔ تولیدی قبلی روی SHA `b75d69a190184b5c62aae4fba2364e2c8f79eb0b` بوده؛ وضعیت سرور هنوز باید مستقلاً بررسی شود. گام بعدی: به‌روزرسانی کنترل‌شدهٔ افزونه از پنل مدیریت، فعال‌سازی کوتاه‌مدت تنظیم تشخیصی، ثبت دو نمونهٔ ریپلای و خاموش‌کردن فوری تنظیم. علت ریشه‌ای هنوز اثبات نشده است.
 
 ## قابلیت‌ها
 
@@ -419,4 +419,12 @@ The user additionally confirmed that all eight notification preferences remained
 
 ## وضعیت بررسی تشخیصی ریپلای اول — ۱۸ اکتبر ۲۰۲۶
 
-CI شاخهٔ `diagnose-first-bale-reply` پنج تخلف RuboCop گزارش کرد. ثبت لاگ تشخیصی از handler به ماژول مستقل `WebhookMessageDiagnostics` منتقل و به‌صورت صریح autoload شده است؛ متدهای ساخت جزئیات لاگ کوچک‌تر شده‌اند و قالب عددی شناسهٔ آزمایشی اصلاح شده است. CI کامل روی HEAD `35a7f7b88c7cf71d19dc6553d0764ed447cafadf` موفق شد ([Discourse Plugin #39110944230](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39110944230)) و smoke tests نیز روی همان HEAD موفق شدند ([run #39110944285](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39110944285)). پس از تغییرات مستندات، CI کامل و smoke tests روی HEAD `9f8ce4adc70190b49a7e9ed4bb9438dd9d1fdafa` نیز موفق شدند ([CI #39112355656](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39112355656)، [smoke #39112355372](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39112355372)). PR شمارهٔ ۲ از حالت Draft خارج و برای بازبینی آماده شده، اما ادغام یا استقرار نشده است. تشخیص علت نهایی به ثبت payload واقعی در محیط زنده نیاز دارد. تنظیم `bale_notifications_webhook_diagnostics_enabled` پیش‌فرض خاموش است و لاگ نباید متن پیام یا مقادیر شناسه‌ها را افشا کند.
+- [x] تغییر تشخیصی در PR شمارهٔ [۲](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/2) ادغام شد؛ commit: `df5089736b51f7f696efad1333b32272188c4142`.
+- [x] CI کامل روی HEAD پیش از ادغام موفق شد ([run #39112724492](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39112724492)) و smoke tests نیز موفق بودند ([run #39112724350](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39112724350)).
+- [x] تنظیم `bale_notifications_webhook_diagnostics_enabled` به‌طور پیش‌فرض خاموش است؛ لاگ فقط شکل payload را ثبت می‌کند، نه متن پیام یا مقادیر شناسه‌ها.
+- [ ] به‌روزرسانی کنترل‌شدهٔ افزونه روی سرور و تأیید نسخهٔ نصب‌شده.
+- [ ] فعال‌کردن تنظیم فقط برای آزمون کوتاه؛ ثبت یک ریپلای اول ناموفق و ریپلای بعدی موفق؛ جمع‌آوری خطوط `[BaleNotifications diagnostic]`.
+- [ ] خاموش‌کردن تنظیم بلافاصله پس از آزمون و تأیید خاموش‌بودن آن.
+- [ ] تحلیل شواهد واقعی، تعیین علت و پیاده‌سازی اصلاح همراه آزمون رگرسیون.
+
+**وضعیت استقرار:** ادغام GitHub هیچ تغییری روی سرور ایجاد نمی‌کند. تا زمان آزمون زنده، علت نهایی و اصلاح رفتاری تأیید نشده‌اند.
