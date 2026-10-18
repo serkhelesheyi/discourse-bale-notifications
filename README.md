@@ -362,3 +362,10 @@ The previous CI failure was fixed, and both workflows passed on commit `b98c7c3e
 افزونه پیش از قرار دادن تحویل Bale در صف، فیلترهای ثبت‌شدهٔ `DiscoursePluginRegistry.push_notification_filters` را روی کاربر و payload اجرا می‌کند. اگر هر فیلتر اعلان را رد کند، job ارسال Bale enqueue نمی‌شود. این رفتار با آزمون سرویس برای هر دو حالت اجازه و رد پوشش داده شده است.
 
 آخرین commit کد/آزمون تأییدشده در CI برای این اصلاح `34d7d5e600f7cfcee642bd38ec2b2c4b6b47ad7c` است: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39099280010) و [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39099279900) هر دو موفق‌اند. این تأیید به معنی پذیرش staging یا استقرار تولید نیست؛ آزمون واقعی فرم ترجیحات، تعامل‌های بله، دکمه‌های کهنه، بازیابی پشتیبان و rollback همچنان لازم‌اند. هیچ استقرار تولیدی انجام نشده است.
+
+
+## اصلاح ثبت ذخیره‌سازی ترجیحات — ۱۸ اکتبر ۲۰۲۶
+
+ممیزی قرارداد frontend هسته نشان داد که برای ذخیرهٔ فیلدهای سفارشی از صفحهٔ ترجیحات پروفایل، باید API رسمی `addSaveableCustomFields("profile")` ثبت شود؛ جایگزینی شیء با `model.set("custom_fields", ...)` به‌تنهایی تضمین نمی‌کند که ویژگی در payload ذخیره‌سازی صفحه وارد شود. initializer مربوط در commit [`e2f5b08`](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/e2f5b08b11e59bc4add138c5a2b82b8fc84f6d19) افزوده شد. مستندات مرجع: [Discourse Plugin API](https://github.com/discourse/discourse/blob/main/frontend/discourse/app/lib/plugin-api.gjs) و [تغییر API در Discourse 2026.1](https://releases.discourse.org/changelog/v2026.1.0-latest/).
+
+[آزمون smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39100026940) روی commit کد موفق است؛ CI کامل روی همان SHA باید تأیید شود. این مخزن زیرساخت مستقل آزمون frontend/GJS ندارد و برای این تغییر محدود چارچوب تازه‌ای اضافه نشده است. آزمون مرورگر و ذخیره/بازخوانی پس از reload در staging همچنان باز است. هیچ استقرار یا تغییری روی تولید انجام نشده است.
