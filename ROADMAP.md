@@ -1140,3 +1140,24 @@
 - **دروازهٔ تأیید:** تا موفقیت هر دو workflow روی HEAD نهایی، آزمون‌ها تأییدشده تلقی نمی‌شوند.
 - **محدودیت:** این آزمون‌ها جایگزین آزمون staging برای رفتار واقعی دکمه‌ها، دسترسی‌های کاربران متفاوت، callbackهای کهنه و ارسال/دریافت واقعی بله نیستند.
 - هیچ استقرار یا تغییری روی محیط تولید انجام نشده است.
+
+
+## اصلاح CI و مرحلهٔ آزمون تعامل‌ها — ۱۸ اکتبر ۲۰۲۶
+
+اجرای CI شمارهٔ [39096015922](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39096015922) روی commit `1e5bcebf1957bbc123b06ea4720f77f6b8f989a0` شکست خورد و بررسی لاگ‌ها سه علت مشخص کرد:
+
+1. RuboCop دو تخلف `Layout/LineLength` در انتظارهای `generate_reply_markup` گزارش کرد.
+2. آزمون لایک به‌علت انتظار نادرست برای آرگومان‌های `edit_keyboard` شکست خورد؛ webhook شناسه‌های chat/message را به صورت رشته می‌گیرد و متد یک hash واحد دریافت می‌کند.
+3. مسیر پاسخ در آزمون، شیء بازگشتی `NewPostManager.new(...).perform` را اشتباه mock کرده بود؛ همچنین کد آنلایک از API ناموجود `PostAction.remove_act` استفاده می‌کرد، در حالی که مدل هستهٔ Discourse متد نمونه‌ای `remove_act!` دارد.
+
+اصلاح‌ها در commitهای [2eb2a9a](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/2eb2a9a0f3d7afe1b57ee1f6d23e8e4e4e0aa13f) و [fc61933](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/fc61933d8602d84c4a21f88e437e12f810a5695a) ثبت شدند. سپس دو آزمون امنیت/لبه افزوده شد: جداسازی حساب متصل‌کنندهٔ callback از سایر کاربران، و رفتار امن آنلایک وقتی لایک فعالی وجود ندارد؛ commit آن [6ad04ae](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/6ad04ae8cc9e7cd93ec56f6950080f77ac02ddf6) است.
+
+**وضعیت:** علت‌های شکست شناسایی و اصلاحات کد/آزمون ثبت شده‌اند؛ نتیجهٔ CI نهایی روی HEAD شامل آزمون‌های تازه هنوز باید بررسی شود. موفقیت Smoke به‌تنهایی برای بستن مرحله کافی نیست.
+
+### ادامهٔ مرحله
+
+- [ ] تأیید سبز بودن RuboCop و تمام آزمون‌های RSpec روی همان HEAD.
+- [x] افزودن آزمون جداسازی حساب‌ها و آنلایک بدون لایک فعال.
+- [ ] پس از سبزشدن CI، بررسی `push_notification_filters` و پوشش واقعی ترجیحات.
+- [ ] اجرای پذیرش staging برای لایک، آنلایک، پاسخ، ترجیحات و دکمه‌های قدیمی؛ این موارد هنوز روی staging تأیید نشده‌اند.
+- [ ] عدم استقرار روی تولید تا مجوز جداگانه و تکمیل معیارهای پذیرش.
