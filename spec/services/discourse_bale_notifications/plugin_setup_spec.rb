@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength -- Covers both allowed and blocked event-filter paths.
 RSpec.describe DiscourseBaleNotifications::PluginSetup do
   describe '.register_notification_event' do
     let(:user) { Fabricate(:user) }
@@ -22,9 +23,9 @@ RSpec.describe DiscourseBaleNotifications::PluginSetup do
     end
 
     it 'enqueues Bale delivery when all Discourse push notification filters allow it' do
-      filter = ->(candidate_user, candidate_payload) {
+      filter = lambda do |candidate_user, candidate_payload|
         candidate_user == user && candidate_payload == payload
-      }
+      end
       allow(DiscoursePluginRegistry).to receive(:push_notification_filters).and_return([filter])
       handler = register_and_capture_handler
 
