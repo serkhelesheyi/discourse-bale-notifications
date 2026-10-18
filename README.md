@@ -380,3 +380,12 @@ The previous CI failure was fixed, and both workflows passed on commit `b98c7c3e
 آخرین CI و smoke tests روی HEAD مستندات `b8cc335f23ee0f7faad004ff00edd30df59e8637` موفق‌اند: [CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39100620762) و [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39100620632). چون محیط staging جداگانه موجود نیست، گام بعدی پذیرش محدود با حساب خود کاربر از طریق به‌روزرسانی خود افزونه در رابط مدیریت انجمن است. کاربر اعلام کرده است که این روش به restart داکر/انجمن نیاز ندارد؛ در این مرحله هیچ تغییر سروری دیگری در برنامه نیست.
 
 چک‌لیست اجرایی و معیارهای توقف در [ROADMAP.md](ROADMAP.md) و [STAGING_ACCEPTANCE.md](STAGING_ACCEPTANCE.md) ثبت شده‌اند. آزمون زنده هنوز انجام نشده است؛ به‌ویژه ذخیره و reload ترجیحات، حالت «هیچ‌کدام»، و کنترل تحویل اعلان‌ها باید واقعاً بررسی شوند. CI سبز به معنی پذیرش زنده نیست.
+
+
+## گزارش پذیرش زنده — ۱۸ اکتبر ۲۰۲۶
+
+پس از به‌روزرسانی افزونه از پنل انجمن، کاربر این موارد را در محیط واقعی تأیید کرد: ترجیحات جزئی پس از reload حفظ می‌شوند؛ هر هشت گزینه در حالت خاموش پس از reload خاموش می‌مانند؛ با فعال‌بودن همهٔ گزینه‌ها پیام ورودی باعث اعلان بله می‌شود؛ لایک و لغو لایک از داخل بله درست کار می‌کنند؛ با غیرفعال‌کردن گزینهٔ پیام خصوصی، پیام بعدی اعلان بله ایجاد نمی‌کند؛ و اعلان تستی پنل مدیریت دریافت می‌شود.
+
+CI و smoke tests برای SHA مستندات 0cbdb51fa39536818dac71edc28381bb72074ad1 نیز موفق‌اند: [CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39101182350) و [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39101182110).
+
+این نتیجه‌ها پذیرش اولیهٔ زنده را تقویت می‌کنند، اما هنوز اثبات نمی‌کنند که با خاموش‌بودن هر هشت گزینه هیچ نوع اعلانی ارسال نمی‌شود؛ همچنین پاسخ از داخل بله، callbackهای کهنه، جداسازی حساب‌ها و restore/rollback هنوز بررسی نشده‌اند. برای جزئیات و گام‌های بعد، [نقشه‌راه](ROADMAP.md) و [چک‌لیست پذیرش](STAGING_ACCEPTANCE.md) را ببینید.
