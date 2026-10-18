@@ -355,3 +355,10 @@ The previous CI failure was fixed, and both workflows passed on commit `b98c7c3e
 ## وضعیت آزمون callback — ۱۸ اکتبر ۲۰۲۶
 
 دو آزمون request به وب‌هوک افزوده شده‌اند: callback معتبر از چتِ متصل‌نشده و callbackی که به پست حذف‌شده اشاره می‌کند. انتظار این است که هر دو بدون استثنای کنترل‌نشده پاسخ داده شوند و پیام «اقدام دیگر در دسترس نیست» برای callback برگردد. این آزمون‌ها رفتار ورودی نامعتبر/منقضی را در backend پوشش می‌دهند؛ جایگزین آزمون واقعی لایک/آنلایک و پاسخ در staging نیستند. نتیجهٔ CI باید روی commit نهایی این تغییر و اسناد بررسی شود.
+
+
+## فیلترهای اعلان Discourse و وضعیت بررسی — ۱۸ اکتبر ۲۰۲۶
+
+افزونه پیش از قرار دادن تحویل Bale در صف، فیلترهای ثبت‌شدهٔ `DiscoursePluginRegistry.push_notification_filters` را روی کاربر و payload اجرا می‌کند. اگر هر فیلتر اعلان را رد کند، job ارسال Bale enqueue نمی‌شود. این رفتار با آزمون سرویس برای هر دو حالت اجازه و رد پوشش داده شده است.
+
+آخرین commit کد/آزمون تأییدشده در CI برای این اصلاح `34d7d5e600f7cfcee642bd38ec2b2c4b6b47ad7c` است: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39099280010) و [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39099279900) هر دو موفق‌اند. این تأیید به معنی پذیرش staging یا استقرار تولید نیست؛ آزمون واقعی فرم ترجیحات، تعامل‌های بله، دکمه‌های کهنه، بازیابی پشتیبان و rollback همچنان لازم‌اند. هیچ استقرار تولیدی انجام نشده است.
