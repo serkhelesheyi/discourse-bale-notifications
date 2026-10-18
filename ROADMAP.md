@@ -1239,3 +1239,15 @@
 - [ ] پس از آزمون‌های باقیمانده، وضعیت نهایی پذیرش و SHA واقعاً نصب‌شده ثبت شود.
 
 **دامنهٔ نتیجه:** موارد تیک‌خورده بر پایهٔ گزارش آزمون زندهٔ کاربر ثبت شده‌اند؛ این مستندات خودشان آزمون‌ها را اجرا نکرده‌اند. هیچ نتیجه‌ای برای موارد باقی‌مانده فرض نشده است.
+
+
+## Live acceptance update — all notification preferences disabled — 18 October 2026
+
+The user reports that all eight notification preferences were disabled and saved; after reloading the profile, all eight remained off. A new private message then produced **no** Bale notification. The user re-enabled the preferences, sent another private message, and received the expected Bale notification. This confirms, for the tested private-message event, both explicit all-off suppression and enabled-state delivery on the live forum. The evidence is the user's direct test report; it is not an independently collected server trace.
+
+- [x] All eight preferences persist as off after reload.
+- [x] A private message is suppressed when all eight preferences are off.
+- [x] A private message is delivered after preferences are re-enabled.
+- [ ] Do not infer that each of the eight notification types has been individually tested; only the private-message event was used for this suppression/delivery comparison.
+- [ ] Bale reply, stale/deleted-post callback, cross-account isolation, and backup restore/rollback remain untested live.
+- [ ] Confirm the exact installed plugin SHA and Discourse version when convenient; this report does not identify them.
