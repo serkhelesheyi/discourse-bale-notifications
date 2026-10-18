@@ -50,7 +50,7 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
         allow(http).to receive(:request).and_raise(error_class, 'simulated network failure')
         expect(Rails.logger).to receive(:error) do |message|
           expect(message).to include(error_class.name)
-          expect(message).not_to include(access_token, private_message)
+          expect(message).not_to include(access_token, private_message, chat_id.to_s)
         end
 
         expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
@@ -61,7 +61,7 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       allow(http).to receive(:request).and_raise(Net::ReadTimeout, 'simulated read timeout')
       expect(Rails.logger).to receive(:error) do |message|
         expect(message).to include('Net::ReadTimeout')
-        expect(message).not_to include(access_token, private_message)
+        expect(message).not_to include(access_token, private_message, chat_id.to_s)
       end
 
       result = described_class.call('sendMessage', chat_id: chat_id, text: private_message)
@@ -115,13 +115,13 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
     end
 
-    it 'does not include the token or outgoing message in API error logs' do
+    it 'does not include the token, outgoing message, or chat ID in API error logs' do
       allow(response).to receive(:body).and_return(
         { ok: false, error_code: 500, description: 'simulated API failure' }.to_json
       )
       expect(Rails.logger).to receive(:error) do |message|
         expect(message).to include('simulated API failure')
-        expect(message).not_to include(access_token, private_message)
+        expect(message).not_to include(access_token, private_message, chat_id.to_s)
       end
       expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
         .with('sendMessage', chat_id, false, 500, 'simulated API failure')
