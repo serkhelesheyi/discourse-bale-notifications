@@ -131,6 +131,7 @@ RSpec.describe 'Bale webhook', type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq('success' => true)
+    end
 
     it 'likes the target post and refreshes the callback keyboard' do
       actor = Fabricate(:user)
@@ -144,9 +145,7 @@ RSpec.describe 'Bale webhook', type: :request do
         'callback-like',
         I18n.t('discourse_bale_notifications.like-success')
       )
-      DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup)
-        .with(target_post, actor)
-        .returns(reply_markup)
+      DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup).with(target_post, actor).returns(reply_markup)
       DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).with(
         chat_id: 987_654_323,
         message_id: 13,
@@ -189,9 +188,7 @@ RSpec.describe 'Bale webhook', type: :request do
         'callback-unlike',
         I18n.t('discourse_bale_notifications.unlike-success')
       )
-      DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup)
-        .with(target_post, actor)
-        .returns(reply_markup)
+      DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup).with(target_post, actor).returns(reply_markup)
       DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).with(
         chat_id: 987_654_324,
         message_id: 14,
@@ -264,8 +261,6 @@ RSpec.describe 'Bale webhook', type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq('success' => true)
-    end
-
     end
   end
 end
