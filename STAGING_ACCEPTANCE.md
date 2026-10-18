@@ -145,3 +145,18 @@ Candidate SHA: `34d7d5e600f7cfcee642bd38ec2b2c4b6b47ad7c`.
 - [ ] Backup restoration and plugin disable/rollback still require staging evidence.
 
 These CI checks apply to the exact candidate SHA above. They do not prove live Bale delivery, browser persistence, webhook configuration, or rollback. Staging acceptance has not been performed, and production has not been changed.
+
+
+## Preference save-path update — 18 October 2026
+
+The candidate adds an initializer that calls `api.addSaveableCustomFields("profile")` because the Bale connector is rendered on the profile preferences page. The official Discourse plugin API documents this method as ensuring the entire `custom_fields` object is included in the selected preferences page's save payload. This complements the component's `model.set("custom_fields", ...)`; neither CI nor this source review proves the browser request persisted the field.
+
+Candidate code commit: [`e2f5b08b11e59bc4add138c5a2b82b8fc84f6d19`](https://github.com/serkhelesheyi/discourse-bale-notifications/commit/e2f5b08b11e59bc4add138c5a2b82b8fc84f6d19).
+
+- [x] Smoke workflow run [39100026940](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39100026940) passed on the candidate code SHA.
+- [ ] Record final Discourse Plugin CI result for the candidate SHA before treating code CI as passed.
+- [ ] Run A16 on staging after recording exact Discourse version and installed plugin SHA: select one type and deselect another, save and reload; select all and verify stored empty string; select none and verify `__none__` and all boxes remain unchecked after reload.
+- [ ] Confirm a test notification is suppressed when `__none__` is saved and that a selected type is delivered when allowed by site settings.
+- [ ] Do not use production for this test. Do not mark A16 passed without browser evidence and a staging-only account.
+
+Reference: [Discourse Plugin API](https://github.com/discourse/discourse/blob/main/frontend/discourse/app/lib/plugin-api.gjs), method `addSaveableCustomFields(page)`; [API introduced in Discourse 2026.1](https://releases.discourse.org/changelog/v2026.1.0-latest/).
