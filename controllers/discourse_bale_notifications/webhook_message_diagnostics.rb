@@ -10,8 +10,7 @@ module DiscourseBaleNotifications
     end
 
     def self.details(request_params, incoming)
-      reply = incoming['reply_to_message']
-      message_details(incoming).merge(reply_details(reply)).merge(
+      message_details(incoming).merge(reply_details(incoming)).merge(
         event: 'bale_webhook_message_shape',
         update_keys: keys(request_params)
       )
@@ -25,10 +24,11 @@ module DiscourseBaleNotifications
       }
     end
 
-    def self.reply_details(reply)
+    def self.reply_details(incoming)
+      reply = incoming['reply_to_message']
       reply_is_object = reply.respond_to?(:keys)
       {
-        reply_to_message_present: !reply.nil?,
+        reply_to_message_present: incoming.key?('reply_to_message'),
         reply_to_message_type: reply.nil? ? 'nil' : reply.class.name,
         reply_to_message_keys: reply_is_object ? keys(reply) : [],
         reply_message_id_present: reply_is_object && reply['message_id'].present?
