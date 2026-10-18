@@ -19,56 +19,56 @@ nb_NO:
     unlike-success: "✅ Du har tatt bort at du liker posten."
     reply-error: "❌ Det skjedde en feil med sendinga av svaret ditt."
     reply-failed: "❌ Svar feilet: \n\n %{errors}"
-    reply-success: "✅ Svar lyktes! Se på det <a href='%{post_url}'>her</a>."
+    reply-success: "✅ Svar lyktes! Se på det [her](%{post_url})."
     message:
       mentioned: |-
-        💬 <a href="%{user_url}">@%{username}</a> <b>nevnte</b> deg
-        i <a href="%{post_url}">%{topic}</a>.
+        💬 [@%{username}](%{user_url}) nevnte deg
+        i [%{topic}](%{post_url}).
 
-        <pre>%{post_excerpt}</pre>
+        %{post_excerpt}
       group_mentioned: |-
-        💬 <a href="%{user_url}">@%{username}</a> <b>nevnte</b> deg
-        i <a href="%{post_url}">%{topic}</a>.
+        💬 [@%{username}](%{user_url}) nevnte deg
+        i [%{topic}](%{post_url}).
 
-        <pre>%{post_excerpt}</pre>
+        %{post_excerpt}
       quoted: |-
-        💬 <a href="%{user_url}">@%{username}</a> <b>siterte</b> deg
-        i <a href="%{post_url}">%{topic}</a>.
+        💬 [@%{username}](%{user_url}) siterte deg
+        i [%{topic}](%{post_url}).
 
-        <pre>%{post_excerpt}</pre>
+        %{post_excerpt}
       replied: |-
-        ↩️ <a href="%{user_url}">@%{username}</a> <b>svarte</b> deg
-        i <a href="%{post_url}">%{topic}</a>.
+        ↩️ [@%{username}](%{user_url}) svarte deg
+        i [%{topic}](%{post_url}).
 
-        <pre>%{post_excerpt}</pre>
+        %{post_excerpt}
       posted: |-
-        💬 <a href="%{user_url}">@%{username}</a> <b>la ut noe</b>
-        i <a href="%{post_url}">%{topic}</a>.
+        💬 [@%{username}](%{user_url}) la ut noe
+        i [%{topic}](%{post_url}).
 
-        <pre>%{post_excerpt}</pre>
+        %{post_excerpt}
       private_message: |-
-        ✉️ <a href="%{user_url}">@%{username}</a> har sendt deg en <b>personlig melding</b>
-        i <a href="%{post_url}">%{topic}</a>.
+        ✉️ [@%{username}](%{user_url}) har sendt deg en personlig melding
+        i [%{topic}](%{post_url}).
 
-        <pre>%{post_excerpt}</pre>
+        %{post_excerpt}
       linked: |-
-        🔗 <a href="%{user_url}">@%{username}</a> <b>lenka</b> til innlegget ditt
-        fra <a href="%{post_url}">%{topic}</a>.
+        🔗 [@%{username}](%{user_url}) lenka til innlegget ditt
+        fra [%{topic}](%{post_url}).
 
-        <pre>%{post_excerpt}</pre>
+        %{post_excerpt}
       watching_first_post: |-
-        💬 <a href="%{user_url}">@%{username}</a> <b>la ut noe</b>
-        i <a href="%{post_url}">%{topic}</a>.
+        💬 [@%{username}](%{user_url}) la ut noe
+        i [%{topic}](%{post_url}).
 
-        <pre>%{post_excerpt}</pre>
+        %{post_excerpt}
       # Discourse Follow Plugin
       following_replied: |-
-        ↩️👥 <a href="%{user_url}">@%{username}</a> <b>svarte noen</b>
-        i <a href="%{post_url}">%{topic}</a>.
+        ↩️👥 [@%{username}](%{user_url}) svarte noen
+        i [%{topic}](%{post_url}).
 
-        <pre>%{post_excerpt}</pre>
+        %{post_excerpt}
       following_posted: |-
-        💬👥 <a href="%{user_url}">@%{username}</a> <b>skrev noe</b>
-        i <a href="%{post_url}">%{topic}</a>.
+        💬👥 [@%{username}](%{user_url}) skrev noe
+        i [%{topic}](%{post_url}).
 
-        <pre>%{post_excerpt}</pre>
+        %{post_excerpt}

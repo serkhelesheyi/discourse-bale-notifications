@@ -18,33 +18,33 @@ zh_CN:
     unlike-success: "取消点赞成功"
     reply-error: "❌ 在处理你的回复时发生了一个错误"
     reply-failed: "❌ 回复失败: \n\n %{errors}"
-    reply-success: "✅ 回复成功 - <a href='%{post_url}'>在线查看</a>"
+    reply-success: "✅ 回复成功 - [在线查看](%{post_url})"
     message:
       mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>提及</b> 你
-                在 <a href="%{post_url}">%{topic}</a>
-                <pre>%{post_excerpt}</pre>
+                💬 [@%{username}](%{user_url}) 提及 你
+                在 [%{topic}](%{post_url})
+                %{post_excerpt}
       group_mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>提及</b> 你
-                在 <a href="%{post_url}">%{topic}</a>
-                <pre>%{post_excerpt}</pre>
+                💬 [@%{username}](%{user_url}) 提及 你
+                在 [%{topic}](%{post_url})
+                %{post_excerpt}
       quoted: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>引用</b> 你
-                在 <a href="%{post_url}">%{topic}</a>
-                <pre>%{post_excerpt}</pre>
+                💬 [@%{username}](%{user_url}) 引用 你
+                在 [%{topic}](%{post_url})
+                %{post_excerpt}
       replied: |-
-                ↩️ <a href="%{user_url}">@%{username}</a> <b>回复</b> 给你
-                在 <a href="%{post_url}">%{topic}</a>
-                <pre>%{post_excerpt}</pre>
+                ↩️ [@%{username}](%{user_url}) 回复 给你
+                在 [%{topic}](%{post_url})
+                %{post_excerpt}
       posted: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>发布</b>
-                在 <a href="%{post_url}">%{topic}</a>
-                <pre>%{post_excerpt}</pre>
+                💬 [@%{username}](%{user_url}) 发布
+                在 [%{topic}](%{post_url})
+                %{post_excerpt}
       private_message: |-
-                ✉️ <a href="%{user_url}">@%{username}</a> 发给你 <b>一条私信</b>
-                在 <a href="%{post_url}">%{topic}</a>
-                <pre>%{post_excerpt}</pre>
+                ✉️ [@%{username}](%{user_url}) 发给你 一条私信
+                在 [%{topic}](%{post_url})
+                %{post_excerpt}
       linked: |-
-                🔗 <a href="%{user_url}">@%{username}</a> <b>链接</b> 你的帖子
-                从 <a href="%{post_url}">%{topic}</a>
-                <pre>%{post_excerpt}</pre>
+                🔗 [@%{username}](%{user_url}) 链接 你的帖子
+                从 [%{topic}](%{post_url})
+                %{post_excerpt}

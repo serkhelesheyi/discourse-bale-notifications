@@ -18,44 +18,44 @@ pl_PL:
     unlike-success: "Pomyślnie wycofano lajka"
     reply-error: "❌ Błąd podczas przetwarzania odpowiedzi."
     reply-failed: "❌ Odpowiedź nie powiodła się: \n\n %{errors}"
-    reply-success: "✅ Pomyślnie odpowiedziano - wyświetl to <a href='%{post_url}'>here</a>"
+    reply-success: "✅ Pomyślnie odpowiedziano - wyświetl to [here](%{post_url})"
     message:
       mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>wspomina</b> o Tobie w  
-                <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) wspomina o Tobie w  
+                [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       group_mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>wspomina</b> o Tobie w  <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) wspomina o Tobie w  [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       quoted: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>cytuje</b> Ciebie w <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) cytuje Ciebie w [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       replied: |-
-                ↩️ <a href="%{user_url}">@%{username}</a> <b>odpowiada</b> tobie w <a href="%{post_url}">%{topic}</a>
+                ↩️ [@%{username}](%{user_url}) odpowiada tobie w [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       posted: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>napisał</b>
-                w <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) napisał
+                w [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       private_message: |-
-                ✉️ <a href="%{user_url}">@%{username}</a> wysłał Tobie <b>prywatną wiadomość</b>
-                in <a href="%{post_url}">%{topic}</a>
+                ✉️ [@%{username}](%{user_url}) wysłał Tobie prywatną wiadomość
+                in [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       linked: |-
-                🔗 <a href="%{user_url}">@%{username}</a> <b>wysłał odnośnik</b> do Twojego postu z <a href="%{post_url}">%{topic}</a>
+                🔗 [@%{username}](%{user_url}) wysłał odnośnik do Twojego postu z [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       following_replied: |-
-                ↩️ Obserwowany <a href="%{user_url}">@%{username}</a> <b>odpowiedział</b> w <a href="%{post_url}">%{topic}</a>
+                ↩️ Obserwowany [@%{username}](%{user_url}) odpowiedział w [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       following_posted: |-
-                ↩️ Obserwowany <a href="%{user_url}">@%{username}</a> utworzył <b>nowy temat:</b> <a href="%{post_url}">%{topic}</a>
+                ↩️ Obserwowany [@%{username}](%{user_url}) utworzył nowy temat: [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}

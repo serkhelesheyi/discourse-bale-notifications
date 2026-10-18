@@ -19,56 +19,56 @@ ru:
     unlike-success: "Лайк успешно убран"
     reply-error: "❌ Ошибка при обработке вашего ответа"
     reply-failed: "❌ Ошибка отправки ответа: \n\n %{errors}"
-    reply-success: "✅ Ответ успешно отправлен — посмотреть <a href='%{post_url}'>здесь</a>"
+    reply-success: "✅ Ответ успешно отправлен — посмотреть [здесь](%{post_url})"
     message:
       mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>упомянул(а)</b> вас
-                в <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) упомянул(а) вас
+                в [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       group_mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>упомянул(а)</b> вашу группу
-                в <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) упомянул(а) вашу группу
+                в [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       quoted: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>процитировал(а)</b> вас
-                в <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) процитировал(а) вас
+                в [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       replied: |-
-                ↩️ <a href="%{user_url}">@%{username}</a> <b>ответил(а)</b> вам
-                в <a href="%{post_url}">%{topic}</a>
+                ↩️ [@%{username}](%{user_url}) ответил(а) вам
+                в [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       posted: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>написал(а)</b>
-                в <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) написал(а)
+                в [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       private_message: |-
-                ✉️ <a href="%{user_url}">@%{username}</a> отправил(а) вам <b>личное сообщение</b>
-                в <a href="%{post_url}">%{topic}</a>
+                ✉️ [@%{username}](%{user_url}) отправил(а) вам личное сообщение
+                в [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       linked: |-
-                🔗 <a href="%{user_url}">@%{username}</a> <b>сослался(ась)</b> на ваш пост
-                в <a href="%{post_url}">%{topic}</a>
+                🔗 [@%{username}](%{user_url}) сослался(ась) на ваш пост
+                в [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       watching_first_post: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>опубликовал(а)</b> пост
-                в <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) опубликовал(а) пост
+                в [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       # Discourse Follow Plugin
       following_replied: |-
-                ↩️👥 <a href="%{user_url}">@%{username}</a> <b>ответил(а)</b>
-                в <a href="%{post_url}">%{topic}</a>
+                ↩️👥 [@%{username}](%{user_url}) ответил(а)
+                в [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       following_posted: |-
-                💬👥 <a href="%{user_url}">@%{username}</a> <b>написал(а)</b>
-                в <a href="%{post_url}">%{topic}</a>
+                💬👥 [@%{username}](%{user_url}) написал(а)
+                в [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}

@@ -3,7 +3,7 @@ de:
     telegram_notifications_enabled: Telegram Benachrichtigungen aktivieren?
     telegram_access_token: Hol dir vom BotFather einen Bot Access Token und gib ihn hier ein
   discourse_telegram_notifications:
-    initial-contact: "Um Benachrichtigungen von %{site_title} zu bekommen, gib die 'Chat ID' <b>%{chat_id}</b> in deinen User-Einstellungen ein!"
+    initial-contact: "Um Benachrichtigungen von %{site_title} zu bekommen, gib die 'Chat ID' %{chat_id} in deinen User-Einstellungen ein!"
     known-user: |-
      Hey %{username}, ich werde dir schreiben, wenn du neue Benachrichtigungen bei %{site_title} hast. 
      Wenn du auf diese Nachricht antwortest, antwortest du gleichzeitig auf das Thema oder die Private Nachricht bei %{site_title}.
@@ -18,46 +18,46 @@ de:
     unlike-success: "Erfolgreich mit \"Gefällt mir nicht\" markiert"
     reply-error: "❌ leider ist bei deiner Antwort ein Fehler aufgetreten"
     reply-failed: "❌ Antwort Fehlgeschlagen: \n\n %{errors}"
-    reply-success: "✅ Antwort erfolgreich - schau sie dir <a href='%{post_url}'>hier</a> an"
+    reply-success: "✅ Antwort erfolgreich - schau sie dir [hier](%{post_url}) an"
     message:
       mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> hat <b>dich</b>
-                in <a href="%{post_url}">%{topic}</a> erwähnt
-                <pre>%{post_excerpt}</pre>
+                💬 [@%{username}](%{user_url}) hat dich
+                in [%{topic}](%{post_url}) erwähnt
+                %{post_excerpt}
       group_mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> hat <b>dich</b>
-                in <a href="%{post_url}">%{topic}</a> erwähnt
-                <pre>%{post_excerpt}</pre>
+                💬 [@%{username}](%{user_url}) hat dich
+                in [%{topic}](%{post_url}) erwähnt
+                %{post_excerpt}
       quoted: |-
-                💬 <a href="%{user_url}">@%{username}</a> hat <b>dich</b>
-                in <a href="%{post_url}">%{topic}</a> zitiert
-                <pre>%{post_excerpt}</pre>
+                💬 [@%{username}](%{user_url}) hat dich
+                in [%{topic}](%{post_url}) zitiert
+                %{post_excerpt}
       replied: |-
-                ↩️ <a href="%{user_url}">@%{username}</a> hat dir in <a href="%{post_url}">%{topic}</a>
-                <b>geantwortet</b>
-                <pre>%{post_excerpt}</pre>
+                ↩️ [@%{username}](%{user_url}) hat dir in [%{topic}](%{post_url})
+                geantwortet
+                %{post_excerpt}
       posted: |-
-                💬 <a href="%{user_url}">@%{username}</a> hat in <a href="%{post_url}">%{topic}</a>
-                <b>geantwortet</b>
-                <pre>%{post_excerpt}</pre>
+                💬 [@%{username}](%{user_url}) hat in [%{topic}](%{post_url})
+                geantwortet
+                %{post_excerpt}
       private_message: |-
-                ✉️ <a href="%{user_url}">@%{username}</a> hat dir eine <b>Private Nachricht</b>
-                gesendet <a href="%{post_url}">%{topic}</a>
-                <pre>%{post_excerpt}</pre>
+                ✉️ [@%{username}](%{user_url}) hat dir eine Private Nachricht
+                gesendet [%{topic}](%{post_url})
+                %{post_excerpt}
       linked: |-
-                🔗 <a href="%{user_url}">@%{username}</a> hat dich in
-                <a href="%{post_url}">%{topic}</a> <b>verlinkt</b>
-                <pre>%{post_excerpt}</pre>
+                🔗 [@%{username}](%{user_url}) hat dich in
+                [%{topic}](%{post_url}) verlinkt
+                %{post_excerpt}
       watching_first_post: |-
-                💬 <a href="%{user_url}">@%{username}</a> hat in <a href="%{post_url}">%{topic}</a>
-                <b>geantwortet</b>
-                <pre>%{post_excerpt}</pre>
+                💬 [@%{username}](%{user_url}) hat in [%{topic}](%{post_url})
+                geantwortet
+                %{post_excerpt}
       # Discourse Follow Plugin
       following_replied: |-
-                ↩️👥 <a href="%{user_url}">@%{username}</a> hat in <a href="%{post_url}">%{topic}</a>
-                <b>geantwortet</b>
-                <pre>%{post_excerpt}</pre>
+                ↩️👥 [@%{username}](%{user_url}) hat in [%{topic}](%{post_url})
+                geantwortet
+                %{post_excerpt}
       following_posted: |-
-                💬👥 <a href="%{user_url}">@%{username}</a> hat in <a href="%{post_url}">%{topic}</a>
-                <b>geantwortet</b>
-                <pre>%{post_excerpt}</pre>
+                💬👥 [@%{username}](%{user_url}) hat in [%{topic}](%{post_url})
+                geantwortet
+                %{post_excerpt}

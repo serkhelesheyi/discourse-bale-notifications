@@ -18,56 +18,56 @@ zh_HK:
     unlike-success: "成功取消讚好"
     reply-error: "❌ 處理你的回覆時發生錯誤"
     reply-failed: "❌ 回覆不成功：\n\n %{errors}"
-    reply-success: "✅ 成功回覆，可以瀏覽：<a href='%{post_url}'>here</a>"
+    reply-success: "✅ 成功回覆，可以瀏覽：[here](%{post_url})"
     message:
       mentioned: |-
-                💬 在 <a href="%{post_url}">%{topic}</a>
-                <a href="%{user_url}">@%{username}</a> <b>提及了</b>你
+                💬 在 [%{topic}](%{post_url})
+                [@%{username}](%{user_url}) 提及了你
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       group_mentioned: |-
-                💬 在 <a href="%{post_url}">%{topic}</a>
-                <a href="%{user_url}">@%{username}</a> <b>提及了</b>你
+                💬 在 [%{topic}](%{post_url})
+                [@%{username}](%{user_url}) 提及了你
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       quoted: |-
-                💬 在 <a href="%{post_url}">%{topic}</a> 
-                <a href="%{user_url}">@%{username}</a> <b>引用了</b>你
+                💬 在 [%{topic}](%{post_url}) 
+                [@%{username}](%{user_url}) 引用了你
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       replied: |-
-                ↩️ 在 <a href="%{post_url}">%{topic}</a> 
-                <a href="%{user_url}">@%{username}</a> <b>回覆了</b>你
+                ↩️ 在 [%{topic}](%{post_url}) 
+                [@%{username}](%{user_url}) 回覆了你
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       posted: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>發佈了</b>
-                <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) 發佈了
+                [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       private_message: |-
-                ✉️ 在 <a href="%{post_url}">%{topic}</a>
-                <a href="%{user_url}">@%{username}</a> 發送了<b>私人訊息</b>給你
+                ✉️ 在 [%{topic}](%{post_url})
+                [@%{username}](%{user_url}) 發送了私人訊息給你
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       linked: |-
-                🔗 在 <a href="%{post_url}">%{topic}</a>
-                <a href="%{user_url}">@%{username}</a> <b>鏈接了</b>你的帖子
+                🔗 在 [%{topic}](%{post_url})
+                [@%{username}](%{user_url}) 鏈接了你的帖子
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       watching_first_post: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>發佈了</b>
-                <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) 發佈了
+                [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       # Discourse Follow Plugin
       following_replied: |-
-                ↩️👥 在 <a href="%{post_url}">%{topic}</a>
-                <a href="%{user_url}">@%{username}</a> 有<b>新回覆</b>
+                ↩️👥 在 [%{topic}](%{post_url})
+                [@%{username}](%{user_url}) 有新回覆
                 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       following_posted: |-
-                💬👥 <a href="%{user_url}">@%{username}</a> <b>發佈了</b>
-                <a href="%{post_url}">%{topic}</a>
+                💬👥 [@%{username}](%{user_url}) 發佈了
+                [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}

@@ -18,56 +18,56 @@ it:
     unlike-success: "Rimosso mi piace con successo"
     reply-error: "❌ Si è verificato un errore durante l'elaborazione della risposta"
     reply-failed: "❌ Risposta fallita: \n\n %{errors}"
-    reply-success: "✅ Risposta inviata con successo - visualizzala <a href='%{post_url}'>qui</a>"
+    reply-success: "✅ Risposta inviata con successo - visualizzala [qui](%{post_url})"
     message:
       mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>ti ha menzionato</b>
-                in <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) ti ha menzionato
+                in [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       group_mentioned: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>ti ha menzionato</b>
-                in <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) ti ha menzionato
+                in [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       quoted: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>ti ha citato</b>
-                in <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) ti ha citato
+                in [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       replied: |-
-                ↩️ <a href="%{user_url}">@%{username}</a> <b>ti ha risposto</b>
-                in <a href="%{post_url}">%{topic}</a>
+                ↩️ [@%{username}](%{user_url}) ti ha risposto
+                in [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       posted: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>ha postato</b>
-                in <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) ha postato
+                in [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       private_message: |-
-                ✉️ <a href="%{user_url}">@%{username}</a> ti ha inviato un <b>messaggio privato</b>
-                in <a href="%{post_url}">%{topic}</a>
+                ✉️ [@%{username}](%{user_url}) ti ha inviato un messaggio privato
+                in [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       linked: |-
-                🔗 <a href="%{user_url}">@%{username}</a> <b>ha creato un collegamento</b> al tuo messaggio
-                da <a href="%{post_url}">%{topic}</a>
+                🔗 [@%{username}](%{user_url}) ha creato un collegamento al tuo messaggio
+                da [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       watching_first_post: |-
-                💬 <a href="%{user_url}">@%{username}</a> <b>ha postato</b>
-                in <a href="%{post_url}">%{topic}</a>
+                💬 [@%{username}](%{user_url}) ha postato
+                in [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       # Discourse Follow Plugin
       following_replied: |-
-                ↩️👥 <a href="%{user_url}">@%{username}</a> <b>ha risposto</b>
-                in <a href="%{post_url}">%{topic}</a>
+                ↩️👥 [@%{username}](%{user_url}) ha risposto
+                in [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
       following_posted: |-
-                💬👥 <a href="%{user_url}">@%{username}</a> <b>ha postato</b>
-                in <a href="%{post_url}">%{topic}</a>
+                💬👥 [@%{username}](%{user_url}) ha postato
+                in [%{topic}](%{post_url})
 
-                <pre>%{post_excerpt}</pre>
+                %{post_excerpt}
