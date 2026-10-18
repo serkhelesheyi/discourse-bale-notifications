@@ -160,3 +160,14 @@ Candidate code commit: [`e2f5b08b11e59bc4add138c5a2b82b8fc84f6d19`](https://gith
 - [ ] Do not use production for this test. Do not mark A16 passed without browser evidence and a staging-only account.
 
 Reference: [Discourse Plugin API](https://github.com/discourse/discourse/blob/main/frontend/discourse/app/lib/plugin-api.gjs), method `addSaveableCustomFields(page)`; [API introduced in Discourse 2026.1](https://releases.discourse.org/changelog/v2026.1.0-latest/).
+
+
+## Final CI gate for preference save-path candidate — 18 October 2026
+
+- [x] Discourse Plugin CI [run 39100085147](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39100085147) passed on documentation HEAD `e2be9a8d674f31cd90f798b20d963e2869e9a46a`, which includes the preference-save initializer and the runbook updates.
+- [x] Plugin smoke tests [run 39100084929](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39100084929) passed on the same SHA.
+- [ ] A16 is still pending actual staging browser evidence: partial selection, all selected, none selected, save/reload persistence, and delivery suppression for `__none__`.
+- [ ] A07–A09, stale callbacks, cross-account isolation, backup restore, and rollback remain pending staging execution.
+- [ ] Do not treat the green CI run as evidence of a deployed staging instance or production acceptance. No production deployment has been performed.
+
+Next action: identify/prepare a non-production staging instance, record its Discourse version and installed plugin SHA, and execute the matrix above with staging-only credentials.
