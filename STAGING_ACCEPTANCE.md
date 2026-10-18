@@ -128,3 +128,8 @@ Automated request coverage now includes a syntactically valid callback from an u
 ## Automated interaction coverage — 18 October 2026
 
 The request suite now includes success-path cases for like, unlike, and replying to a stored notification. They verify the local like state, callback feedback/keyboard refresh calls, mapping of a Bale message ID to the original post, and the arguments passed to Discourse's `NewPostManager`. The Bale API calls are mocked. These tests are not a staging pass: A07 and the real Bale reply flow remain **Pending staging run** until exercised with staging-only credentials and accounts. Also verify stale buttons and cross-account isolation before marking interaction acceptance complete.
+
+
+## Automated interaction coverage update — 18 October 2026
+
+The request suite now also covers callback account isolation (the linked account identified by the incoming private chat must be the actor; another linked account must not receive the action) and an unlike callback when no active like exists. CI previously exposed and prompted fixes for an unsupported `PostAction.remove_act` class call, keyboard expectation argument types, reply-manager mocking, and two RuboCop line-length offenses. These fixes are committed, but this section is not a staging pass: wait for green CI on the final candidate SHA, then run A07–A09 with staging-only credentials and record actual evidence.
