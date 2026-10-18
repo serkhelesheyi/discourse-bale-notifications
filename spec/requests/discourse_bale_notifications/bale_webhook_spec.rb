@@ -270,6 +270,8 @@ RSpec.describe 'Bale webhook', type: :request do
              }
            }
 
+      expect(expected_text).to include('[View the reply](https://forum.example/t/example/1)')
+      expect(expected_text).not_to include('<a ')
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq('success' => true)
     end
