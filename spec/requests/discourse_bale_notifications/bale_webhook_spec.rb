@@ -232,8 +232,8 @@ RSpec.describe 'Bale webhook', type: :request do
       PluginStore.set('bale-notifications', "message_#{chat_id}_#{bale_message_id}", target_post.id)
 
       reply_url = 'https://forum.example/t/example/1'
-      reply_post = stub(full_url: reply_url)
-      result = stub(errors: [], post: reply_post)
+      reply_post = double(full_url: reply_url)
+      result = double(errors: [], post: reply_post)
       expected_text = I18n.t(
         'discourse_bale_notifications.reply-success',
         post_url: CGI.escapeHTML(reply_url)
