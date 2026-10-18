@@ -374,3 +374,9 @@ The previous CI failure was fixed, and both workflows passed on commit `b98c7c3e
 ## تأیید CI نهایی — ثبت ذخیره‌سازی ترجیحات — ۱۸ اکتبر ۲۰۲۶
 
 هر دو workflow روی HEAD مستندات `e2be9a8d674f31cd90f798b20d963e2869e9a46a` موفق‌اند: [Discourse Plugin CI run 39100085147](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39100085147) و [Plugin smoke tests run 39100084929](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39100084929). بنابراین گیت CI خودکار برای initializer ثبت `addSaveableCustomFields("profile")` و مستندات مربوط بسته است. این نتیجه آزمون مرورگر را اثبات نمی‌کند؛ A16 و آزمون end-to-end، تعامل‌های واقعی بله و بازیابی/rollback همچنان نیازمند staging هستند. هیچ استقرار یا تغییری روی تولید انجام نشده است.
+
+## مسیر بعدی: پذیرش محدود با حساب مدیر روی انجمن فعلی
+
+آخرین CI و smoke tests روی HEAD مستندات `b8cc335f23ee0f7faad004ff00edd30df59e8637` موفق‌اند: [CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39100620762) و [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39100620632). چون محیط staging جداگانه موجود نیست، گام بعدی پذیرش محدود با حساب خود کاربر از طریق به‌روزرسانی خود افزونه در رابط مدیریت انجمن است. کاربر اعلام کرده است که این روش به restart داکر/انجمن نیاز ندارد؛ در این مرحله هیچ تغییر سروری دیگری در برنامه نیست.
+
+چک‌لیست اجرایی و معیارهای توقف در [ROADMAP.md](ROADMAP.md) و [STAGING_ACCEPTANCE.md](STAGING_ACCEPTANCE.md) ثبت شده‌اند. آزمون زنده هنوز انجام نشده است؛ به‌ویژه ذخیره و reload ترجیحات، حالت «هیچ‌کدام»، و کنترل تحویل اعلان‌ها باید واقعاً بررسی شوند. CI سبز به معنی پذیرش زنده نیست.
