@@ -45,7 +45,7 @@ Record the date/time and timezone, staging URL (do not publish secrets), Discour
 | A13 | Secret and content redaction | Tokens, secrets, private message bodies, and sensitive payloads do not appear in logs | Pending staging run |
 | A14 | Disable plugin | New plugin activity stops as expected; no recurring job/error storm remains | Pending staging run |
 | A15 | Regression and resource health | Core forum actions still work; web and Sidekiq remain healthy; no growing queue or repeated errors | Pending staging run |
-| A16 | Bale preference persistence | Toggle one notification type off, save/reload and confirm it remains off; toggle it on and repeat; select all types and confirm legacy unrestricted behavior; deselect all types and confirm all remain off after reload and no Bale notification is delivered | Pending staging run |
+| A16 | Bale preference persistence | Toggle preferences, save/reload; all-off state suppresses a supported event and enabled state delivers it | **Partial pass on live forum**: persistence and private-message suppression/delivery confirmed by user report; other types not individually tested |
 
 For each row record **Pass / Fail / Blocked / Not applicable**, test account(s), timestamp, concise observations, and links to redacted logs. Never mark a row Pass solely because a unit test or GitHub Actions workflow passed.
 
@@ -203,3 +203,10 @@ After updating the plugin through the forum admin UI, the user reports these rea
 The documentation HEAD 0cbdb51fa39536818dac71edc28381bb72074ad1 also has green automated workflows: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39101182350) and [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39101182110).
 
 This is evidence of initial live acceptance, not full acceptance. Still verify event suppression with all eight options off; test other notification types individually where applicable; and retain pending status for Bale replies, stale/deleted-post callbacks, cross-account isolation, and backup restore/rollback until those are exercised. The checklist records the user's report; it does not independently execute or verify the tests.
+
+
+## Live acceptance update — all preferences off — 18 October 2026
+
+**Reported outcome: PASS for the tested private-message event on the existing live forum.** The user saved all eight notification preferences as off, reloaded the profile and confirmed they remained off, then sent a private message and received no Bale notification. After re-enabling the preferences, a second private message generated the expected notification.
+
+This validates persistence of the explicit all-off selection and delivery suppression/enabled delivery for the private-message route only. It does not establish that all eight notification types have each been tested individually. The result is based on the user's direct report, not independent log inspection. Exact installed plugin SHA and Discourse version have not yet been recorded.
