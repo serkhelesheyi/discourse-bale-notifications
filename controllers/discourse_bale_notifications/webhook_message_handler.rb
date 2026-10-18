@@ -10,10 +10,33 @@ module DiscourseBaleNotifications
       chat_id = incoming['chat']['id']
       return render json: { success: true } if rate_limited_chat?(chat_id)
 
+      log_webhook_message_shape(incoming)
+
       user, known_user, message_text = resolve_message_user(chat_id, incoming)
       message_text = reply_message_text(user, chat_id, incoming) if known_user && incoming.key?('reply_to_message')
 
       send_incoming_message(chat_id, message_text)
+    end
+
+    # Opt-in diagnostics deliberately record structure only, never payload values.
+    # This helps distinguish a missing Bale reply field from a reply-mapping failure.
+    def log_webhook_message_shape(incoming)
+      return unless SiteSetting.bale_notifications_webhook_diagnostics_enabled
+
+      reply = incoming['reply_to_message']
+      reply_is_object = webhook_object?(reply)
+      details = {
+        event: 'bale_webhook_message_shape',
+        update_keys: params.keys.map(&:to_s).sort,
+        message_keys: incoming.keys.map(&:to_s).sort,
+        text_present: incoming.key?('text'),
+        text_type: incoming['text'].class.name,
+        reply_to_message_present: incoming.key?('reply_to_message'),
+        reply_to_message_type: reply.nil? ? 'nil' : reply.class.name,
+        reply_to_message_keys: reply_is_object ? reply.keys.map(&:to_s).sort : [],
+        reply_message_id_present: reply_is_object && reply['message_id'].present?
+      }
+      Rails.logger.info("[BaleNotifications diagnostic] #{details.to_json}")
     end
 
     def send_incoming_message(chat_id, message_text)
