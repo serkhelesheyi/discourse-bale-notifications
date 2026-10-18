@@ -1299,8 +1299,9 @@ The user reports that all eight notification preferences were disabled and saved
 - [x] شاخهٔ تشخیصی `diagnose-first-bale-reply` با تنظیم اختیاری `bale_notifications_webhook_diagnostics_enabled` ایجاد شد؛ پیش‌فرض `false` است.
 - [x] لاگ تشخیصی فقط نام کلیدها، وجود فیلدها و نوع داده‌ها را ثبت می‌کند؛ متن پیام، شناسهٔ چت، شناسهٔ پیام، secret و مقادیر payload را ثبت نمی‌کند.
 - [x] آزمون رگرسیون برای تأیید ثبت ساختار امن و عدم ثبت متن/شناسهٔ آزمایشی اضافه شد.
-- [ ] CI کامل و smoke tests روی شاخهٔ تشخیصی باید سبز شوند.
-- [ ] پس از بررسی PR و به‌روزرسانی کنترل‌شدهٔ افزونه از پنل مدیریت، تنظیم تشخیصی را موقتاً روشن کنید؛ دقیقاً یک اعلان آزمایشی بفرستید و اولین ریپلای را انجام دهید، سپس یک ریپلای دوم بفرستید.
+- [x] CI کامل روی commit `1bc8e56` سبز شد: [Discourse Plugin run #251](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39108367492)؛ هر سه job شامل `check_for_tests`، `linting/Rubocop` و `backend_tests` موفق شدند.
+- [x] Smoke tests روی همان commit سبز شد: [Plugin smoke tests run #169](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39108367323).
+- [ ] پس از بازبینی نهایی PR و ادغام آن، افزونه را فقط از پنل مدیریت به‌روزرسانی کنید؛ تنظیم تشخیصی را موقتاً روشن کنید، یک اعلان آزمایشی بفرستید و اولین ریپلای را انجام دهید، سپس یک ریپلای دوم بفرستید.
 - [ ] فقط خطوط `[BaleNotifications diagnostic]` مربوط به زمان آزمون را بررسی کنید. اگر برای ریپلای اول `reply_to_message_present:false` و برای ریپلای دوم `true` باشد، نبودن فرادادهٔ Reply در ورودی اول به‌طور مستقیم ثابت می‌شود. اگر هر دو `true` باشند، باید نوع و کلیدهای شیء `reply_to_message` و سپس نگاشت `message_id` به `PluginStore` را بررسی کنیم.
 - [ ] پس از ثبت شواهد، تنظیم تشخیصی را فوراً خاموش کنید و بر مبنای payload واقعی اصلاح نهایی و آزمون رگرسیون بنویسید.
 
