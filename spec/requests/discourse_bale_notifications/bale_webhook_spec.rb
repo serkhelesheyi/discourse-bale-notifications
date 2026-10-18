@@ -71,7 +71,7 @@ RSpec.describe 'Bale webhook', type: :request do
            params: {
              message: {
                text: 'private diagnostic text',
-               chat: { id: 987654399, type: 'private' }
+               chat: { id: 987_654_399, type: 'private' }
              }
            }
 
