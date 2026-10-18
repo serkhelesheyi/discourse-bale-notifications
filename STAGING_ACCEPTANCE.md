@@ -45,7 +45,7 @@ Record the date/time and timezone, staging URL (do not publish secrets), Discour
 | A13 | Secret and content redaction | Tokens, secrets, private message bodies, and sensitive payloads do not appear in logs | Pending staging run |
 | A14 | Disable plugin | New plugin activity stops as expected; no recurring job/error storm remains | Pending staging run |
 | A15 | Regression and resource health | Core forum actions still work; web and Sidekiq remain healthy; no growing queue or repeated errors | Pending staging run |
-| A16 | Bale preference persistence | Toggle one notification type off, save, reload and confirm it remains off; toggle it on and repeat; select all types, save/reload and confirm legacy unrestricted behavior | Pending staging run |
+| A16 | Bale preference persistence | Toggle one notification type off, save/reload and confirm it remains off; toggle it on and repeat; select all types and confirm legacy unrestricted behavior; deselect all types and confirm all remain off after reload and no Bale notification is delivered | Pending staging run |
 
 For each row record **Pass / Fail / Blocked / Not applicable**, test account(s), timestamp, concise observations, and links to redacted logs. Never mark a row Pass solely because a unit test or GitHub Actions workflow passed.
 
@@ -106,7 +106,7 @@ No production deployment has been performed. Production release requires separat
 
 ## Additional preference persistence check — 17 October 2026
 
-A16 specifically validates the GJS-to-Discourse model save path. Run it only on staging with a linked test account and record the exact plugin SHA and Discourse version. Check both the rendered checkbox state after reload and, where safely available, the persisted `bale_notification_types` custom field. When every enabled type is selected, the expected stored value is an empty string (legacy unrestricted behavior). Do not treat CI or backend job specs as a substitute for this browser check. This test has not yet been executed.
+A16 specifically validates the GJS-to-Discourse model save path. Run it only on staging with a linked test account and record the exact plugin SHA and Discourse version. Check both the rendered checkbox state after reload and, where safely available, the persisted `bale_notification_types` custom field. When every enabled type is selected, the expected stored value is an empty string (legacy unrestricted behavior). When none is selected, the expected stored value is the explicit sentinel `__none__`, and the delivery job must suppress every type. Also verify one selected/one deselected after a reload. Do not treat CI or backend job specs as a substitute for this browser check. This test has not yet been executed.
 
 
 ## Clarification for A16 — explicit empty selection
@@ -118,3 +118,8 @@ The persisted preference contract distinguishes three states:
 - A pipe-separated list: only those listed types may be delivered.
 
 For A16, verify that selecting no checkboxes survives save/reload as all unchecked and that a supported test notification is not delivered to that account. Also verify selecting all checkboxes survives reload and continues to use the legacy empty-string value. This clarification describes the candidate implementation; it is not evidence that the staging test has run.
+
+
+## Callback regression note — 18 October 2026
+
+Automated request coverage now includes a syntactically valid callback from an unlinked private chat and a callback referencing a missing/deleted post. These cases must be acknowledged safely and answered as unavailable. This does not replace staging checks for successful like/unlike, replies, stale keyboard buttons, or cross-account isolation. Record actual outcomes and redacted evidence before marking any acceptance row as passed.
