@@ -194,3 +194,12 @@ Next action: identify/prepare a non-production staging instance, record its Disc
 ### ثبت نتیجه
 
 برای هر مورد، زمان، SHA واقعاً نصب‌شده، نسخهٔ Discourse، نتیجهٔ مورد انتظار/واقعی و شواهد redacted را ثبت کنید. تا زمانی که نتیجهٔ واقعی ثبت نشده، A16 و پذیرش زنده را **Pending** نگه دارید. این سند به‌روزرسانی افزونه را اجرا نمی‌کند و rollback را نیز انجام نداده است.
+
+
+## Live acceptance report — 18 October 2026
+
+After updating the plugin through the forum admin UI, the user reports these real-site checks passed: partial notification preferences remained deselected after reload; all eight preferences remained deselected after reload; an incoming message produced a Bale notification when all options were enabled; like and unlike actions from Bale worked; disabling the private-message notification preference suppressed the next private-message notification; and the admin-panel test notification was delivered.
+
+The documentation HEAD 0cbdb51fa39536818dac71edc28381bb72074ad1 also has green automated workflows: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39101182350) and [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39101182110).
+
+This is evidence of initial live acceptance, not full acceptance. Still verify event suppression with all eight options off; test other notification types individually where applicable; and retain pending status for Bale replies, stale/deleted-post callbacks, cross-account isolation, and backup restore/rollback until those are exercised. The checklist records the user's report; it does not independently execute or verify the tests.
