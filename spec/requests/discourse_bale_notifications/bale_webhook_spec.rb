@@ -10,9 +10,9 @@ RSpec.describe 'Bale webhook', type: :request do
     SiteSetting.bale_secret = 'test-webhook-secret'
   end
 
-  describe 'POST /bale/hook/:key' do
+  describe 'POST /bale/hook?key=:key' do
     it 'returns JSON with forbidden status for an incorrect secret' do
-      post '/bale/hook/wrong-secret', params: { message: {} }
+      post '/bale/hook?key=wrong-secret', params: { message: {} }
 
       expect(response).to have_http_status(:forbidden)
       expect(response.parsed_body).to eq('error' => 'forbidden')
@@ -21,10 +21,31 @@ RSpec.describe 'Bale webhook', type: :request do
     it 'rejects requests when the configured webhook secret is blank' do
       SiteSetting.bale_secret = ''
 
-      post '/bale/hook/test-webhook-secret', params: { message: {} }
+      post '/bale/hook?key=test-webhook-secret', params: { message: {} }
 
       expect(response).to have_http_status(:forbidden)
       expect(response.parsed_body).to eq('error' => 'forbidden')
+    end
+
+
+    it 'filters webhook secrets and payload content from Rails request logging' do
+      post '/bale/hook?key=test-webhook-secret',
+           params: {
+             message: { text: 'private-webhook-message-do-not-log' },
+             callback_query: { id: 'private-callback-id-do-not-log' },
+             bale: { message: 'duplicate-private-payload-do-not-log' }
+           }
+
+      expect(response).to have_http_status(:ok)
+      expect(request.filtered_path).not_to include('test-webhook-secret')
+      filtered_parameters = request.filtered_parameters.to_json
+      expect(filtered_parameters).to include('[FILTERED]')
+      expect(filtered_parameters).not_to include(
+        'test-webhook-secret',
+        'private-webhook-message-do-not-log',
+        'private-callback-id-do-not-log',
+        'duplicate-private-payload-do-not-log'
+      )
     end
 
     it 'acknowledges a message payload with no chat object without raising' do
