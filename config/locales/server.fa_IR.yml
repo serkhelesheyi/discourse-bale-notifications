@@ -61,6 +61,7 @@ fa_IR:
       private_message: |-
                 ✉️ [@%{username}](%{user_url}) برای شما یک پیام خصوصی فرستاد
                 موضوع پیام خصوصی: [%{topic}](%{post_url})
+                برای پاسخ، روی همین اعلان Reply بزنید.
 
                 %{post_excerpt}
       linked: |-

@@ -228,6 +228,7 @@ RSpec.describe Jobs::SendBaleNotifications do
 
       expect(rendered).to include("موضوع پیام خصوصی: [عنوان پیام خصوصی](#{Discourse.base_url}/t/private-topic/123/1)")
       expect(rendered).to include('برای شما یک پیام خصوصی فرستاد')
+      expect(rendered).to include('برای پاسخ، روی همین اعلان Reply بزنید.')
       expect(rendered).not_to include('<a ', '<b>', '<pre>')
     end
 

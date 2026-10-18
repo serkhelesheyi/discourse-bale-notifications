@@ -61,6 +61,7 @@ en:
       private_message: |-
                 ✉️ [@%{username}](%{user_url}) sent you a personal message
                 Private-message topic: [%{topic}](%{post_url})
+                To reply, use Reply on this notification.
 
                 %{post_excerpt}
       linked: |-

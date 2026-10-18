@@ -217,3 +217,6 @@ This validates persistence of the explicit all-off selection and delivery suppre
 The user confirmed that replying to an existing private-message notification in Bale successfully posted a reply to the correct private topic and under the correct account. The user then identified three presentation issues: the success-message link was not clickable, the notification did not explain the Reply workflow, and the phrase equivalent to “in [title]” was ambiguous.
 
 The candidate changes use Bale's documented Markdown link syntax, label the private-message topic explicitly, add a concise Reply instruction, and escape dynamic text for Markdown. **These presentation fixes are not yet live-verified.** After updating the plugin through the forum admin UI, check that (1) the success link opens the created reply, (2) the initial private-message notification has a clickable topic link and a clear “Private-message topic” label, (3) the Reply instruction is visible, and (4) the private-message body remains readable. Do not mark this follow-up as passed before those checks.
+
+
+The private-message notification itself now includes a short Reply hint (not only the connection/help message). Verify that the hint appears in a newly delivered notification after updating the plugin. This remains pending live verification.
