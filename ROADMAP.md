@@ -1,6 +1,6 @@
 # نقشه‌راه بازبینی و بهبود افزونهٔ اعلان‌های بله
 
-> **وضعیت سند:** به‌روزرسانی‌شده در ۱۸ اکتبر ۲۰۲۶. روی HEAD شاخهٔ `diagnose-first-bale-reply` با SHA `35a7f7b88c7cf71d19dc6553d0764ed447cafadf` هر دو workflow موفق‌اند: [Discourse Plugin CI #39110944230](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39110944230) و [Plugin smoke tests #39110944285](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39110944285). PR شمارهٔ ۲ از حالت Draft خارج و برای بازبینی آماده شده است؛ هنوز ادغام یا استقرار نشده. آزمون مرورگر ترجیحات، پذیرش staging و بازیابی پشتیبان همچنان باز هستند.
+> **وضعیت سند:** به‌روزرسانی‌شده در ۱۸ اکتبر ۲۰۲۶. روی HEAD شاخهٔ `diagnose-first-bale-reply` با SHA `9f8ce4adc70190b49a7e9ed4bb9438dd9d1fdafa` هر دو workflow موفق‌اند: [Discourse Plugin CI #39112355656](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39112355656) و [Plugin smoke tests #39112355372](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39112355372). PR شمارهٔ ۲ از حالت Draft خارج و برای بازبینی آماده شده است؛ هنوز ادغام یا استقرار نشده. آزمون مرورگر ترجیحات، پذیرش staging و بازیابی پشتیبان همچنان باز هستند.
 > **هدف:** افزونه‌ای قابل‌اعتماد، امن، قابل‌نگهداری و خوش‌استفاده برای یک انجمن دیسکورس معمولی تا متوسط؛ نه یک سامانهٔ سازمانی پرهزینه.
 > **قاعدهٔ اجرا:** هر مرحله باید با شواهد، تغییر محدود، آزمون متناسب و به‌روزرسانی همین سند و `README.md` پایان یابد. تا وقتی مرحله‌ای واقعاً اجرا و آزموده نشده، آن را «انجام‌شده» اعلام نمی‌کنیم.
 
