@@ -146,8 +146,8 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.like-success')
       )
       DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup)
-        .with(target_post, actor)
-        .returns(reply_markup)
+      .with(target_post, actor)
+      .returns(reply_markup)
       DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).with(
         chat_id: '987654323',
         message_id: '13',
@@ -191,8 +191,8 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.unlike-success')
       )
       DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup)
-        .with(target_post, actor)
-        .returns(reply_markup)
+      .with(target_post, actor)
+      .returns(reply_markup)
       DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).with(
         chat_id: '987654324',
         message_id: '14',
@@ -249,7 +249,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       ).returns(manager)
       DiscourseBaleNotifications::BaleNotifier.expects(:send_message).with(
-        chat_id: chat_id,
+        chat_id: chat_id.to_s,
         text: expected_text,
         parse_mode: 'html',
         disable_web_page_preview: true
@@ -284,8 +284,8 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.like-success')
       )
       DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup)
-        .with(target_post, actor)
-        .returns(reply_markup)
+      .with(target_post, actor)
+      .returns(reply_markup)
       DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).with(
         chat_id: '987654326',
         message_id: '16',
@@ -334,8 +334,8 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.unlike-failed')
       )
       DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup)
-        .with(target_post, actor)
-        .returns(reply_markup)
+      .with(target_post, actor)
+      .returns(reply_markup)
       DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).with(
         chat_id: '987654328',
         message_id: '17',
