@@ -265,6 +265,103 @@ RSpec.describe 'Bale webhook', type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq('success' => true)
     end
+
+    it 'does not apply a callback action to a different linked account' do
+      actor = Fabricate(:user)
+      other_user = Fabricate(:user)
+      author = Fabricate(:user)
+      target_post = Fabricate(:post, user: author)
+      actor.custom_fields['bale_chat_id'] = '987654326'
+      actor.save_custom_fields
+      other_user.custom_fields['bale_chat_id'] = '987654327'
+      other_user.save_custom_fields
+      reply_markup = { inline_keyboard: [] }
+
+      DiscourseBaleNotifications::BaleNotifier.expects(:answer_callback).with(
+        'callback-account-isolation',
+        I18n.t('discourse_bale_notifications.like-success')
+      )
+      DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup)
+        .with(target_post, actor)
+        .returns(reply_markup)
+      DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).with(
+        chat_id: '987654326',
+        message_id: '16',
+        reply_markup: reply_markup
+      )
+
+      post '/bale/hook/test-webhook-secret',
+           params: {
+             callback_query: {
+               id: 'callback-account-isolation',
+               data: "like:#{target_post.id}",
+               message: {
+                 message_id: 16,
+                 chat: { id: 987_654_326, type: 'private' }
+               }
+             }
+           }
+
+      expect(response).to have_http_status(:ok)
+      expect(
+        actor.post_actions.exists?(
+          post_id: target_post.id,
+          post_action_type_id: PostActionType.types[:like],
+          deleted_at: nil
+        )
+      ).to be(true)
+      expect(
+        other_user.post_actions.exists?(
+          post_id: target_post.id,
+          post_action_type_id: PostActionType.types[:like],
+          deleted_at: nil
+        )
+      ).to be(false)
+    end
+
+    it 'acknowledges an unlike callback when the user has no active like' do
+      actor = Fabricate(:user)
+      author = Fabricate(:user)
+      target_post = Fabricate(:post, user: author)
+      actor.custom_fields['bale_chat_id'] = '987654328'
+      actor.save_custom_fields
+      reply_markup = { inline_keyboard: [] }
+
+      DiscourseBaleNotifications::BaleNotifier.expects(:answer_callback).with(
+        'callback-unlike-missing',
+        I18n.t('discourse_bale_notifications.unlike-failed')
+      )
+      DiscourseBaleNotifications::BaleNotifier.expects(:generate_reply_markup)
+        .with(target_post, actor)
+        .returns(reply_markup)
+      DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).with(
+        chat_id: '987654328',
+        message_id: '17',
+        reply_markup: reply_markup
+      )
+
+      post '/bale/hook/test-webhook-secret',
+           params: {
+             callback_query: {
+               id: 'callback-unlike-missing',
+               data: "unlike:#{target_post.id}",
+               message: {
+                 message_id: 17,
+                 chat: { id: 987_654_328, type: 'private' }
+               }
+             }
+           }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq('success' => true)
+      expect(
+        actor.post_actions.exists?(
+          post_id: target_post.id,
+          post_action_type_id: PostActionType.types[:like],
+          deleted_at: nil
+        )
+      ).to be(false)
+    end
   end
 end
 
