@@ -256,7 +256,6 @@ RSpec.describe 'Bale webhook', type: :request do
         {
           chat_id: chat_id.to_s,
           text: expected_text,
-          parse_mode: 'html',
           disable_web_page_preview: true
         }
       )
