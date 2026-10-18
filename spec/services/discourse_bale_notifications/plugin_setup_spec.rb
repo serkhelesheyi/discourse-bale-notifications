@@ -49,3 +49,4 @@ RSpec.describe DiscourseBaleNotifications::PluginSetup do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
