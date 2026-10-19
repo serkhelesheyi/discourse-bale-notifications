@@ -596,11 +596,12 @@ The site owner reports that the plugin has been updated through Discourse and th
 
 The regression test in `spec/jobs/send_bale_notifications_spec.rb` asserts that `Jobs::SendBaleNotifications` retains `sidekiq_options retry: 5`. This guards against accidentally removing or changing the configured retry budget; it does not prove the live Sidekiq runtime's effective retry schedule or real Bale API behavior.
 
-### Validation of PR #8
+### PR #8 merged and follow-up privacy hardening — 19 October 2026
 
-- [x] Reviewed the three-file diff: one regression assertion and documentation-only updates; no runtime behavior changed.
-- [x] Discourse Plugin CI passed on HEAD `0188a33c43c3ff547f69a107971df0c35e5fe8ef`: [run 39262862183](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39262862183) (`linting`, `check_for_tests`, `backend_tests` all successful).
-- [x] Plugin smoke tests passed on the same HEAD: [run 39262866759](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39262866759).
-- [ ] PR [#8](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/8) is awaiting an explicit merge decision; passing CI is not itself authorization to merge.
+- [x] PR [#8](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/8) was squash-merged into `main` as `42744d3b80536fa2d961f1fd029c85cd35825b04`.
+- [x] CI and smoke tests passed on the pre-merge PR head `5f25687e6641daf3446286da73bb31186bbfa4c4`.
+- [x] On the merge commit, smoke tests passed: [run 39265563004](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39265563004). The CI `linting` and `check_for_tests` jobs passed; `backend_tests` was still running at the last check, so full post-merge CI must not yet be described as complete.
+- [x] Follow-up PR branch `fix/minimize-admin-activity-identifiers` removes `chat_id` from the admin status API's recent-activity response while retaining username lookup, and adds a request regression test.
+- [ ] The follow-up branch's CI and smoke tests must pass before proposing that change for merge.
 
-No server commands, production configuration changes, webhook changes, restarts, or database operations were performed as part of this repository-side test change. CI does not establish exactly-once delivery, the live retry schedule, or whether every notification/callback path has been exercised.
+The follow-up reduces unnecessary exposure of linked Bale chat IDs in the admin JSON response; it does not remove IDs from the internal PluginStore activity records or prove privacy across external CDN/access logs. No production server commands, configuration changes, webhook changes, restarts, or database operations were performed. CI does not establish exactly-once delivery or the live Sidekiq retry schedule.
