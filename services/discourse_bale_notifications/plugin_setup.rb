@@ -4,6 +4,7 @@ module DiscourseBaleNotifications
   # Registers routes, user fields, hooks, and jobs after the Discourse app initializes.
   class PluginSetup
     def self.configure
+      configure_webhook_parameter_filters
       draw_engine_routes
       draw_admin_routes
       register_chat_id_field
@@ -13,10 +14,17 @@ module DiscourseBaleNotifications
       register_jobs
     end
 
+    # Prevent Rails' automatic request logging from recording webhook secrets or payloads.
+    # These names are filtered globally because Rails applies parameter filters before
+    # controller code runs; only log output is affected, not the values the app processes.
+    def self.configure_webhook_parameter_filters
+      Rails.application.config.filter_parameters |= %i[key message callback_query bale]
+    end
+
     def self.draw_engine_routes
       Engine.routes.draw do
         # تغییر مسیر وب‌هوک از /telegram به /bale
-        post '/hook/:key' => 'bale#hook'
+        post '/hook' => 'bale#hook'
         # فاز یک - اصلاح #۸: تولید/حذف کد اتصال یک‌بارمصرف (نیازمند ورود به حساب)
         post '/link' => 'link#create'
         delete '/link' => 'link#destroy'

@@ -10,9 +10,9 @@ RSpec.describe 'Bale webhook', type: :request do
     SiteSetting.bale_secret = 'test-webhook-secret'
   end
 
-  describe 'POST /bale/hook/:key' do
+  describe 'POST /bale/hook?key=:key' do
     it 'returns JSON with forbidden status for an incorrect secret' do
-      post '/bale/hook/wrong-secret', params: { message: {} }
+      post '/bale/hook?key=wrong-secret', params: { message: {} }
 
       expect(response).to have_http_status(:forbidden)
       expect(response.parsed_body).to eq('error' => 'forbidden')
@@ -21,21 +21,41 @@ RSpec.describe 'Bale webhook', type: :request do
     it 'rejects requests when the configured webhook secret is blank' do
       SiteSetting.bale_secret = ''
 
-      post '/bale/hook/test-webhook-secret', params: { message: {} }
+      post '/bale/hook?key=test-webhook-secret', params: { message: {} }
 
       expect(response).to have_http_status(:forbidden)
       expect(response.parsed_body).to eq('error' => 'forbidden')
     end
 
+    it 'filters webhook secrets and payload content from Rails request logging' do
+      post '/bale/hook?key=test-webhook-secret',
+           params: {
+             message: { text: 'private-webhook-message-do-not-log' },
+             callback_query: { id: 'private-callback-id-do-not-log' },
+             bale: { message: 'duplicate-private-payload-do-not-log' }
+           }
+
+      expect(response).to have_http_status(:ok)
+      expect(request.filtered_path).not_to include('test-webhook-secret')
+      filtered_parameters = request.filtered_parameters.to_json
+      expect(filtered_parameters).to include('[FILTERED]')
+      expect(filtered_parameters).not_to include(
+        'test-webhook-secret',
+        'private-webhook-message-do-not-log',
+        'private-callback-id-do-not-log',
+        'duplicate-private-payload-do-not-log'
+      )
+    end
+
     it 'acknowledges a message payload with no chat object without raising' do
-      post '/bale/hook/test-webhook-secret', params: { message: { text: 'hello' } }
+      post '/bale/hook?key=test-webhook-secret', params: { message: { text: 'hello' } }
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq('success' => true)
     end
 
     it 'acknowledges a message payload with no chat ID without raising' do
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: { message: { chat: { type: 'private' }, text: 'hello' } }
 
       expect(response).to have_http_status(:ok)
@@ -43,7 +63,7 @@ RSpec.describe 'Bale webhook', type: :request do
     end
 
     it 'acknowledges non-private message payloads without processing them' do
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: { message: { chat: { id: 123, type: 'group' }, text: 'hello' } }
 
       expect(response).to have_http_status(:ok)
@@ -67,7 +87,7 @@ RSpec.describe 'Bale webhook', type: :request do
         payload[:chat_id] == '987654399' && payload[:text].include?('To reply')
       end
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              message: {
                text: 'private diagnostic text',
@@ -85,7 +105,7 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.action-unavailable')
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: { callback_query: { id: 'callback-1', data: 'like:1' } }
 
       expect(response).to have_http_status(:ok)
@@ -98,7 +118,7 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.action-unavailable')
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-2',
@@ -120,7 +140,7 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.action-unavailable')
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-unlinked',
@@ -146,7 +166,7 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.action-unavailable')
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-deleted-post',
@@ -185,7 +205,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-like',
@@ -232,7 +252,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-unlike',
@@ -289,7 +309,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              message: {
                text: 'Reply from Bale',
@@ -330,7 +350,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-account-isolation',
@@ -382,7 +402,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-unlike-missing',

@@ -24,10 +24,10 @@ module DiscourseBaleNotifications
       do_request('answerCallbackQuery', { callback_query_id: callback_id, text: text })
     end
 
-    def self.setup_webhook(_key)
+    def self.setup_webhook(key)
       message = {
-        # آدرس وب‌هوک با دامنه بله و مسیر جدید
-        url: "#{Discourse.base_url}/bale/hook/#{SiteSetting.bale_secret}"
+        # Keep the secret in a filtered query parameter, never in the logged URL path.
+        url: "#{Discourse.base_url}/bale/hook?key=#{CGI.escape(key.to_s)}"
       }
       do_request('setWebhook', message)
     end

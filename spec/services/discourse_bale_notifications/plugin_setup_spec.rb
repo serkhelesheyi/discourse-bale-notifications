@@ -4,6 +4,30 @@ require 'rails_helper'
 
 # rubocop:disable Metrics/BlockLength -- Covers both allowed and blocked event-filter paths.
 RSpec.describe DiscourseBaleNotifications::PluginSetup do
+  describe '.configure_webhook_parameter_filters' do
+    it 'filters webhook credentials and private payload fields from Rails logs' do
+      described_class.configure_webhook_parameter_filters
+
+      filters = Rails.application.config.filter_parameters
+      expect(filters).to include(:key, :message, :callback_query, :bale)
+
+      filtered = ActiveSupport::ParameterFilter.new(filters).filter(
+        'key' => 'test-webhook-secret',
+        'message' => { 'text' => 'private-webhook-message-do-not-log' },
+        'callback_query' => { 'id' => 'private-callback-id-do-not-log' },
+        'bale' => { 'message' => 'duplicate-private-payload-do-not-log' }
+      ).to_json
+
+      expect(filtered).to include('[FILTERED]')
+      expect(filtered).not_to include(
+        'test-webhook-secret',
+        'private-webhook-message-do-not-log',
+        'private-callback-id-do-not-log',
+        'duplicate-private-payload-do-not-log'
+      )
+    end
+  end
+
   describe '.register_notification_event' do
     let(:user) { Fabricate(:user) }
     let(:payload) { { notification_type: Notification.types[:mentioned] } }

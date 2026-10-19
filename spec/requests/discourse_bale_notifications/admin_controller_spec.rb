@@ -22,14 +22,14 @@ RSpec.describe 'Bale admin endpoints', type: :request do
       allow(DiscourseBaleNotifications::BaleNotifier).to receive(:recent_activity).and_return([])
       allow(DiscourseBaleNotifications::BaleNotifier).to receive(:fetch_webhook_info).and_return(
         'ok' => true,
-        'result' => { 'url' => 'https://example.com/bale/hook/secret-key' }
+        'result' => { 'url' => 'https://example.com/bale/hook?key=secret-key' }
       )
 
       get '/bale/admin/status', headers: headers
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body.dig('webhook_info', 'result', 'url')).to eq(
-        'https://example.com/bale/hook/[REDACTED]'
+        'https://example.com/bale/hook?key=[REDACTED]'
       )
       expect(response.body).not_to include('secret-key')
     end
