@@ -1621,3 +1621,20 @@ The user reports that all eight notification preferences were disabled and saved
 README contains a read-only preflight command block for collecting container state, configured plugin declaration, installed plugin SHA, disk/backup inventory, and public site response. Run it on the VPS and review the output before deciding whether to deploy. If a path is absent, stop and inspect the actual configuration rather than guessing.
 
 **Safety boundary:** No production server command was executed by this work. No production code, configuration, secret, webhook, database, container, or service was changed. Do not proceed to update/rebuild until the live version, backup integrity, and rollback route are verified and the deployment procedure is chosen for this installation.
+
+## ادامه پس از به‌روزرسانی افزونه — ۱۹ اکتبر ۲۰۲۶
+
+### وضعیت عملیاتی گزارش‌شده
+- [x] کاربر گزارش کرده افزونه را از پنل Discourse به‌روزرسانی کرده است.
+- [x] کاربر گزارش کرده فعلاً خطای آشکاری مشاهده نمی‌کند.
+- [ ] این گزارش به‌تنهایی اثبات نمی‌کند همهٔ مسیرهای اعلان، callback، retry یا محرمانگی لاگ‌ها جداگانه آزموده شده‌اند؛ این موارد را بدون شواهد مشخص تکمیل‌شده علامت نمی‌زنیم.
+- [x] بنا بر درخواست کاربر، بررسی مجدد سرور در این مرحله تکرار نمی‌شود.
+
+### مرحلهٔ بعدی در مخزن: تثبیت تنظیم retry با آزمون رگرسیون
+- [x] بررسی کد فعلی نشان داد job ارسال اعلان صراحتاً `sidekiq_options retry: 5` دارد.
+- [x] آزمون رگرسیون اضافه شد تا مقدار retry در تنظیمات کلاس job برابر ۵ بماند.
+- [ ] اجرای CI کامل و smoke tests روی شاخهٔ این تغییر باید موفق شود.
+- [ ] پس از CI، diff و نتیجه‌ها بازبینی و این مرحله با شواهد نهایی ثبت شود؛ سپس برای ادغام تصمیم گرفته شود.
+
+### مرزهای شواهد
+آزمون تنظیمات کلاس از حذف یا تغییر ناخواستهٔ مقدار `retry: 5` جلوگیری می‌کند، اما برنامهٔ retry مؤثر در نسخهٔ زندهٔ Discourse/Sidekiq یا رفتار واقعی API بله را اثبات نمی‌کند. همچنین بررسی access logهای Arvan/CDN از این تغییر کد جداست و در این مرحله انجام نشده است. هیچ secret، token، payload خصوصی یا اطلاعات شناسایی کاربر در مستندات ثبت نشود.
