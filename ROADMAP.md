@@ -1591,7 +1591,7 @@ The user reports that all eight notification preferences were disabled and saved
 - [x] شاخهٔ `main` به merge commit منتقل شد؛ وضعیت PR در GitHub بسته‌شده و ادغام‌شده است.
 - [x] روی merge commit، [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39256838373) موفق شد؛ linting، کشف آزمون‌ها و backend tests همگی سبز شدند.
 - [x] روی merge commit، [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39256837919) موفق شد.
-- [x] README پس از ادغام اصلاح شد تا وضعیت جدید `main` و شواهد CI ثبت شوند. این تغییر مستندات نیز باید از CI خودش عبور کند؛ نتیجهٔ آن را تا پایان اجرا بررسی کنید.
+- [x] README و ROADMAP پس از ادغام اصلاح شدند تا وضعیت جدید `main` و شواهد CI ثبت شوند. روی HEAD مستندات پیش از این ثبت نهایی، [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39257063414) و [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39257062878) هر دو موفق شدند؛ هر دو اجرا شامل lint/test discovery/backend tests یا smoke checks مطابق workflow هستند.
 
 ### وضعیت فعلی و مرزهای ایمنی
 - کد retry محدود اکنون در `main` است؛ این تغییر به‌خودی‌خود هیچ فایلی را روی سرور تولیدی تغییر نداده است.
