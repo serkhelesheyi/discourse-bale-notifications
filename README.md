@@ -489,9 +489,14 @@ PR [شمارهٔ ۴](https://github.com/serkhelesheyi/discourse-bale-notificatio
 **Boundary:** CI and smoke tests are green on the current branch HEAD. PR #6 remains open and unmerged; `main`, production settings, secrets, and server files have not been changed. A green CI run does not prove the live Bale webhook URL is registered or that inbound delivery works.
 
 
-## وضعیت ادغام اصلاحیهٔ ثبت وب‌هوک — ۱۹ اکتبر ۲۰۲۶
+## وضعیت اصلاح ثبت وب‌هوک پس از آزمون زنده — ۱۹ اکتبر ۲۰۲۶
 
-- [PR #6](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/6) با روش squash ادغام شد.
-- Merge commit: `9029d4c5aa9283cfc5f5cc3348fc9d043b9562c9`.
-- آخرین بررسی پیش از ادغام: CI اصلی (linting، کشف آزمون‌ها و backend RSpec) و smoke tests روی شاخه موفق بودند.
-- وضعیت استقرار: **انجام نشده**؛ تغییرات تولیدی و ثبت مجدد webhook نیازمند تأیید جداگانه‌اند.
+- [x] [PR #6](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/6) با روش squash ادغام شد؛ merge commit: `9029d4c5aa9283cfc5f5cc3348fc9d043b9562c9`.
+- [x] CI اصلی روی آخرین HEAD مستندشدهٔ `main`، یعنی `8cac42a1caef2cb5cd5f71ad40ad51bfc87e709f`، موفق شد: [Discourse Plugin](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39221431109).
+- [x] smoke tests روی همان HEAD موفق شدند: [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39221430577).
+- [x] کاربر اعلام کرده است آزمون پس از استقرار با موفقیت پایان یافته است.
+- [ ] جزئیات دقیق سناریوهای آزمون زنده در گزارش موجود تفکیک نشده‌اند؛ بنابراین موفقیت ثبت‌شده را نباید خودبه‌خود به ثبت webhook، دریافت پیام ورودی، callback، retry یا بررسی لاگ‌های امنیتی تعمیم داد.
+- [ ] وضعیت نهایی `getWebhookInfo.result.url` و پردازش پیام ورودی/callback باید فقط در صورت انجام و مشاهدهٔ واقعی، جداگانه ثبت شود.
+- [ ] بازبینی لاگ‌های Arvan/CDN و سایر لایه‌های بالادستی از جهت ثبت query string حاوی secret همچنان لازم است؛ فیلتر Rails به‌تنهایی این لایه‌ها را پوشش نمی‌دهد.
+
+**مرز اطمینان:** آزمون زنده با موفقیت گزارش شده است؛ این مستندات گزارش کاربر را ثبت می‌کنند و ادعای بررسی مستقیم سرور نیستند. اصلاح کد ادغام شده و CI اصلی و smoke tests روی HEAD مستندشدهٔ `main` موفق‌اند. مواردی که سناریوی دقیق یا شواهد مستقل ندارند، باز باقی می‌مانند.
