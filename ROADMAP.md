@@ -1620,4 +1620,25 @@ The user reports that all eight notification preferences were disabled and saved
 ### Read-only evidence collection
 README contains a read-only preflight command block for collecting container state, configured plugin declaration, installed plugin SHA, disk/backup inventory, and public site response. Run it on the VPS and review the output before deciding whether to deploy. If a path is absent, stop and inspect the actual configuration rather than guessing.
 
-**Safety boundary:** No production server command was executed by this work. No production code, configuration, secret, webhook, database, container, or service was changed. Do not proceed to update/rebuild until the live version, backup integrity, and rollback route are verified and the deployment procedure is chosen for this installation.
+**Status at the time this preflight note was written:** no production server command or change had been performed by the repository work, and live deployment was still pending. The later user-reported update is recorded in the following section; this historical note is not the current deployment status.
+
+## ادامه پس از به‌روزرسانی افزونه — ۱۹ اکتبر ۲۰۲۶
+
+### وضعیت عملیاتی گزارش‌شده
+- [x] کاربر گزارش کرده افزونه را از پنل Discourse به‌روزرسانی کرده است.
+- [x] کاربر گزارش کرده فعلاً خطای آشکاری مشاهده نمی‌کند.
+- [ ] این گزارش به‌تنهایی اثبات نمی‌کند همهٔ مسیرهای اعلان، callback، retry یا محرمانگی لاگ‌ها جداگانه آزموده شده‌اند؛ این موارد را بدون شواهد مشخص تکمیل‌شده علامت نمی‌زنیم.
+- [x] بنا بر درخواست کاربر، بررسی مجدد سرور در این مرحله تکرار نمی‌شود.
+
+### نتیجهٔ مرحلهٔ تثبیت تنظیم retry — PR #8
+- [x] آزمون رگرسیون در `spec/jobs/send_bale_notifications_spec.rb` اضافه شد تا `described_class.get_sidekiq_options['retry'] == 5` باشد.
+- [x] بازبینی diff سه فایل تغییرکرده انجام شد: یک assertion آزمون و دو به‌روزرسانی مستندات؛ هیچ کد اجرایی/runtime تغییر نکرده است.
+- [x] Discourse Plugin CI روی HEAD `0188a33c43c3ff547f69a107971df0c35e5fe8ef` موفق شد: [run 39262862183](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39262862183). هر سه job یعنی `linting`، `check_for_tests` و `backend_tests` نتیجهٔ موفق داشتند.
+- [x] Plugin smoke tests روی همان HEAD موفق شد: [run 39262866759](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39262866759).
+- [x] README و این نقشهٔ راه با نتیجهٔ آزمون‌ها و وضعیت PR به‌روزرسانی شدند.
+- [ ] PR [#8](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/8) هنوز ادغام نشده است؛ ادغام به تصمیم/اجازهٔ صریح نیاز دارد.
+
+### مرزهای شواهد و مرحلهٔ بعد
+این آزمون فقط از تغییر ناخواستهٔ مقدار تنظیم‌شدهٔ `retry: 5` جلوگیری می‌کند؛ برنامهٔ retry مؤثر در نسخهٔ زندهٔ Discourse/Sidekiq یا رفتار واقعی API بله را اثبات نمی‌کند. آزمون CI نیز تحویل دقیقاً یک‌بار را تضمین نمی‌کند. بررسی access logهای Arvan/CDN از این تغییر کد جداست و انجام نشده است. بنا بر درخواست کاربر، بررسی مجدد سرور در این مرحله انجام نشد و هیچ تغییری در سرور تولیدی ایجاد نشد.
+
+**گام بعدی:** پس از تصمیم دربارهٔ ادغام PR #8، در صورت ادغام، CI و smoke tests روی `main` و merge commit را بررسی و سپس نقشهٔ راه را ثبت نهایی می‌کنیم. بعد از آن، ادامهٔ کار باید از ممیزی‌های باقی‌ماندهٔ مسیرهای واقعی اعلان/callback و محرمانگی لاگ‌ها بر اساس شواهد موجود باشد؛ نه از ادعای تأییدنشدهٔ عملکرد زنده.

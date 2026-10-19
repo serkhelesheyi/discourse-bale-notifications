@@ -20,6 +20,12 @@ RSpec.describe Jobs::SendBaleNotifications do
     user.save_custom_fields
   end
 
+  describe 'Sidekiq retry policy' do
+    it 'keeps notification retries bounded at five' do
+      expect(described_class.get_sidekiq_options['retry']).to eq(5)
+    end
+  end
+
   describe 'RetryableDelivery' do
     [429, 500, 502, 503, 599].each do |error_code|
       it "raises a retryable error for an explicit transient API rejection (#{error_code})" do
