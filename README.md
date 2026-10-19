@@ -8,6 +8,13 @@
 > **وضعیت عملیاتی و ممیزی، ۱۸ اکتبر ۲۰۲۶:** PR تشخیصی [#2](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/2)، اصلاح دکمهٔ پسندیدن [#3](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/3) و اصلاح حریم خصوصی لاگ‌ها [#4](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/4) ادغام شده‌اند. برای PR شمارهٔ ۴، CI کامل روی SHA `e391e330e5663ff79382f8435feb4e2857c5e067` و smoke tests هر دو موفق شدند ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39146201932)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39146205319)); merge commit برابر `0c8ed8ef7bca1e4e3032dd5dea00f1db633db7f5` است. در سه پیام عمومی Rails برای خطای شبکه، خطای API و قطع اتصال خودکار، شناسهٔ چت ثبت نمی‌شود؛ ثبت داخلی محدود فعالیت‌ها برای پنل مدیریت عمداً حفظ شده است. این ادغام به‌خودی‌خود تغییری روی انجمن تولیدی اعمال نمی‌کند. کاربر اصلاح دکمه را پس از به‌روزرسانی افزونه در انجمن واقعی آزمایش کرده و نتیجه را موفق گزارش کرده است؛ این پذیرش دستی کاربر است، نه بررسی مستقیم سرور. مسئلهٔ ریپلای اول هنوز علت ریشه‌ای اثبات‌شده ندارد و تنظیم تشخیصی `bale_notifications_webhook_diagnostics_enabled` باید خاموش بماند مگر برای آزمون هدفمند و موقت. گام بعدی، بررسی سایر مسیرهای لاگ و ممیزی هدفمند امنیت/حریم خصوصی با شواهد است.
 
 
+## وضعیت آزمون زنده و ممیزی API — ۱۹ اکتبر ۲۰۲۶
+
+کاربر گزارش کرده است که ریپلای به اعلان بله پس از ثبت دوبارهٔ secret وب‌هوک کار می‌کند. علت ریشه‌ای هنوز اثبات نشده است؛ هم‌زمانی با ثبت مجدد secret به‌تنهایی رابطهٔ علّی را ثابت نمی‌کند. گزینهٔ `bale_notifications_webhook_diagnostics_enabled` صرفاً برای آزمون هدفمند است و پس از پایان بررسی باید خاموش شود.
+
+ممیزی ایستای بعدی یک شکاف بالقوه در retry نشان داده است: API client برای خطاهای شبکه، پاسخ نامعتبر و شکست API مقدار `false` برمی‌گرداند؛ job ارسال اعلان این نتیجه را بدون استثنا یا سیاست retry اختصاصی می‌پذیرد. بنابراین این شکست‌ها لزوماً وارد retry خودکار Sidekiq نمی‌شوند. رفتار دقیق باید با توجه به موقت/دائمی بودن خطاها و قرارداد نسخهٔ هدف Discourse بررسی و آزموده شود. جزئیات و گام بعد در [ROADMAP.md](ROADMAP.md) ثبت شده است.
+
+
 ## حفاظت از لاگ وب‌هوک
 
 **به‌روزرسانی ۱۹ اکتبر ۲۰۲۶:** اصلاحیهٔ [PR #5](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/5) ادغام شده است (merge commit: `37bbda8faaa48f38bc4747582a8e8cb9ade36a79`). CI کامل روی HEAD اصلاحیه موفق شد: linting، کشف آزمون‌ها و آزمون‌های backend؛ smoke tests نیز روی همان HEAD موفق شدند. آزمون‌های رگرسیون مسیر فیلترشده، پارامترهای فیلترشده و ساخت URL جدید webhook را بررسی می‌کنند.
