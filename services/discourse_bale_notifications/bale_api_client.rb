@@ -106,6 +106,11 @@ module DiscourseBaleNotifications
         response_data['error_code'],
         response_data['description']
       )
+
+      # Keep explicit API rejection details available to the notification job so
+      # it can retry only clearly transient sendMessage/sendPhoto failures.
+      return response_data if %w[sendMessage sendPhoto].include?(method_name)
+
       false
     end
 
