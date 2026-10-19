@@ -34,7 +34,9 @@ RSpec.describe Jobs::SendBaleNotifications do
       it "does not retry a non-transient API rejection (#{error_code})" do
         response = { 'ok' => false, 'error_code' => error_code }
 
-        expect { DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(response) }.not_to raise_error
+        expect do
+          DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(response)
+        end.not_to raise_error
       end
     end
 
