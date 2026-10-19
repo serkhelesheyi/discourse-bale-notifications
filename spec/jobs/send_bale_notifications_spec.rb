@@ -20,6 +20,66 @@ RSpec.describe Jobs::SendBaleNotifications do
     user.save_custom_fields
   end
 
+  describe '#raise_for_retryable_api_failure' do
+    [429, 500, 502, 503, 599].each do |error_code|
+      it "raises a retryable error for an explicit transient API rejection (#{error_code})" do
+        response = { 'ok' => false, 'error_code' => error_code }
+
+        expect { job.raise_for_retryable_api_failure(response) }
+          .to raise_error(described_class::RetryableDeliveryError, /error_code=#{error_code}/)
+      end
+    end
+
+    [400, 401, 403, 404, 422, 0].each do |error_code|
+      it "does not retry a non-transient API rejection (#{error_code})" do
+        response = { 'ok' => false, 'error_code' => error_code }
+
+        expect { job.raise_for_retryable_api_failure(response) }.not_to raise_error
+      end
+    end
+
+    it 'does not retry a network/ambiguous failure represented by false' do
+      expect { job.raise_for_retryable_api_failure(false) }.not_to raise_error
+    end
+
+    it 'does not retry a successful response' do
+      expect { job.raise_for_retryable_api_failure('ok' => true, 'result' => { 'message_id' => 7 }) }
+        .not_to raise_error
+    end
+  end
+
+  describe '#execute' do
+    let(:post) { Fabricate(:post, user: user) }
+    let(:valid_payload) do
+      {
+        notification_type: Notification.types[:mentioned],
+        post_number: post.post_number,
+        topic_id: post.topic_id
+      }
+    end
+
+    before do
+      allow(SiteSetting).to receive(:bale_notifications_enabled?).and_return(true)
+      allow(job).to receive(:site_notification_enabled?).and_return(true)
+      allow(job).to receive(:delivery_context).and_return([user, '123456', post])
+    end
+
+    it 'raises for a transient API rejection so Sidekiq can retry the job' do
+      allow(job).to receive(:deliver_notification)
+        .and_return('ok' => false, 'error_code' => 503)
+
+      expect { job.execute(user_id: user.id, payload: valid_payload) }
+        .to raise_error(described_class::RetryableDeliveryError)
+    end
+
+    it 'does not raise for a permanent API rejection' do
+      allow(job).to receive(:deliver_notification)
+        .and_return('ok' => false, 'error_code' => 403)
+
+      expect { job.execute(user_id: user.id, payload: valid_payload) }.not_to raise_error
+    end
+  end
+
   describe '#site_notification_enabled?' do
     it 'accepts only notification types in the site allowlist' do
       SiteSetting.bale_enabled_notification_types = 'mentioned|replied'
