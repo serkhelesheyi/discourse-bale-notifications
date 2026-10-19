@@ -1440,10 +1440,15 @@ The user reports that all eight notification preferences were disabled and saved
 **محدودیت نتیجه:** این اصلاح، تشخیص/قابلیت اطمینان job را بهبود می‌دهد؛ هنوز علت نهایی خالی‌بودن URL در API بله ثابت نشده و این تغییر به‌تنهایی دریافت موفق webhook را تضمین نمی‌کند.
 
 
-### CI lint correction — 19 October 2026
+### تأیید CI و وضعیت پیش از ادغام — ۱۹ اکتبر ۲۰۲۶
 
-- [x] Inspected both failed lint runs (#327 pull_request and push): both failed for the same RuboCop offense, `Metrics/MethodLength`, in `jobs/setup_bale_webhook.rb:18` (11/10 lines). Backend tests and test-discovery checks passed in those runs.
-- [x] Refactored common API-response validation/logging/raising into `ensure_successful_response!`; no cop suppression was added and intended retry behavior remains.
-- [ ] Verify new pull_request and push CI runs for the correction commit `0e1f7e78d54b29053c6c73d5e2959fcbf26cc772`. Do not assume earlier passing backend tests validate this new commit.
-- [ ] Before merge, review retry behavior and design a safe explicit admin trigger for webhook registration without toggling settings.
-- [ ] No production deployment or setting changes until CI is green and the trigger/recovery plan is reviewed.
+- [x] خطای RuboCop در `jobs/setup_bale_webhook.rb` (`Metrics/MethodLength`، ۱۱/۱۰ خط) شناسایی شد؛ در commit `510b6ba72ed8445a0eab22de5022e29be0456209` دریافت/ساخت secret به متد `webhook_secret` منتقل شد و هیچ cop غیرفعال نشد.
+- [x] تمام jobهای CI اصلی روی HEAD نهایی موفق شدند: [Discourse Plugin run #341](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39219172157)؛ شامل `linting`، `check_for_tests` و `backend_tests`.
+- [x] آزمون‌های smoke روی همان HEAD موفق شدند: [Plugin smoke tests run #212](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39219171679).
+- [x] وضعیت PR بررسی شد: [PR #6](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/6) باز و ادغام‌نشده است؛ `main` و محیط تولید تغییر نکرده‌اند.
+- [ ] بازبینی نهایی diff، به‌ویژه رفتار retry در Sidekiq، پیام‌های خطای عمومی و آزمون‌های رگرسیون.
+- [ ] بررسی اینکه برای ثبت مجدد وب‌هوک، مسیر مدیریتی صریح و ایمنی لازم است یا خیر؛ تنظیمات را صرفاً برای تحریک job خاموش/روشن نکنید.
+- [ ] ادغام فقط پس از بازبینی نهایی و تصمیم جداگانه انجام شود.
+- [ ] استقرار تولیدی و ثبت مجدد وب‌هوک مرحله‌ای مستقل و نیازمند تأیید کاربر است؛ پس از آن، پیام ورودی و callback در آزمون کنترل‌شده بررسی شوند.
+
+**محدودیت نتیجه:** سبزبودن CI صحت آزمون‌های موجود روی commit را تأیید می‌کند؛ اما علت نهایی خالی‌بودن `getWebhookInfo.result.url` یا سلامت دریافت زندهٔ webhook را ثابت نمی‌کند. تا پیش از تصمیم جداگانه، هیچ تغییر تولیدی، تغییر secret یا تغییر تنظیمات انجام نشود.
