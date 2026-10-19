@@ -478,22 +478,24 @@ PR [شمارهٔ ۴](https://github.com/serkhelesheyi/discourse-bale-notificatio
 **مرز استقرار:** PR ادغام شده است، اما در این مرحله هیچ تغییری روی سرور تولیدی انجام نشده و حذف شناسه از لاگ‌های زنده هنوز با آزمون عملی تأیید نشده است.
 
 
-### Webhook registration reliability — CI confirmed, 19 October 2026
+### Webhook registration reliability — وضعیت پیش از ادغام، ۱۹ اکتبر ۲۰۲۶
 
-- [x] Fixed the RuboCop `Metrics/MethodLength` offense by extracting secret retrieval/creation into `webhook_secret`; no cop was disabled.
-- [x] Confirmed all jobs in Discourse Plugin CI run [#341](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39219172157) on HEAD `510b6ba72ed8445a0eab22de5022e29be0456209`: linting, test discovery, and backend tests all succeeded.
-- [x] Confirmed Plugin smoke tests run [#212](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39219171679) on the same HEAD succeeded.
-- [ ] Perform final code/diff review and decide whether to merge PR [#6](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/6).
-- [ ] If separately approved, plan controlled production update and verify webhook registration, inbound messages, and callback queries.
+این بخش یک snapshot تاریخی از مرحلهٔ پیش از ادغام است؛ وضعیت جاری در بخش «وضعیت اصلاح ثبت وب‌هوک پس از آزمون زنده» در انتهای همین فایل ثبت شده است.
 
-**Boundary:** CI and smoke tests are green on the current branch HEAD. PR #6 remains open and unmerged; `main`, production settings, secrets, and server files have not been changed. A green CI run does not prove the live Bale webhook URL is registered or that inbound delivery works.
+- [x] تخلف RuboCop از نوع `Metrics/MethodLength` با استخراج متد `webhook_secret` اصلاح شد؛ هیچ cop غیرفعال نشد.
+- [x] همهٔ jobهای CI اصلی در اجرای [#341](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39219172157) روی HEAD `510b6ba72ed8445a0eab22de5022e29be0456209` موفق شدند.
+- [x] smoke tests در اجرای [#212](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39219171679) روی همان HEAD موفق شدند.
+- [x] PR شمارهٔ [۶](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/6) بعداً با روش squash ادغام شد؛ merge commit برابر `9029d4c5aa9283cfc5f5cc3348fc9d043b9562c9` است.
+
+**مرز تاریخی:** عبارت‌های «PR ادغام نشده» و «استقرار انجام نشده» در یادداشت‌های قدیمی، وضعیت همان زمان را بیان می‌کنند و نباید به‌عنوان وضعیت فعلی خوانده شوند.
 
 
 ## وضعیت اصلاح ثبت وب‌هوک پس از آزمون زنده — ۱۹ اکتبر ۲۰۲۶
 
 - [x] [PR #6](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/6) با روش squash ادغام شد؛ merge commit: `9029d4c5aa9283cfc5f5cc3348fc9d043b9562c9`.
-- [x] CI اصلی روی آخرین HEAD مستندشدهٔ `main`، یعنی `8cac42a1caef2cb5cd5f71ad40ad51bfc87e709f`، موفق شد: [Discourse Plugin](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39221431109).
-- [x] smoke tests روی همان HEAD موفق شدند: [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39221430577).
+- [x] CI اصلی و smoke tests روی commit کد `8cac42a1caef2cb5cd5f71ad40ad51bfc87e709f` موفق شدند: [Discourse Plugin](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39221431109) و [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39221430577).
+- [x] پس از ثبت گزارش آزمون زنده، README و ROADMAP به‌روزرسانی شدند؛ smoke tests روی commit مستندات `195966db2bd2e1dec8cc8ecaf5749049462f3b3e` نیز موفق شد: [run](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39222287324).
+- [ ] CI اصلی روی آخرین commit مستندات باید تا نتیجهٔ نهایی دنبال شود: [run](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39222287878).
 - [x] کاربر اعلام کرده است آزمون پس از استقرار با موفقیت پایان یافته است.
 - [ ] جزئیات دقیق سناریوهای آزمون زنده در گزارش موجود تفکیک نشده‌اند؛ بنابراین موفقیت ثبت‌شده را نباید خودبه‌خود به ثبت webhook، دریافت پیام ورودی، callback، retry یا بررسی لاگ‌های امنیتی تعمیم داد.
 - [ ] وضعیت نهایی `getWebhookInfo.result.url` و پردازش پیام ورودی/callback باید فقط در صورت انجام و مشاهدهٔ واقعی، جداگانه ثبت شود.
