@@ -530,3 +530,62 @@ PR [#7](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/7) ad
 The final code HEAD `ec48a90848ccbed7af5158c436e81af6f03df4ea` passed both required GitHub Actions workflows: [Discourse Plugin CI run 39250973508](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250973508) and [Plugin smoke tests run 39250973079](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250973079). An additional Discourse Plugin run on the same SHA also passed: [run 39250968343](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250968343).
 
 The documentation update itself will trigger new workflow runs; those must also pass before this documentation stage is considered complete. PR #7 remains a draft and has not been merged. No production deployment was performed by these GitHub changes.
+
+## Deployment preflight after PR #7 — 19 October 2026
+
+PR [#7](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/7) is merged into `main`. The bounded retry implementation is present in the repository; this does **not** update a running Discourse installation.
+
+Latest verified documentation HEAD before this note: `28b9efcfa08e5648d8074a281acd78e263304b37`.
+- [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39257564690): `linting`, `check_for_tests`, and `backend_tests` all succeeded.
+- [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39257564039): succeeded.
+
+### Required production preflight
+
+Before updating the live forum, verify and record all of the following:
+
+1. The exact plugin path and installed Git SHA inside the running `app` container; do not infer the path from the repository name.
+2. The live Discourse version and container state, and whether the plugin is configured in the actual `app.yml`.
+3. The most recent backup's timestamp, size, and archive integrity; confirm there is enough free disk space and a practical rollback path.
+4. The exact update mechanism supported by this installation. Do not assume a Git checkout alone changes the running plugin, or that a container rebuild is unnecessary.
+5. A maintenance window and acceptance checks: site health, plugin/admin page, a controlled notification, Sidekiq job outcome, and relevant logs with secrets and private message contents redacted.
+
+### Read-only evidence collection
+
+Run the following on the VPS as a user with permission to inspect Docker and the Discourse installation. These commands are intended for **inspection only**; they do not pull code, edit configuration, restart services, or deploy.
+
+```bash
+set -eu
+cd /var/discourse
+
+printf '\n===== HOST / DISCOURSE CONFIG =====\n'
+date -Is
+git status --short 2>/dev/null || true
+grep -nE 'discourse-bale-notifications|git clone' containers/app.yml || true
+
+printf '\n===== CONTAINER STATE =====\n'
+docker ps --filter 'name=app' --format 'name={{.Names}} status={{.Status}} image={{.Image}}'
+docker inspect app --format 'started={{.State.StartedAt}} restart_count={{.RestartCount}}'
+
+printf '\n===== PLUGIN PATH / SHA INSIDE CONTAINER =====\n'
+docker exec app bash -lc '
+set -eu
+for p in /var/www/discourse/plugins/discourse-bale-notifications /var/www/discourse/plugins/bale-notifications; do
+  if [ -d "$p/.git" ]; then
+    printf "plugin_path=%s\n" "$p"
+    git -C "$p" rev-parse HEAD
+    git -C "$p" status --short
+  fi
+done
+'
+
+printf '\n===== DISK / BACKUPS =====\n'
+df -h /var/discourse /var/discourse/shared/standalone/backups/default
+find /var/discourse/shared/standalone/backups/default -maxdepth 1 -type f -printf '%TY-%Tm-%TdT%TH:%TM:%TS %s %f\n' 2>/dev/null | sort | tail -n 8
+
+printf '\n===== PUBLIC SITE RESPONSE =====\n'
+curl -sS -o /dev/null -w 'http_status=%{http_code} total_seconds=%{time_total}\n' --max-time 15 https://mobahasah.ir/
+```
+
+If a command reports that a path is absent, do not create it or substitute a guessed path; use the actual path shown by the live `app.yml` and container. Do not paste tokens, webhook secrets, private message contents, or full secret-bearing URLs into issues or chat. For compressed backups, check integrity with the tool matching the actual archive format; do not extract over a live installation.
+
+**Current status:** CI and smoke tests passed; production preflight is pending evidence from the actual VPS. No production update, rebuild, restart, webhook change, or database operation was performed by this repository documentation change.
