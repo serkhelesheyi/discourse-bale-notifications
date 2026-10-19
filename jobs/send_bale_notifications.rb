@@ -89,8 +89,6 @@ module Jobs
       }
     end
 
-    # Bale renders message text as Markdown; escape dynamic text to keep
-    # user-controlled content from changing links or formatting.
     def markdown_escape(value)
       value.to_s.gsub(/[\\_*()\[\]]/) { |character| "\\#{character}" }
     end
