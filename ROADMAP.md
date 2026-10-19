@@ -1620,7 +1620,7 @@ The user reports that all eight notification preferences were disabled and saved
 ### Read-only evidence collection
 README contains a read-only preflight command block for collecting container state, configured plugin declaration, installed plugin SHA, disk/backup inventory, and public site response. Run it on the VPS and review the output before deciding whether to deploy. If a path is absent, stop and inspect the actual configuration rather than guessing.
 
-**Safety boundary:** No production server command was executed by this work. No production code, configuration, secret, webhook, database, container, or service was changed. Do not proceed to update/rebuild until the live version, backup integrity, and rollback route are verified and the deployment procedure is chosen for this installation.
+**Status at the time this preflight note was written:** no production server command or change had been performed by the repository work, and live deployment was still pending. The later user-reported update is recorded in the following section; this historical note is not the current deployment status.
 
 ## ادامه پس از به‌روزرسانی افزونه — ۱۹ اکتبر ۲۰۲۶
 
