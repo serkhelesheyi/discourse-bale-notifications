@@ -40,6 +40,16 @@ RSpec.describe Jobs::SendBaleNotifications do
       end
     end
 
+    it 'does not retry a malformed API rejection without a numeric error code' do
+      [nil, '503', 'invalid'].each do |error_code|
+        response = { 'ok' => false, 'error_code' => error_code }
+
+        expect do
+          DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(response)
+        end.not_to raise_error
+      end
+    end
+
     it 'does not retry a network/ambiguous failure represented by false' do
       expect { DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(false) }.not_to raise_error
     end
