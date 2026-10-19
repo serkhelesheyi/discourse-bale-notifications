@@ -478,6 +478,12 @@ PR [شمارهٔ ۴](https://github.com/serkhelesheyi/discourse-bale-notificatio
 **مرز استقرار:** PR ادغام شده است، اما در این مرحله هیچ تغییری روی سرور تولیدی انجام نشده و حذف شناسه از لاگ‌های زنده هنوز با آزمون عملی تأیید نشده است.
 
 
-### Webhook retry follow-up — 19 October 2026
+### Webhook registration reliability — CI confirmed, 19 October 2026
 
-A subsequent CI run found one RuboCop offense in `jobs/setup_bale_webhook.rb` (`Metrics/MethodLength`, 11/10 lines). The failure handling was extracted into `ensure_successful_response!` to reduce method length without disabling the cop. The change is on `fix/webhook-registration-reliability`; the new CI result must be checked before merge. No production settings or server files were changed.
+- [x] Fixed the RuboCop `Metrics/MethodLength` offense by extracting secret retrieval/creation into `webhook_secret`; no cop was disabled.
+- [x] Confirmed all jobs in Discourse Plugin CI run [#341](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39219172157) on HEAD `510b6ba72ed8445a0eab22de5022e29be0456209`: linting, test discovery, and backend tests all succeeded.
+- [x] Confirmed Plugin smoke tests run [#212](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39219171679) on the same HEAD succeeded.
+- [ ] Perform final code/diff review and decide whether to merge PR [#6](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/6).
+- [ ] If separately approved, plan controlled production update and verify webhook registration, inbound messages, and callback queries.
+
+**Boundary:** CI and smoke tests are green on the current branch HEAD. PR #6 remains open and unmerged; `main`, production settings, secrets, and server files have not been changed. A green CI run does not prove the live Bale webhook URL is registered or that inbound delivery works.
