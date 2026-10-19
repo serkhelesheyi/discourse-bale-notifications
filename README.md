@@ -588,7 +588,7 @@ curl -sS -o /dev/null -w 'http_status=%{http_code} total_seconds=%{time_total}\n
 
 If a command reports that a path is absent, do not create it or substitute a guessed path; use the actual path shown by the live `app.yml` and container. Do not paste tokens, webhook secrets, private message contents, or full secret-bearing URLs into issues or chat. For compressed backups, check integrity with the tool matching the actual archive format; do not extract over a live installation.
 
-**Current status:** CI and smoke tests passed; production preflight is pending evidence from the actual VPS. No production update, rebuild, restart, webhook change, or database operation was performed by this repository documentation change.
+**Status at the time this preflight note was written:** CI and smoke tests passed; the live production update had not yet been reported. The subsequent user-reported status is recorded in the later section below; no independent server inspection is claimed.
 
 ## Production update reported and retry-budget regression — 19 October 2026
 
