@@ -1632,13 +1632,21 @@ README contains a read-only preflight command block for collecting container sta
 
 ### نتیجهٔ مرحلهٔ تثبیت تنظیم retry — PR #8
 - [x] آزمون رگرسیون در `spec/jobs/send_bale_notifications_spec.rb` اضافه شد تا `described_class.get_sidekiq_options['retry'] == 5` باشد.
-- [x] بازبینی diff سه فایل تغییرکرده انجام شد: یک assertion آزمون و دو به‌روزرسانی مستندات؛ هیچ کد اجرایی/runtime تغییر نکرده است.
-- [x] Discourse Plugin CI روی HEAD `0188a33c43c3ff547f69a107971df0c35e5fe8ef` موفق شد: [run 39262862183](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39262862183). هر سه job یعنی `linting`، `check_for_tests` و `backend_tests` نتیجهٔ موفق داشتند.
-- [x] Plugin smoke tests روی همان HEAD موفق شد: [run 39262866759](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39262866759).
-- [x] README و این نقشهٔ راه با نتیجهٔ آزمون‌ها و وضعیت PR به‌روزرسانی شدند.
-- [ ] PR [#8](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/8) هنوز ادغام نشده است؛ ادغام به تصمیم/اجازهٔ صریح نیاز دارد.
+- [x] PR [#8](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/8) با روش squash ادغام شد؛ merge commit روی `main`: `42744d3b80536fa2d961f1fd029c85cd35825b04`.
+- [x] CI کامل و smoke tests روی head پیش از ادغام موفق بودند.
+- [x] Smoke tests روی merge commit موفق شد: [run 39265563004](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39265563004).
+- [x] روی merge commit، `linting` و `check_for_tests` موفق شدند؛ `backend_tests` در آخرین مشاهده هنوز در حال اجرا بود، پس CI پس از ادغام هنوز کامل اعلام نمی‌شود.
+- [x] وضعیت ادغام و شواهد آزمون در README و این نقشهٔ راه ثبت شد.
 
-### مرزهای شواهد و مرحلهٔ بعد
-این آزمون فقط از تغییر ناخواستهٔ مقدار تنظیم‌شدهٔ `retry: 5` جلوگیری می‌کند؛ برنامهٔ retry مؤثر در نسخهٔ زندهٔ Discourse/Sidekiq یا رفتار واقعی API بله را اثبات نمی‌کند. آزمون CI نیز تحویل دقیقاً یک‌بار را تضمین نمی‌کند. بررسی access logهای Arvan/CDN از این تغییر کد جداست و انجام نشده است. بنا بر درخواست کاربر، بررسی مجدد سرور در این مرحله انجام نشد و هیچ تغییری در سرور تولیدی ایجاد نشد.
+### مرحلهٔ بعد — حداقل‌سازی شناسهٔ چت در پاسخ API مدیریتی
+**یافته:** `AdminController#activity_with_usernames` از `chat_id` برای نگاشت فعالیت به نام کاربری استفاده می‌کرد، اما همان شناسه را نیز در JSON پاسخ endpoint مدیریتی بازمی‌گرداند؛ رابط کاربری آن را نمایش نمی‌داد. این شناسه برای نمایش فعلی جدول لازم نیست.
 
-**گام بعدی:** پس از تصمیم دربارهٔ ادغام PR #8، در صورت ادغام، CI و smoke tests روی `main` و merge commit را بررسی و سپس نقشهٔ راه را ثبت نهایی می‌کنیم. بعد از آن، ادامهٔ کار باید از ممیزی‌های باقی‌ماندهٔ مسیرهای واقعی اعلان/callback و محرمانگی لاگ‌ها بر اساس شواهد موجود باشد؛ نه از ادعای تأییدنشدهٔ عملکرد زنده.
+- [x] شاخهٔ جداگانهٔ `fix/minimize-admin-activity-identifiers` از merge commit ایجاد شد.
+- [x] در `AdminController#activity_with_usernames`، `chat_id` از هر entry پاسخ حذف می‌شود؛ نگاشت نام کاربری پیش از حذف شناسه همچنان انجام می‌شود.
+- [x] آزمون request افزوده شد تا پاسخ همچنان نام کاربری را داشته باشد و نه کلید `chat_id` و نه مقدار شناسهٔ نمونه را افشا کند.
+- [x] README و ROADMAP به‌روزرسانی شدند.
+- [ ] CI کامل و smoke tests روی شاخهٔ جدید باید موفق شوند.
+- [ ] پس از موفقیت آزمون‌ها، diff نهایی بازبینی و PR جداگانه برای ادغام آماده شود.
+
+### مرزهای شواهد و ایمنی
+این تغییر فقط افشای غیرضروری شناسهٔ چت را از پاسخ JSON پنل مدیریت حذف می‌کند؛ شناسه هنوز در رکوردهای داخلی PluginStore نگهداری می‌شود و این تغییر به‌تنهایی محرمانگی لاگ‌های Arvan/CDN، حداقل‌سازی شرح خطای API یا رفتار زندهٔ Sidekiq را اثبات نمی‌کند. مطابق درخواست کاربر، هیچ بررسی مجددی روی سرور انجام نشده و هیچ تغییری در سرور تولیدی ایجاد نشده است.
