@@ -26,7 +26,7 @@ RSpec.describe Jobs::SetupBaleWebhook do
         job.execute
       end
 
-      it 'creates a secret only when none exists and retains it if registration fails' do
+      it 'creates a secret only when none exists and raises on registration failure' do
         allow(SiteSetting).to receive(:bale_secret).and_return('')
         allow(SecureRandom).to receive(:hex).and_return('new-stable-secret')
 
@@ -39,10 +39,10 @@ RSpec.describe Jobs::SetupBaleWebhook do
           'Bale webhook registration failed; the current webhook secret was retained'
         )
 
-        job.execute
+        expect { job.execute }.to raise_error(StandardError, 'Bale webhook registration failed')
       end
 
-      it 'logs a safe error when the API does not confirm registration' do
+      it 'raises a safe error when the API does not confirm registration' do
         allow(SiteSetting).to receive(:bale_secret).and_return('existing-secret')
         allow(DiscourseBaleNotifications::BaleNotifier).to receive(:setup_webhook)
           .with('existing-secret')
@@ -52,7 +52,7 @@ RSpec.describe Jobs::SetupBaleWebhook do
           'Bale webhook registration failed; the current webhook secret was retained'
         )
 
-        job.execute
+        expect { job.execute }.to raise_error(StandardError, 'Bale webhook registration failed')
       end
     end
 
@@ -69,13 +69,13 @@ RSpec.describe Jobs::SetupBaleWebhook do
         job.execute
       end
 
-      it 'logs a safe error when webhook removal is not confirmed' do
+      it 'raises a safe error when webhook removal is not confirmed' do
         allow(DiscourseBaleNotifications::BaleNotifier).to receive(:delete_webhook)
           .and_return(false)
 
         expect(Rails.logger).to receive(:error).with('Bale webhook removal failed')
 
-        job.execute
+        expect { job.execute }.to raise_error(StandardError, 'Bale webhook removal failed')
       end
     end
   end
