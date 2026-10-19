@@ -7,15 +7,42 @@ module Jobs
   class SetupBaleWebhook < ::Jobs::Base
     def execute(*)
       if SiteSetting.bale_notifications_enabled?
-        SiteSetting.bale_secret = SecureRandom.hex
-        DiscourseBaleNotifications::BaleNotifier.setup_webhook(SiteSetting.bale_secret)
+        setup_webhook
       else
-        # فاز یک - اصلاح #۱۰: قبلاً هنگام غیرفعال‌سازی افزونه هیچ اقدامی
-        # انجام نمی‌شد و وب‌هوک نزد بله ثبت‌شده باقی می‌ماند؛ بله تا ابد
-        # سعی در ارسال درخواست به endpointِ اکنون ۴۰۴ می‌کرد. اکنون هنگام
-        # غیرفعال‌سازی، وب‌هوک صراحتاً از سمت بله حذف می‌شود.
-        DiscourseBaleNotifications::BaleNotifier.delete_webhook
+        remove_webhook
       end
+    end
+
+    private
+
+    def setup_webhook
+      response = DiscourseBaleNotifications::BaleNotifier.setup_webhook(webhook_secret)
+      ensure_successful_response!(
+        response,
+        'Bale webhook registration failed',
+        'Bale webhook registration failed; the current webhook secret was retained'
+      )
+    end
+
+    def webhook_secret
+      return SiteSetting.bale_secret if SiteSetting.bale_secret.present?
+
+      secret = SecureRandom.hex
+      SiteSetting.bale_secret = secret
+      secret
+    end
+
+    def remove_webhook
+      response = DiscourseBaleNotifications::BaleNotifier.delete_webhook
+      ensure_successful_response!(response, 'Bale webhook removal failed', 'Bale webhook removal failed')
+    end
+
+    def ensure_successful_response!(response, error_message, log_message)
+      return if response.is_a?(Hash) && response['ok'] == true
+
+      Rails.logger.error(log_message)
+      # Raising marks the job as failed so Sidekiq can apply its retry policy.
+      raise StandardError, error_message
     end
   end
 end

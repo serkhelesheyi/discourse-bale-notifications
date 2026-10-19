@@ -14,7 +14,9 @@
 
 در نسخهٔ ادغام‌شده، secret وب‌هوک در پارامتر پرس‌وجوی `key` قرار می‌گیرد، نه در مسیر URL؛ Rails نیز مقادیر `key`، `message`، `callback_query` و `bale` را برای لاگ پارامترها فیلتر می‌کند. این فیلترها باید فقط بر خروجی لاگ اثر بگذارند و دادهٔ موردنیاز پردازش وب‌هوک را تغییر ندهند.
 
-**وضعیت تولید: هنوز مستقر نشده است.** وب‌هوک ثبت‌شدهٔ فعلی ممکن است همچنان از قالب قدیمی مسیر استفاده کند؛ پس از به‌روزرسانی افزونه باید ثبت وب‌هوک با secret تازه انجام و دریافت پیام/کال‌بک در آزمون کنترل‌شده بررسی شود. پیش از این کار، از تغییر تنظیمات تولیدی خودداری کنید تا روند به‌روزرسانی و ثبت مجدد هماهنگ باشد. Rails filtering کنترل‌کنندهٔ لاگ‌های دسترسی Arvan/CDN یا سایر لایه‌های بالادستی نیست؛ تا زمان بررسی جداگانهٔ آن لاگ‌ها، حفاظت سرتاسری ادعا نمی‌شود. secretهای قبلی را در گزارش‌ها یا خروجی‌های قابل‌اشتراک بازنشر نکنید.
+**وضعیت تولید: هنوز مستقر نشده است.**
+
+**به‌روزرسانی تشخیصی — ۱۹ اکتبر ۲۰۲۶:** در بررسی پنل بله، پاسخ `getWebhookInfo` موفق بود اما `result.url` خالی بود؛ بخش‌های Retries، Scheduled و Dead در Sidekiq نیز خالی گزارش شدند. این شواهد علت قطعی را مشخص نمی‌کنند، اما نقصی در job ثبت وب‌هوک پیدا شد: secret در هر اجرا پیش از تأیید API چرخانده می‌شد و نتیجهٔ ثبت بررسی نمی‌شد. اصلاح محدود در شاخهٔ `fix/webhook-registration-reliability` در حال آزمون است؛ secret موجود دیگر در هر تلاش چرخانده نمی‌شود و secret تازه فقط در صورت خالی‌بودن ساخته می‌شود. در بازبینی دقیق‌تر روشن شد که صرف لاگ‌کردن شکست، job را برای retry خودکار ناموفق نمی‌کند؛ بنابراین شکست ثبت/حذف اکنون پس از لاگ امن، با استثنای عمومی بالا می‌آید تا سیاست retry در Sidekiq بتواند آن را دوباره اجرا کند. آزمون‌های رگرسیون این رفتار را بررسی می‌کنند. CI کامل و smoke tests روی commit `510b6ba72ed8445a0eab22de5022e29be0456209` موفق شده‌اند؛ PR هنوز ادغام نشده و هیچ تنظیم یا فایلی در تولید تغییر نکرده است. تنظیمات تولیدی را تغییر ندهید. وب‌هوک ثبت‌شدهٔ فعلی ممکن است همچنان از قالب قدیمی مسیر استفاده کند؛ پس از به‌روزرسانی افزونه باید ثبت وب‌هوک با secret تازه انجام و دریافت پیام/کال‌بک در آزمون کنترل‌شده بررسی شود. پیش از این کار، از تغییر تنظیمات تولیدی خودداری کنید تا روند به‌روزرسانی و ثبت مجدد هماهنگ باشد. Rails filtering کنترل‌کنندهٔ لاگ‌های دسترسی Arvan/CDN یا سایر لایه‌های بالادستی نیست؛ تا زمان بررسی جداگانهٔ آن لاگ‌ها، حفاظت سرتاسری ادعا نمی‌شود. secretهای قبلی را در گزارش‌ها یا خروجی‌های قابل‌اشتراک بازنشر نکنید.
 
 
 
@@ -474,3 +476,14 @@ PR [شمارهٔ ۴](https://github.com/serkhelesheyi/discourse-bale-notificatio
 - [ ] به‌روزرسانی افزونه در انجمن تولیدی و بررسی لاگ پس از یک آزمون کنترل‌شده؛ این مرحله جدا از ادغام GitHub است.
 
 **مرز استقرار:** PR ادغام شده است، اما در این مرحله هیچ تغییری روی سرور تولیدی انجام نشده و حذف شناسه از لاگ‌های زنده هنوز با آزمون عملی تأیید نشده است.
+
+
+### Webhook registration reliability — CI confirmed, 19 October 2026
+
+- [x] Fixed the RuboCop `Metrics/MethodLength` offense by extracting secret retrieval/creation into `webhook_secret`; no cop was disabled.
+- [x] Confirmed all jobs in Discourse Plugin CI run [#341](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39219172157) on HEAD `510b6ba72ed8445a0eab22de5022e29be0456209`: linting, test discovery, and backend tests all succeeded.
+- [x] Confirmed Plugin smoke tests run [#212](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39219171679) on the same HEAD succeeded.
+- [ ] Perform final code/diff review and decide whether to merge PR [#6](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/6).
+- [ ] If separately approved, plan controlled production update and verify webhook registration, inbound messages, and callback queries.
+
+**Boundary:** CI and smoke tests are green on the current branch HEAD. PR #6 remains open and unmerged; `main`, production settings, secrets, and server files have not been changed. A green CI run does not prove the live Bale webhook URL is registered or that inbound delivery works.
