@@ -1438,3 +1438,12 @@ The user reports that all eight notification preferences were disabled and saved
 تا پیش از merge، هیچ تغییری در `main` یا سرور تولیدی انجام نشده است. اگر آزمون‌ها ناموفق باشند، شاخهٔ اصلاح را می‌توان بدون اثر روی نسخهٔ تولیدی کنار گذاشت. پس از merge ولی پیش از استقرار، بازگشت با revert commitهای همین اصلاح ممکن است. استقرار تولیدی و ثبت مجدد وب‌هوک مرحله‌ای مستقل و نیازمند تأیید کاربر است.
 
 **محدودیت نتیجه:** این اصلاح، تشخیص/قابلیت اطمینان job را بهبود می‌دهد؛ هنوز علت نهایی خالی‌بودن URL در API بله ثابت نشده و این تغییر به‌تنهایی دریافت موفق webhook را تضمین نمی‌کند.
+
+
+### CI lint correction — 19 October 2026
+
+- [x] Inspected both failed lint runs (#327 pull_request and push): both failed for the same RuboCop offense, `Metrics/MethodLength`, in `jobs/setup_bale_webhook.rb:18` (11/10 lines). Backend tests and test-discovery checks passed in those runs.
+- [x] Refactored common API-response validation/logging/raising into `ensure_successful_response!`; no cop suppression was added and intended retry behavior remains.
+- [ ] Verify new pull_request and push CI runs for the correction commit `0e1f7e78d54b29053c6c73d5e2959fcbf26cc772`. Do not assume earlier passing backend tests validate this new commit.
+- [ ] Before merge, review retry behavior and design a safe explicit admin trigger for webhook registration without toggling settings.
+- [ ] No production deployment or setting changes until CI is green and the trigger/recovery plan is reviewed.
