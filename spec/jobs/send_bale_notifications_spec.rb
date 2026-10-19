@@ -25,8 +25,8 @@ RSpec.describe Jobs::SendBaleNotifications do
       it "raises a retryable error for an explicit transient API rejection (#{error_code})" do
         response = { 'ok' => false, 'error_code' => error_code }
 
-        expect { job.raise_for_retryable_api_failure(response) }
-          .to raise_error(described_class::RetryableDeliveryError, /error_code=#{error_code}/)
+        expect { DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(response) }
+          .to raise_error(DiscourseBaleNotifications::RetryableDelivery::Error, /error_code=#{error_code}/)
       end
     end
 
@@ -39,11 +39,11 @@ RSpec.describe Jobs::SendBaleNotifications do
     end
 
     it 'does not retry a network/ambiguous failure represented by false' do
-      expect { job.raise_for_retryable_api_failure(false) }.not_to raise_error
+      expect { DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(false) }.not_to raise_error
     end
 
     it 'does not retry a successful response' do
-      expect { job.raise_for_retryable_api_failure('ok' => true, 'result' => { 'message_id' => 7 }) }
+      expect { DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!('ok' => true, 'result' => { 'message_id' => 7 }) }
         .not_to raise_error
     end
   end
