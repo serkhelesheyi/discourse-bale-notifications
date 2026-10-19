@@ -16,19 +16,20 @@ module Jobs
     private
 
     def setup_webhook
-      # Keep the existing secret stable across retries.
-      secret = SiteSetting.bale_secret
-      if secret.blank?
-        secret = SecureRandom.hex
-        SiteSetting.bale_secret = secret
-      end
-
-      response = DiscourseBaleNotifications::BaleNotifier.setup_webhook(secret)
+      response = DiscourseBaleNotifications::BaleNotifier.setup_webhook(webhook_secret)
       ensure_successful_response!(
         response,
         'Bale webhook registration failed',
         'Bale webhook registration failed; the current webhook secret was retained'
       )
+    end
+
+    def webhook_secret
+      return SiteSetting.bale_secret if SiteSetting.bale_secret.present?
+
+      secret = SecureRandom.hex
+      SiteSetting.bale_secret = secret
+      secret
     end
 
     def remove_webhook
