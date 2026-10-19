@@ -100,12 +100,11 @@ module DiscourseBaleNotifications
       log_api_failure(method_name, response, response_data)
       unlink_chat_if_unreachable(chat_id, response_data)
       BaleActivityLog.record_activity(
-        method_name,
-        chat_id,
-        false,
-        response_data['error_code'],
-        response_data['description']
+        method_name, chat_id, false, response_data['error_code'], response_data['description']
       )
+      # Return send API rejection details so the notification job can classify retryable failures.
+      return response_data if %w[sendMessage sendPhoto].include?(method_name)
+
       false
     end
 

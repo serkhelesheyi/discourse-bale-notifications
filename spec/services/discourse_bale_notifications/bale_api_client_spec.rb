@@ -126,7 +126,13 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
         .with('sendMessage', chat_id, false, 500, 'simulated API failure')
 
-      expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
+      result = described_class.call('sendMessage', chat_id: chat_id, text: private_message)
+
+      expect(result).to eq(
+        'ok' => false,
+        'error_code' => 500,
+        'description' => 'simulated API failure'
+      )
     end
   end
 end

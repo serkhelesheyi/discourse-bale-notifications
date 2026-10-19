@@ -15,6 +15,10 @@
 ممیزی ایستای بعدی یک شکاف بالقوه در retry نشان داده است: API client برای خطاهای شبکه، پاسخ نامعتبر و شکست API مقدار `false` برمی‌گرداند؛ job ارسال اعلان این نتیجه را بدون استثنا یا سیاست retry اختصاصی می‌پذیرد. بنابراین این شکست‌ها لزوماً وارد retry خودکار Sidekiq نمی‌شوند. رفتار دقیق باید با توجه به موقت/دائمی بودن خطاها و قرارداد نسخهٔ هدف Discourse بررسی و آزموده شود. جزئیات و گام بعد در [ROADMAP.md](ROADMAP.md) ثبت شده است.
 
 
+## قابلیت اطمینان ارسال اعلان — ۱۹ اکتبر ۲۰۲۶
+
+در شاخهٔ ممیزی `fix/bounded-bale-notification-retries`، retry برای پاسخ‌های صریح و موقت API بله محدود شده است: فقط پاسخ ناموفق با `error_code` از نوع عدد صحیح و برابر `429` یا در بازهٔ `500–599` از مسیر job استثنای retryable ایجاد می‌کند و Sidekiq حداکثر پنج بار retry می‌کند. کد خطای مفقود، رشته‌ای یا نامعتبر باعث استثنا و retry از این سیاست نمی‌شود. خطاهای دائمی و خطاهایی که نتیجهٔ ارسال در آن‌ها نامعلوم است (از جمله timeout/پاسخ نامعتبر) عمداً از این مسیر retry نمی‌شوند تا احتمال ارسال تکراری افزایش نیابد. آزمون‌های رگرسیون این دسته‌ها را پوشش می‌دهند. CI کامل روی HEAD کد `97f495b4f32d2d74025c92604775fcb04cc8828b` موفق شد: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39253636213) شامل linting، کشف آزمون‌ها و backend tests و [smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39253635917) همگی سبز هستند. این شواهد صحت آزمون‌های خودکار را نشان می‌دهند، نه تضمین تحویل دقیقاً یک‌بار یا موفقیت ارسال زنده. تغییرات هنوز فقط در شاخهٔ PR شمارهٔ [#7](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/7) هستند؛ `main` و سرور تولیدی تغییر نکرده‌اند. جزئیات و محدودیت‌ها در [ROADMAP.md](ROADMAP.md) آمده است.
+
 ## حفاظت از لاگ وب‌هوک
 
 **به‌روزرسانی ۱۹ اکتبر ۲۰۲۶:** اصلاحیهٔ [PR #5](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/5) ادغام شده است (merge commit: `37bbda8faaa48f38bc4747582a8e8cb9ade36a79`). CI کامل روی HEAD اصلاحیه موفق شد: linting، کشف آزمون‌ها و آزمون‌های backend؛ smoke tests نیز روی همان HEAD موفق شدند. آزمون‌های رگرسیون مسیر فیلترشده، پارامترهای فیلترشده و ساخت URL جدید webhook را بررسی می‌کنند.
@@ -509,3 +513,20 @@ PR [شمارهٔ ۴](https://github.com/serkhelesheyi/discourse-bale-notificatio
 - [ ] بازبینی لاگ‌های Arvan/CDN و سایر لایه‌های بالادستی از جهت ثبت query string حاوی secret همچنان لازم است؛ فیلتر Rails به‌تنهایی این لایه‌ها را پوشش نمی‌دهد.
 
 **مرز اطمینان:** آزمون زنده با موفقیت گزارش شده است؛ این مستندات گزارش کاربر را ثبت می‌کنند و ادعای بررسی مستقیم سرور نیستند. اصلاح کد ادغام شده و CI اصلی و smoke tests روی HEAD مستندشدهٔ `main` موفق‌اند. مواردی که سناریوی دقیق یا شواهد مستقل ندارند، باز باقی می‌مانند.
+
+
+## Bounded retries for explicit transient Bale API failures — 19 October 2026
+
+PR [#7](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/7) adds a conservative retry policy for notification sends:
+
+- The API client preserves explicit failed API response details for `sendMessage` and `sendPhoto`.
+- The notification job raises a retryable error only when Bale explicitly rejects a send with `error_code=429` or a 5xx code. Sidekiq retries are capped at five.
+- Permanent API failures (including 400/401/403/404/422) are not retried.
+- Network errors, timeouts, malformed JSON, and ambiguous responses are not retried because Bale may have accepted the message before the response was lost; retrying could duplicate a notification.
+- Regression coverage checks response classification and propagation through the job. The retry policy does not provide exactly-once delivery.
+
+### Validation status
+
+The final code HEAD `ec48a90848ccbed7af5158c436e81af6f03df4ea` passed both required GitHub Actions workflows: [Discourse Plugin CI run 39250973508](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250973508) and [Plugin smoke tests run 39250973079](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250973079). An additional Discourse Plugin run on the same SHA also passed: [run 39250968343](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250968343).
+
+The documentation update itself will trigger new workflow runs; those must also pass before this documentation stage is considered complete. PR #7 remains a draft and has not been merged. No production deployment was performed by these GitHub changes.
