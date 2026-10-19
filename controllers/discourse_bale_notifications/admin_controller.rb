@@ -25,7 +25,9 @@ module DiscourseBaleNotifications
 
     def activity_with_usernames(activity)
       usernames = usernames_by_chat_id(activity)
-      activity.map { |entry| entry.merge('username' => usernames[entry['chat_id'].to_s]) }
+      activity.map do |entry|
+        entry.except('chat_id').merge('username' => usernames[entry['chat_id'].to_s])
+      end
     end
 
     def usernames_by_chat_id(activity)
