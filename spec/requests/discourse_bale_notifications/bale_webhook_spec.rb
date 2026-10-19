@@ -27,7 +27,6 @@ RSpec.describe 'Bale webhook', type: :request do
       expect(response.parsed_body).to eq('error' => 'forbidden')
     end
 
-
     it 'filters webhook secrets and payload content from Rails request logging' do
       post '/bale/hook?key=test-webhook-secret',
            params: {
