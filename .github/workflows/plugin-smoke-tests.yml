@@ -26,6 +26,7 @@ jobs:
           ruby -c plugin.rb
           ruby -c services/discourse_bale_notifications/link_code.rb
           ruby -c services/discourse_bale_notifications/bale_api_client.rb
+          ruby -c services/discourse_bale_notifications/retryable_delivery.rb
           ruby -c services/discourse_bale_notifications/bale_notifier.rb
           ruby -c test/link_code_test.rb
 
