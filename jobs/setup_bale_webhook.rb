@@ -30,6 +30,9 @@ module Jobs
       Rails.logger.error(
         'Bale webhook registration failed; the current webhook secret was retained'
       )
+      # Jobs::Base is handled by Sidekiq. Raising allows its retry policy to retry
+      # transient API/network failures instead of silently completing the job.
+      raise StandardError, 'Bale webhook registration failed'
     end
 
     def remove_webhook
@@ -37,6 +40,7 @@ module Jobs
       return if successful_api_response?(response)
 
       Rails.logger.error('Bale webhook removal failed')
+      raise StandardError, 'Bale webhook removal failed'
     end
 
     def successful_api_response?(response)
