@@ -589,3 +589,13 @@ curl -sS -o /dev/null -w 'http_status=%{http_code} total_seconds=%{time_total}\n
 If a command reports that a path is absent, do not create it or substitute a guessed path; use the actual path shown by the live `app.yml` and container. Do not paste tokens, webhook secrets, private message contents, or full secret-bearing URLs into issues or chat. For compressed backups, check integrity with the tool matching the actual archive format; do not extract over a live installation.
 
 **Current status:** CI and smoke tests passed; production preflight is pending evidence from the actual VPS. No production update, rebuild, restart, webhook change, or database operation was performed by this repository documentation change.
+
+## Production update reported and retry-budget regression — 19 October 2026
+
+The site owner reports that the plugin has been updated through Discourse and that no apparent errors have been observed so far. This is a user-reported operational status, not an independent server inspection or proof that every notification path was exercised.
+
+The next repository-side hardening step adds a regression test that asserts `Jobs::SendBaleNotifications` retains `sidekiq_options retry: 5`. This guards against accidentally removing or changing the bounded retry configuration. It does not prove the live Sidekiq runtime's effective retry schedule or that a real Bale API failure will be retried; those remain distinct from CI.
+
+- Bounded retry behavior and limitations: see the section above.
+- Production deployment and its user-reported status must be distinguished from repository CI.
+- No server commands, configuration changes, webhook changes, restarts, or database operations were performed as part of this repository-side test change.
