@@ -1489,3 +1489,17 @@ The user reports that all eight notification preferences were disabled and saved
 4. به‌روزرسانی این بخش و README با نتایج واقعی؛ سپس بستن این بخش از نقشهٔ راه، مشروط به تکمیل موارد ضروری.
 
 **مرز وضعیت:** این ثبت بر اعلام کاربر مبنی بر موفقیت آزمون تکیه دارد؛ دسترسی مستقیم به سرور وجود نداشته و سناریوهای آزمون مستقلانه مشاهده نشده‌اند. بخش‌های قدیمی‌تر ROADMAP که وضعیت پیش از استقرار یا پیش از ادغام را شرح می‌دهند، سابقهٔ زمانی‌اند؛ این بخش آخرین وضعیت گزارش‌شده را بیان می‌کند.
+
+
+## ثبت آزمون زنده و وضعیت جاری مستندات — ۱۹ اکتبر ۲۰۲۶
+
+- [x] کاربر اعلام کرده آزمون پس از استقرار با موفقیت پایان یافته است.
+- [x] CI اصلی و smoke tests روی commit کد `8cac42a1caef2cb5cd5f71ad40ad51bfc87e709f` موفق شدند: [CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39221431109)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39221430577).
+- [x] گزارش نتیجه و موارد باقی‌مانده در README و این نقشهٔ راه ثبت شده‌اند.
+- [x] smoke tests روی commit مستندات `195966db2bd2e1dec8cc8ecaf5749049462f3b3e` موفق شد: [run](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39222287324).
+- [ ] CI اصلی روی آخرین commit مستندات هنوز در وضعیت نهایی تأیید نشده است: [run](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39222287878).
+- [ ] سناریوهای دقیق آزمون زنده باید مشخص شوند. موفقیت کلی به‌تنهایی اثبات نمی‌کند که ثبت webhook، دریافت پیام ورودی، callback، retry و محرمانگی همهٔ لاگ‌ها جداگانه آزموده شده‌اند.
+- [ ] بازبینی access logهای Arvan/CDN از جهت ثبت query string حاوی secret باز است؛ فیلتر Rails این لایه‌ها را پوشش نمی‌دهد.
+- [ ] سیاست واقعی retry در نسخهٔ نصب‌شدهٔ Discourse/Sidekiq باید با شواهد مستند شود؛ exception به‌تنهایی تضمین نمی‌کند job تا ابد یا پس از پایان تلاش‌های مجاز دوباره اجرا شود.
+
+**مرز وضعیت:** نتیجهٔ آزمون زنده بر اساس اعلام کاربر ثبت شده و مشاهدهٔ مستقیم سرور انجام نشده است. یادداشت‌های قدیمی‌تر در بخش‌های قبلی ROADMAP snapshot تاریخی‌اند؛ این بخش وضعیت گزارش‌شدهٔ جاری و موارد باز را جمع‌بندی می‌کند. هیچ secret، token یا payload خصوصی در مستندات درج نشود.
