@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength -- Setup-job regression cases share one concise fixture.
 RSpec.describe Jobs::SetupBaleWebhook do
   subject(:job) { described_class.new }
 
@@ -79,3 +80,4 @@ RSpec.describe Jobs::SetupBaleWebhook do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
