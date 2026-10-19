@@ -7,15 +7,40 @@ module Jobs
   class SetupBaleWebhook < ::Jobs::Base
     def execute(*)
       if SiteSetting.bale_notifications_enabled?
-        SiteSetting.bale_secret = SecureRandom.hex
-        DiscourseBaleNotifications::BaleNotifier.setup_webhook(SiteSetting.bale_secret)
+        setup_webhook
       else
-        # فاز یک - اصلاح #۱۰: قبلاً هنگام غیرفعال‌سازی افزونه هیچ اقدامی
-        # انجام نمی‌شد و وب‌هوک نزد بله ثبت‌شده باقی می‌ماند؛ بله تا ابد
-        # سعی در ارسال درخواست به endpointِ اکنون ۴۰۴ می‌کرد. اکنون هنگام
-        # غیرفعال‌سازی، وب‌هوک صراحتاً از سمت بله حذف می‌شود.
-        DiscourseBaleNotifications::BaleNotifier.delete_webhook
+        remove_webhook
       end
+    end
+
+    private
+
+    def setup_webhook
+      # Keep the existing secret stable across retries. Rotating it before the API
+      # confirms registration can invalidate the currently registered webhook.
+      secret = SiteSetting.bale_secret
+      if secret.blank?
+        secret = SecureRandom.hex
+        SiteSetting.bale_secret = secret
+      end
+
+      response = DiscourseBaleNotifications::BaleNotifier.setup_webhook(secret)
+      return if successful_api_response?(response)
+
+      Rails.logger.error(
+        'Bale webhook registration failed; the current webhook secret was retained'
+      )
+    end
+
+    def remove_webhook
+      response = DiscourseBaleNotifications::BaleNotifier.delete_webhook
+      return if successful_api_response?(response)
+
+      Rails.logger.error('Bale webhook removal failed')
+    end
+
+    def successful_api_response?(response)
+      response.is_a?(Hash) && response['ok'] == true
     end
   end
 end
