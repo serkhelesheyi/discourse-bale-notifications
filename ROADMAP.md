@@ -1404,10 +1404,10 @@ The user reports that all eight notification preferences were disabled and saved
 در بررسی لاگ‌های تولیدی مشخص شد Rails به‌طور خودکار پارامترهای درخواست را ثبت می‌کند. این مسیر مستقل از لاگ تشخیصی افزونه است و می‌تواند متن پیام خصوصی، شناسه‌ها و داده‌های callback را افشا کند. قرارگرفتن secret در مسیر URL نیز باعث می‌شود فیلترکردن پارامترها به‌تنهایی از ثبت آن در خط درخواست جلوگیری نکند.
 
 - [x] ریشهٔ مسئله در کد مخزن مشخص شد: مسیر قبلی وب‌هوک secret را در path قرار می‌داد؛ logger خودکار Rails جدا از `WebhookMessageDiagnostics` عمل می‌کند.
-- [ ] انتقال endpoint به `POST /bale/hook?key=...` و ثبت webhook جدید با همین قالب.
-- [ ] افزودن فیلتر Rails برای `key`، `message`، `callback_query` و `bale` و آزمون اینکه مقادیر آزمایشی در `filtered_path` و `filtered_parameters` ظاهر نشوند.
-- [ ] هماهنگ‌سازی redaction پنل مدیریت با قالب query جدید، بدون بازگرداندن secret به پاسخ JSON.
-- [ ] اجرای CI کامل و smoke tests روی commit نهایی؛ شکست هر تست باید پیش از ادغام رفع شود.
+- [x] در شاخهٔ اصلاح، endpoint به `POST /bale/hook?key=...` منتقل شد و تمام آزمون‌های درخواست به قالب جدید تغییر کردند.
+- [x] فیلتر Rails برای `key`، `message`، `callback_query` و `bale` اضافه شد؛ آزمون رگرسیون برای `filtered_path` و `filtered_parameters` نوشته شد.
+- [x] redaction پنل مدیریت با قالب query جدید هماهنگ شد و آزمون عدم افشای secret در پاسخ JSON به‌روزرسانی شد.
+- [ ] تأیید نهایی CI کامل و smoke tests روی آخرین commit؛ اجراهای قبلی یک بار به‌دلیل مسیرهای قدیمی و دو تخلف RuboCop شکست خوردند و اصلاح شدند.
 - [ ] پس از ادغام و به‌روزرسانی کنترل‌شدهٔ افزونه، ثبت مجدد webhook با secret تازه و بررسی لاگ‌های جدید بدون نمایش یا ارسال مقادیر حساس.
 - [ ] بررسی اینکه access logهای CDN/وب‌سرور query string را فیلتر می‌کنند یا خیر؛ فیلتر Rails به‌تنهایی access log لایه‌های بالادست را پوشش نمی‌دهد.
 
