@@ -513,3 +513,20 @@ PR [شمارهٔ ۴](https://github.com/serkhelesheyi/discourse-bale-notificatio
 - [ ] بازبینی لاگ‌های Arvan/CDN و سایر لایه‌های بالادستی از جهت ثبت query string حاوی secret همچنان لازم است؛ فیلتر Rails به‌تنهایی این لایه‌ها را پوشش نمی‌دهد.
 
 **مرز اطمینان:** آزمون زنده با موفقیت گزارش شده است؛ این مستندات گزارش کاربر را ثبت می‌کنند و ادعای بررسی مستقیم سرور نیستند. اصلاح کد ادغام شده و CI اصلی و smoke tests روی HEAD مستندشدهٔ `main` موفق‌اند. مواردی که سناریوی دقیق یا شواهد مستقل ندارند، باز باقی می‌مانند.
+
+
+## Bounded retries for explicit transient Bale API failures — 19 October 2026
+
+PR [#7](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/7) adds a conservative retry policy for notification sends:
+
+- The API client preserves explicit failed API response details for `sendMessage` and `sendPhoto`.
+- The notification job raises a retryable error only when Bale explicitly rejects a send with `error_code=429` or a 5xx code. Sidekiq retries are capped at five.
+- Permanent API failures (including 400/401/403/404/422) are not retried.
+- Network errors, timeouts, malformed JSON, and ambiguous responses are not retried because Bale may have accepted the message before the response was lost; retrying could duplicate a notification.
+- Regression coverage checks response classification and propagation through the job. The retry policy does not provide exactly-once delivery.
+
+### Validation status
+
+The final code HEAD `ec48a90848ccbed7af5158c436e81af6f03df4ea` passed both required GitHub Actions workflows: [Discourse Plugin CI run 39250973508](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250973508) and [Plugin smoke tests run 39250973079](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250973079). An additional Discourse Plugin run on the same SHA also passed: [run 39250968343](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250968343).
+
+The documentation update itself will trigger new workflow runs; those must also pass before this documentation stage is considered complete. PR #7 remains a draft and has not been merged. No production deployment was performed by these GitHub changes.
