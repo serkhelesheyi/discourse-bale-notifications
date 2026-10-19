@@ -8,7 +8,8 @@ module DiscourseBaleNotifications
     def self.raise_if_retryable_api_failure!(response)
       return unless response.is_a?(Hash) && response['ok'] == false
 
-      error_code = response['error_code'].to_i
+      error_code = response['error_code']
+      return unless error_code.is_a?(Integer)
       return unless error_code == 429 || error_code.between?(500, 599)
 
       raise Error, "Bale temporarily rejected notification delivery (error_code=#{error_code})"
