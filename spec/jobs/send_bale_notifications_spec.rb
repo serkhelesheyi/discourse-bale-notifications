@@ -20,7 +20,7 @@ RSpec.describe Jobs::SendBaleNotifications do
     user.save_custom_fields
   end
 
-  describe '#raise_for_retryable_api_failure' do
+  describe 'RetryableDelivery' do
     [429, 500, 502, 503, 599].each do |error_code|
       it "raises a retryable error for an explicit transient API rejection (#{error_code})" do
         response = { 'ok' => false, 'error_code' => error_code }
@@ -34,7 +34,7 @@ RSpec.describe Jobs::SendBaleNotifications do
       it "does not retry a non-transient API rejection (#{error_code})" do
         response = { 'ok' => false, 'error_code' => error_code }
 
-        expect { job.raise_for_retryable_api_failure(response) }.not_to raise_error
+        expect { DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(response) }.not_to raise_error
       end
     end
 
@@ -69,7 +69,7 @@ RSpec.describe Jobs::SendBaleNotifications do
         .and_return('ok' => false, 'error_code' => 503)
 
       expect { job.execute(user_id: user.id, payload: valid_payload) }
-        .to raise_error(described_class::RetryableDeliveryError)
+        .to raise_error(DiscourseBaleNotifications::RetryableDelivery::Error)
     end
 
     it 'does not raise for a permanent API rejection' do
