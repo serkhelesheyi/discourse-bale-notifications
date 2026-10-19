@@ -49,14 +49,14 @@ RSpec.describe 'Bale webhook', type: :request do
     end
 
     it 'acknowledges a message payload with no chat object without raising' do
-      post '/bale/hook/test-webhook-secret', params: { message: { text: 'hello' } }
+      post '/bale/hook?key=test-webhook-secret', params: { message: { text: 'hello' } }
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq('success' => true)
     end
 
     it 'acknowledges a message payload with no chat ID without raising' do
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: { message: { chat: { type: 'private' }, text: 'hello' } }
 
       expect(response).to have_http_status(:ok)
@@ -64,7 +64,7 @@ RSpec.describe 'Bale webhook', type: :request do
     end
 
     it 'acknowledges non-private message payloads without processing them' do
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: { message: { chat: { id: 123, type: 'group' }, text: 'hello' } }
 
       expect(response).to have_http_status(:ok)
@@ -88,7 +88,7 @@ RSpec.describe 'Bale webhook', type: :request do
         payload[:chat_id] == '987654399' && payload[:text].include?('To reply')
       end
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              message: {
                text: 'private diagnostic text',
@@ -106,7 +106,7 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.action-unavailable')
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: { callback_query: { id: 'callback-1', data: 'like:1' } }
 
       expect(response).to have_http_status(:ok)
@@ -119,7 +119,7 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.action-unavailable')
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-2',
@@ -141,7 +141,7 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.action-unavailable')
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-unlinked',
@@ -167,7 +167,7 @@ RSpec.describe 'Bale webhook', type: :request do
         I18n.t('discourse_bale_notifications.action-unavailable')
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-deleted-post',
@@ -206,7 +206,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-like',
@@ -253,7 +253,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-unlike',
@@ -310,7 +310,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              message: {
                text: 'Reply from Bale',
@@ -351,7 +351,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-account-isolation',
@@ -403,7 +403,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       )
 
-      post '/bale/hook/test-webhook-secret',
+      post '/bale/hook?key=test-webhook-secret',
            params: {
              callback_query: {
                id: 'callback-unlike-missing',
