@@ -69,19 +69,10 @@ module Jobs
     end
 
     def notification_variables(payload)
-      basic_notification_variables(payload).merge(post_notification_variables(payload))
-    end
-
-    def basic_notification_variables(payload)
       {
         site_title: markdown_escape(SiteSetting.title),
         site_url: Discourse.base_url,
-        username: markdown_escape(payload[:username])
-      }
-    end
-
-    def post_notification_variables(payload)
-      {
+        username: markdown_escape(payload[:username]),
         post_url: Discourse.base_url + payload[:post_url].to_s,
         post_excerpt: markdown_escape(payload[:excerpt]),
         topic: markdown_escape(payload[:topic_title]),
