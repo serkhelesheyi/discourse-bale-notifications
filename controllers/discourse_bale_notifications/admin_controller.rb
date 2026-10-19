@@ -45,7 +45,7 @@ module DiscourseBaleNotifications
 
       info = info.deep_dup
       registered_url = info['result']['url'].to_s
-      redacted_url = registered_url.sub(%r{([?&]key=)[^&#]+}, '\\1[REDACTED]')
+      redacted_url = registered_url.sub(/([?&]key=)[^&#]+/, '\\1[REDACTED]')
       info['result']['url'] = redacted_url == registered_url ? '[URL hidden]' : redacted_url
       info
     end
