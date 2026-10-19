@@ -5,6 +5,13 @@ require_dependency 'jobs/base'
 module Jobs
   # Delivers a queued Discourse notification to the linked private Bale chat.
   class SendBaleNotifications < ::Jobs::Base
+    # Retry only explicit transient API rejections. Network timeouts and malformed
+    # responses remain non-retryable because Bale may already have accepted a send.
+    sidekiq_options retry: 5
+
+    class RetryableDeliveryError < StandardError
+    end
+
     def execute(args)
       return unless SiteSetting.bale_notifications_enabled?
 
@@ -17,7 +24,19 @@ module Jobs
 
       user, chat_id, post = context
       response = deliver_notification(payload, type_name, user, chat_id, post)
+      raise_for_retryable_api_failure(response)
       store_message_id(response, chat_id, post)
+    end
+
+
+    def raise_for_retryable_api_failure(response)
+      return unless response.is_a?(Hash) && response['ok'] == false
+
+      error_code = response['error_code'].to_i
+      return unless error_code == 429 || error_code.between?(500, 599)
+
+      raise RetryableDeliveryError,
+            "Bale temporarily rejected notification delivery (error_code=#{error_code})"
     end
 
     def site_notification_enabled?(type_name)
