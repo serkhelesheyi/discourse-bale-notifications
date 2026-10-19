@@ -594,8 +594,13 @@ If a command reports that a path is absent, do not create it or substitute a gue
 
 The site owner reports that the plugin has been updated through Discourse and that no apparent errors have been observed so far. This is a user-reported operational status, not an independent server inspection or proof that every notification path was exercised.
 
-The next repository-side hardening step adds a regression test that asserts `Jobs::SendBaleNotifications` retains `sidekiq_options retry: 5`. This guards against accidentally removing or changing the bounded retry configuration. It does not prove the live Sidekiq runtime's effective retry schedule or that a real Bale API failure will be retried; those remain distinct from CI.
+The regression test in `spec/jobs/send_bale_notifications_spec.rb` asserts that `Jobs::SendBaleNotifications` retains `sidekiq_options retry: 5`. This guards against accidentally removing or changing the configured retry budget; it does not prove the live Sidekiq runtime's effective retry schedule or real Bale API behavior.
 
-- Bounded retry behavior and limitations: see the section above.
-- Production deployment and its user-reported status must be distinguished from repository CI.
-- No server commands, configuration changes, webhook changes, restarts, or database operations were performed as part of this repository-side test change.
+### Validation of PR #8
+
+- [x] Reviewed the three-file diff: one regression assertion and documentation-only updates; no runtime behavior changed.
+- [x] Discourse Plugin CI passed on HEAD `0188a33c43c3ff547f69a107971df0c35e5fe8ef`: [run 39262862183](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39262862183) (`linting`, `check_for_tests`, `backend_tests` all successful).
+- [x] Plugin smoke tests passed on the same HEAD: [run 39262866759](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39262866759).
+- [ ] PR [#8](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/8) is awaiting an explicit merge decision; passing CI is not itself authorization to merge.
+
+No server commands, production configuration changes, webhook changes, restarts, or database operations were performed as part of this repository-side test change. CI does not establish exactly-once delivery, the live retry schedule, or whether every notification/callback path has been exercised.
