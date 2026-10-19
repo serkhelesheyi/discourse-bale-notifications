@@ -1601,3 +1601,23 @@ The user reports that all eight notification preferences were disabled and saved
 - [ ] پس از استقرار مجاز، آزمون کنترل‌شدهٔ اعلان در محیط واقعی و بررسی لاگ‌ها/Sidekiq انجام شود؛ موفقیت CI به‌تنهایی رفتار زندهٔ API بله را اثبات نمی‌کند.
 
 **نتیجهٔ مرحله:** PR #7 ادغام شد و CI روی merge commit موفق است. مرحلهٔ بعدی آماده‌سازی و بررسی ایمنِ استقرار تولیدی است، نه اجرای خودکار استقرار.
+
+## Deployment preflight after PR #7 — 19 October 2026
+
+### Verified repository state
+- [x] PR [#7](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/7) was squash-merged; merge commit: `b91835d8368223408dd0c8ecbc754478712553b4`.
+- [x] Latest pre-note documentation HEAD `28b9efcfa08e5648d8074a281acd78e263304b37`: [Discourse Plugin CI run 39257564690](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39257564690) completed successfully. `linting`, `check_for_tests`, and `backend_tests` all concluded `success`.
+- [x] [Plugin smoke tests run 39257564039](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39257564039) succeeded.
+- [x] README and this roadmap now distinguish repository validation from deployment to the live forum.
+
+### Production preflight — not yet verified
+- [ ] Identify the actual plugin path and installed Git SHA inside the running `app` container; compare it with the reviewed `main` commit. Do not assume the path or that a Git checkout alone updates the running application.
+- [ ] Record the running Discourse version, container health/restart count, and the actual plugin declaration in `/var/discourse/containers/app.yml`.
+- [ ] Verify the latest backup's timestamp, size, and archive integrity, available disk space, and a practical rollback method.
+- [ ] Determine the correct update/rebuild process from the live installation configuration before changing any files.
+- [ ] After a separately authorized deployment, run a controlled real notification, verify site health and Sidekiq outcome, and inspect relevant logs without exposing secrets or private content.
+
+### Read-only evidence collection
+README contains a read-only preflight command block for collecting container state, configured plugin declaration, installed plugin SHA, disk/backup inventory, and public site response. Run it on the VPS and review the output before deciding whether to deploy. If a path is absent, stop and inspect the actual configuration rather than guessing.
+
+**Safety boundary:** No production server command was executed by this work. No production code, configuration, secret, webhook, database, container, or service was changed. Do not proceed to update/rebuild until the live version, backup integrity, and rollback route are verified and the deployment procedure is chosen for this installation.
