@@ -476,3 +476,8 @@ PR [شمارهٔ ۴](https://github.com/serkhelesheyi/discourse-bale-notificatio
 - [ ] به‌روزرسانی افزونه در انجمن تولیدی و بررسی لاگ پس از یک آزمون کنترل‌شده؛ این مرحله جدا از ادغام GitHub است.
 
 **مرز استقرار:** PR ادغام شده است، اما در این مرحله هیچ تغییری روی سرور تولیدی انجام نشده و حذف شناسه از لاگ‌های زنده هنوز با آزمون عملی تأیید نشده است.
+
+
+### Webhook retry follow-up — 19 October 2026
+
+A subsequent CI run found one RuboCop offense in `jobs/setup_bale_webhook.rb` (`Metrics/MethodLength`, 11/10 lines). The failure handling was extracted into `ensure_successful_response!` to reduce method length without disabling the cop. The change is on `fix/webhook-registration-reliability`; the new CI result must be checked before merge. No production settings or server files were changed.
