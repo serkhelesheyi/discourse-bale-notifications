@@ -1550,7 +1550,12 @@ The user reports that all eight notification preferences were disabled and saved
 اجرای اولیهٔ PR #7، یعنی [CI run 39249219920](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39249219920)، در lint چهار تخلف تازه/متأثر از تغییر را گزارش کرد: `Metrics/ClassLength` در job اعلان، دو مورد فاصله‌گذاری و `Metrics/MethodLength` در API client. برای رفع ریشه‌ای و نه خاموش‌کردن copها، منطق طبقه‌بندی به سرویس کوچک `RetryableDelivery` منتقل شد، سرویس در autoload افزونه ثبت شد، handler API کوتاه شد و syntax smoke test نیز فایل جدید را پوشش می‌دهد.
 
 - [x] اصلاح ساختاری lint بر اساس لاگ واقعی انجام شد.
-- [ ] اجرای تازهٔ CI روی آخرین HEAD و تأیید backend tests، lint و smoke tests.
-- [ ] بازبینی نهایی diff و ثبت وضعیت نهایی.
+- [x] اجرای نهایی Discourse Plugin CI روی HEAD کد `ec48a90848ccbed7af5158c436e81af6f03df4ea` موفق شد: [run 39250973508](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250973508).
+- [x] اجرای نهایی Plugin smoke tests روی همان HEAD موفق شد: [run 39250973079](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250973079).
+- [x] اجرای اضافی Discourse Plugin CI روی همان HEAD نیز موفق شد: [run 39250968343](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39250968343).
+- [x] بازبینی اولیهٔ PR تأیید می‌کند که شاخهٔ اصلاحات از `main` جداست و PR #7 هنوز باز، پیش‌نویس و ادغام‌نشده است.
+- [ ] پس از اجرای CI ناشی از این به‌روزرسانی مستندات، نتیجهٔ هر دو workflow دوباره تأیید شود.
+- [ ] پس از تأیید CI مستندات، بازبینی نهایی PR و تصمیم دربارهٔ آماده‌کردن آن برای ادغام انجام شود.
+- [ ] تغییرات هنوز نباید روی انجمن تولیدی مستقر شوند؛ ادغام PR و استقرار زنده دو مرحلهٔ مستقل‌اند.
 
-آخرین تغییرات فقط در شاخهٔ PR هستند؛ تا اجرای تازهٔ workflowها نتیجهٔ موفق فرض نمی‌شود.
+**وضعیت:** CI کد روی HEAD یادشده موفق است؛ این مرحله فقط در شاخهٔ PR انجام شده و `main` و سرور تولیدی تغییر نکرده‌اند. خطاهای نسخه‌های قبلی CI لغو یا با commitهای بعدی جایگزین شده‌اند و نتیجهٔ مرجع، اجراهای موفق روی SHA نهایی بالاست.
