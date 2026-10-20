@@ -247,3 +247,10 @@ The private-message notification itself now includes a short Reply hint (not onl
 **وضعیت: Risk accepted / further investigation deferred by user; not a technical Pass.** در خروجی read-only `nginx -T`، قالب `log_discourse` از `"$request"` استفاده می‌کند؛ این متغیر می‌تواند query string را شامل شود. مقصد access log در خروجی `/var/log/nginx/access.log` بود. از این شواهد نمی‌توان نتیجه گرفت که درخواست وب‌هوک حتماً با همین قالب ثبت می‌شود یا secret واقعاً در لاگ موجود است.
 
 کاربر تصمیم گرفت فعلاً پنل آروان بررسی نشود و بررسی بیشتر لاگ‌های سرور انجام نگیرد، زیرا دسترسی دیگران به لاگ‌ها محدود است. هیچ access log واقعی جست‌وجو یا چاپ نشد و هیچ تنظیمی در production تغییر نکرد. این تصمیم پذیرش عملیاتی ریسک است، نه اثبات محرمانگی کامل؛ موارد مربوط به آروان و مشاهدهٔ لاگ‌ها برای آینده باز گذاشته می‌شوند.
+
+
+## Live acceptance addendum — reply/mention flows — 20 October 2026
+
+The user reports successful live checks after updating the plugin: private-message and ordinary-reply notifications arrived; a post containing a mention generated a reply notification for the topic/post owner and a mention notification for the mentioned user; replying to the Bale mention notification created a reply under the intended Discourse post; and a subsequent reply in the chain was recorded under the preceding reply with a notification delivered to the expected recipient. Full scenario details and limits are recorded in LIVE_ACCEPTANCE_REPORT.md.
+
+**Status:** these are user-reported manual PASS results for the scenarios exercised, not an independently verified test run. The exact installed plugin SHA and Discourse version remain unrecorded. Replying to the older/original mention notification did not produce a new notification for the mentioned user; this alone does not establish a defect. Keep that edge case pending until the exact Discourse target post and notification policy are checked. Deleted/stale-post callbacks, cross-account isolation, remaining notification types, and backup restore/rollback also remain pending. No production commands or changes were performed while documenting this report.
