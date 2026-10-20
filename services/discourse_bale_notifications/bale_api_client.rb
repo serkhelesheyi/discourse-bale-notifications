@@ -54,9 +54,9 @@ module DiscourseBaleNotifications
     rescue *DiscourseBaleNotifications::NETWORK_ERRORS => e
       Rails.logger.error(
         'Bale API request failed before receiving a response ' \
-        "(method=#{method_name}): #{e.class}: #{e.message}"
+        "(method=#{method_name}, error=#{e.class})"
       )
-      BaleActivityLog.record_activity(method_name, chat_id, false, nil, "#{e.class}: #{e.message}")
+      BaleActivityLog.record_activity(method_name, chat_id, false, nil, "network failure (#{e.class})")
       false
     end
 
@@ -66,8 +66,8 @@ module DiscourseBaleNotifications
 
       log_invalid_response_structure(response, method_name, chat_id)
       :invalid_json
-    rescue JSON::ParserError => e
-      log_non_json_response(response, method_name, chat_id, e)
+    rescue JSON::ParserError
+      log_non_json_response(response, method_name, chat_id)
       :invalid_json
     end
 
@@ -88,10 +88,10 @@ module DiscourseBaleNotifications
       BaleActivityLog.record_activity(method_name, chat_id, false, response.code, 'invalid response')
     end
 
-    def self.log_non_json_response(response, method_name, chat_id, error)
+    def self.log_non_json_response(response, method_name, chat_id)
       Rails.logger.error(
         'Bale API returned a non-JSON response ' \
-        "(method=#{method_name}, http_status=#{response.code}): #{error.message}"
+        "(method=#{method_name}, http_status=#{response.code})"
       )
       BaleActivityLog.record_activity(method_name, chat_id, false, response.code, 'non-JSON response')
     end
@@ -100,7 +100,7 @@ module DiscourseBaleNotifications
       log_api_failure(method_name, response, response_data)
       unlink_chat_if_unreachable(chat_id, response_data)
       BaleActivityLog.record_activity(
-        method_name, chat_id, false, response_data['error_code'], response_data['description']
+        method_name, chat_id, false, response_data['error_code'], activity_error_description(response_data)
       )
       # Return send API rejection details so the notification job can classify retryable failures.
       return response_data if %w[sendMessage sendPhoto].include?(method_name)
@@ -111,9 +111,19 @@ module DiscourseBaleNotifications
     def self.log_api_failure(method_name, response, response_data)
       Rails.logger.error(
         "Bale API call failed (method=#{method_name}, " \
-        "http_status=#{response.code}, error_code=#{response_data['error_code']}, " \
-        "description=#{response_data['description']})"
+        "http_status=#{response.code}, error_code=#{response_data['error_code']})"
       )
+    end
+
+    # Keep arbitrary remote descriptions out of persistent activity and Rails logs.
+    # The original response is still returned to the notification job for classification.
+    def self.activity_error_description(response_data)
+      code = response_data['error_code']
+      return 'rate limited by Bale API' if code == 429
+      return 'temporary Bale API failure' if code.is_a?(Integer) && code.between?(500, 599)
+      return 'chat blocked or unavailable' if bot_unreachable?(response_data)
+
+      'Bale API rejected request'
     end
 
     def self.bot_unreachable?(response_data)
