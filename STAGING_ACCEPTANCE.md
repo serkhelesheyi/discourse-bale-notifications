@@ -302,3 +302,20 @@ Next, confirm whether deleted/stale-post callback handling and a safe restore/ro
 - The user also confirmed that both CI workflows succeeded. Check the latest linked Actions runs for the exact documentation HEAD before relying on those runs as current evidence.
 
 A17 remains an accepted operational risk, not a technical PASS. The empty untracked core path `e` remains untouched. No production changes were made for this documentation update.
+
+
+## Current status reconciliation — 21 October 2026
+
+This section supersedes the earlier historical status notes above where they conflict with the latest evidence. The older dated entries are retained as history; they are not a live checklist by themselves.
+
+- Current documentation HEAD at the start of this reconciliation: `2fb9a462049b146a30cc384fe581e0baf47f6044`. The documentation refresh does not change executable plugin code.
+- **GitHub CI: PASS** on that HEAD: [Discourse Plugin CI run 39495201493](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39495201493) and [Plugin smoke tests run 39495201171](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39495201171). These are automated repository checks, not a staging deployment.
+- **Reported live manual PASS:** the user confirmed private-message notifications, ordinary reply and mention routing, chained Bale Reply posting to the intended Discourse posts, reply to an older mention notification, cross-account isolation, and safe handling of a deleted/stale-post like callback. These are user-reported observations, not independently reproduced here.
+- **Staging matrix:** not executed/verified in a separate staging environment. Keep A01–A15 as pending staging checks unless evidence from a genuine non-production run is added. Do not infer a full staging pass from production smoke tests or CI.
+- **A16:** partial live pass only for preference persistence and the private-message all-off/on behavior, as described in the historical record; do not extend that result to all notification types.
+- **Restore/rollback:** provisionally accepted operationally at the user's request. This is not evidence that a restore drill or full backup recovery has been executed. Do not run a restore exercise on production; any future technical validation must use a non-production environment and an explicitly approved plan.
+- **A17:** accepted operational risk; not a technical Pass. Further upstream-log investigation is deferred by the user.
+- **Production baseline reported by user:** plugin SHA `35f34cc5e60ad2aa63b197fdd3e06ff26e85e850`; Discourse core SHA `bab418487a463eede4c7d2f6415fe2eb966a3883`. A newer plugin-repository HEAD consists of documentation changes relative to the latest code-validated SHA, so these documentation commits alone do not warrant a production update or rebuild.
+- The empty untracked core file `e` remains untouched because its origin is unknown.
+
+No production command, configuration change, secret rotation, rebuild, or deployment was performed while reconciling this document.
