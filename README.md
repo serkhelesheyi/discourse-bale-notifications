@@ -607,3 +607,10 @@ The regression test in `spec/jobs/send_bale_notifications_spec.rb` asserts that 
 - [ ] PR-triggered CI and smoke tests must pass on the PR head before merge; runs [39379000298](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39379000298) and [39378999754](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39378999754) were queued when this note was written.
 
 The follow-up reduces unnecessary exposure of linked Bale chat IDs in the admin JSON response; it does not remove IDs from the internal PluginStore activity records or prove privacy across external CDN/access logs. No production server commands, configuration changes, webhook changes, restarts, or database operations were performed. CI does not establish exactly-once delivery or the live Sidekiq retry schedule.
+
+
+## حداقل‌سازی جزئیات خطای API — ۲۰ اکتبر ۲۰۲۶
+
+در شاخهٔ پیگیری حریم خصوصی، پیام خام استثناهای شبکه و شرح دلخواه پاسخ API بله در لاگ Rails یا رکوردهای پایدار فعالیت ذخیره نمی‌شوند. برای عیب‌یابی، نام عملیات، کلاس خطای شبکه، وضعیت HTTP و کد خطای API حفظ می‌شوند؛ رکورد فعالیت از شرح‌های ثابت و دسته‌بندی‌شده استفاده می‌کند. پاسخ اصلی API همچنان به job ارسال برگردانده می‌شود تا طبقه‌بندی retry و تشخیص چت غیرقابل‌دسترسی تغییر نکند. این تغییر به‌تنهایی محرمانگی لاگ‌های CDN/پروکسی یا داده‌های قدیمی PluginStore را اثبات نمی‌کند.
+
+PR [#9](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/9) در commit `04f08155bd1b29f0ea49a3340629b66ddd6b5ebd` ادغام شده است؛ CI و smoke tests پس از ادغام موفق بودند ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39379682083)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39379681576)). مرحلهٔ جدید کاهش جزئیات خطای API در شاخهٔ `fix/redact-api-error-details` در حال اعتبارسنجی است؛ تا پایان CI نتیجهٔ آن تأییدشده محسوب نمی‌شود.
