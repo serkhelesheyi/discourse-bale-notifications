@@ -293,3 +293,12 @@ The user supplied read-only metadata for the core repository's untracked path `e
 - The live plugin remains at `35f34cc5e60ad2aa63b197fdd3e06ff26e85e850`; no production update is warranted solely for docs-only commits.
 
 Next, confirm whether deleted/stale-post callback handling and a safe restore/rollback exercise have already been independently verified. Do not perform a restore exercise on production. A17 remains an accepted operational risk, not a technical PASS.
+
+
+## User-confirmed operational acceptance — 21 October 2026
+
+- **Deleted/stale-post callback — PASS (user-reported live test):** the user tested the callback on the live forum; liking was unavailable and the bot correctly responded that liking was not possible.
+- **Restore/rollback — provisionally accepted by user:** the user asked that this item be treated as confirmed for now and removed from the open checklist. This records an operational acceptance decision; it does **not** claim that a real restore drill was executed or that a full restore was demonstrated. Do not run a restore drill on production.
+- The user also confirmed that both CI workflows succeeded. Check the latest linked Actions runs for the exact documentation HEAD before relying on those runs as current evidence.
+
+A17 remains an accepted operational risk, not a technical PASS. The empty untracked core path `e` remains untouched. No production changes were made for this documentation update.
