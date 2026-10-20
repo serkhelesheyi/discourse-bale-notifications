@@ -1872,3 +1872,15 @@ README contains a read-only preflight command block for collecting container sta
 - این بررسی هیچ تغییری روی سرور ایجاد نکرد.
 
 **گام بعدی:** نوع/مسیر و metadata مورد `e` را فقط‌خواندنی شناسایی کنیم؛ سپس وضعیت callback پست حذف‌شده/کهنه و مستندات restore/rollback را فقط در صورت انجام‌نشدن بررسی کنیم. SHA نصب‌شده و هسته اکنون ثبت شده‌اند، اما `e` تا بررسی باقی است.
+
+
+## تکمیل بررسی مسیر untracked و تأیید CI — ۲۱ اکتبر ۲۰۲۶
+
+کاربر خروجی بررسی فقط‌خواندنی مورد `e` را ارائه کرد:
+
+- `e` یک فایل عادی خالی با اندازهٔ صفر بایت است؛ مالک و گروه `root:root)، مجوز `644)، زمان آخرین تغییر `2026-09-25 11:18:21 UTC) و symlink نیست.
+- این metadata منشأ فایل را مشخص نمی‌کند. فایل در مخزن هسته همچنان untracked است؛ در این مرحله نه خوانده، نه stage، نه حذف و نه تغییر داده شود. صرف خالی‌بودن آن مجوز حذف نیست.
+- هر دو workflow روی HEAD مستنداتی `f18481802a65e7881f129553f8ab7cba2389d392` موفق شدند: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39493976023) و [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39493975015).
+- نتیجهٔ CI مربوط به تغییرات مستنداتی است و نسخهٔ نصب‌شدهٔ افزونه همچنان `35f34cc5e60ad2aa63b197fdd3e06ff26e85e850` است؛ به‌روزرسانی production لازم نیست.
+
+**گام بعدی:** تأیید کنیم آیا آزمون callback مربوط به پست حذف‌شده/کهنه و تمرین امن روش restore/rollback قبلاً انجام شده‌اند. اگر انجام نشده‌اند، آن‌ها را به‌عنوان دو مورد باقیمانده نگه می‌داریم؛ آزمون restore واقعی روی production انجام نمی‌شود. A17 همچنان ریسک پذیرفته‌شده است، نه Pass فنی.
