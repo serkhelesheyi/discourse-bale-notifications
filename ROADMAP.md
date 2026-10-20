@@ -1921,3 +1921,21 @@ README contains a read-only preflight command block for collecting container sta
 ### نتیجهٔ ممیزی محدود بعدی — فیلترهای اعلان
 
 بررسی سورس افزونه در SHA `a5836a1205a8b154d2c3862d3ced58b5eb6b91ca` و هستهٔ Discourse در SHA `bab418487a463eede4c7d2f6415fe2eb966a3883` نشان داد که `PostAlerter.push_notification` رویداد را پیش از فیلترهای push منتشر می‌کند، اما افزونه در `PluginSetup.register_notification_event` همهٔ `DiscoursePluginRegistry.push_notification_filters` را خودش ارزیابی می‌کند و تنها در صورت اجازهٔ همگی job را enqueue می‌کند. آزمون‌های موجود در `spec/services/discourse_bale_notifications/plugin_setup_spec.rb` هر دو نتیجهٔ allow/block را بررسی می‌کنند. بنابراین شکاف مطرح‌شده در توضیح قدیمی، شکاف مستندات بود نه نقص اثبات‌شدهٔ کد؛ `NOTIFICATION_COVERAGE.md` اصلاح شد و کد اجرایی تغییر نکرد. اجرای مستقل آزمون‌ها در این نوبت انجام نشده است.
+
+
+## زیرمرحلهٔ پایداری job — payload نامعتبر در صف — ۲۱ اکتبر ۲۰۲۶
+
+### یافته
+
+در `Jobs::SendBaleNotifications#execute`، مقدار `args[:payload]` پیش از هر اعتبارسنجی به‌صورت hash فرض می‌شد. اگر job قدیمی/دستی یا دادهٔ خراب صف مقدار `nil` یا نوعی غیر از Hash داشته باشد، دسترسی به `payload[:notification_type]` exception ایجاد می‌کند و job ممکن است بی‌دلیل وارد چرخهٔ retry شود؛ درحالی‌که payload نامعتبر با retry اصلاح نمی‌شود.
+
+### تغییر محدود پیشنهادی/پیاده‌سازی‌شده روی شاخه
+
+- [x] پیش از خواندن نوع اعلان، بررسی می‌شود که payload یک Hash باشد؛ payload غیر Hash بدون ارسال پیام و بدون ورود به مسیر delivery نادیده گرفته می‌شود.
+- [x] آزمون رگرسیون برای payloadهای `nil`، آرایه و رشته افزوده شد و بررسی می‌کند که خطایی رخ ندهد و هیچ مرحلهٔ delivery فراخوانی نشود.
+- [ ] CI و smoke tests روی commit نهایی شاخه باید اجرا و نتیجه بررسی شود؛ در این مرحله نتیجهٔ آزمون‌ها را پیشاپیش Pass اعلام نمی‌کنیم.
+- [ ] پس از مرور diff و موفقیت آزمون‌ها، تصمیم دربارهٔ ادغام PR گرفته شود. هیچ استقرار production در این مرحله انجام نشده است.
+
+### دامنه و محدودیت
+
+این guard فقط شکل کلی payload را بررسی می‌کند و قرارداد payload معتبر را تغییر نمی‌دهد. payloadهای Hash با کلیدهای ناقص همچنان از allowlist نوع اعلان عبور نمی‌کنند یا در بررسی‌های موجودِ user/post متوقف می‌شوند؛ این تغییر تضمین نمی‌کند هر دادهٔ دلخواهی در صف معتبر است. تغییر فقط در شاخهٔ `fix/ignore-malformed-notification-jobs` انجام شده و روی `main` یا سرور تولیدی اعمال نشده است.
