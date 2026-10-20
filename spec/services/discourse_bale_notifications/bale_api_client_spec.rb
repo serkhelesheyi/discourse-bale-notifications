@@ -58,7 +58,9 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
     end
 
     it 'returns false on network timeout and does not log the token or private message' do
-      allow(http).to receive(:request).and_raise(Net::ReadTimeout, 'simulated read timeout')
+      allow(http).to receive(:request).and_raise(
+        Net::ReadTimeout, "simulated timeout with #{access_token} #{private_message} #{chat_id}"
+      )
       expect(Rails.logger).to receive(:error) do |message|
         expect(message).to include('Net::ReadTimeout')
         expect(message).not_to include(access_token, private_message, chat_id.to_s)
@@ -68,7 +70,7 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
 
       expect(result).to be(false)
       expect(DiscourseBaleNotifications::BaleActivityLog).to have_received(:record_activity)
-        .with('sendMessage', chat_id, false, nil, a_string_starting_with('Net::ReadTimeout:'))
+        .with('sendMessage', chat_id, false, nil, 'network failure (Net::ReadTimeout)')
     end
 
     it 'returns false and records a safe diagnostic for a non-JSON response' do
@@ -115,24 +117,37 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
     end
 
-    it 'does not include the token, outgoing message, or chat ID in API error logs' do
+    it 'redacts arbitrary API descriptions from logs and persisted activity' do
+      remote_description = "simulated failure #{access_token} #{private_message} #{chat_id}"
       allow(response).to receive(:body).and_return(
-        { ok: false, error_code: 500, description: 'simulated API failure' }.to_json
+        { ok: false, error_code: 500, description: remote_description }.to_json
       )
       expect(Rails.logger).to receive(:error) do |message|
-        expect(message).to include('simulated API failure')
-        expect(message).not_to include(access_token, private_message, chat_id.to_s)
+        expect(message).to include('method=sendMessage', 'http_status=200', 'error_code=500')
+        expect(message).not_to include(remote_description, access_token, private_message, chat_id.to_s)
       end
       expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
-        .with('sendMessage', chat_id, false, 500, 'simulated API failure')
+        .with('sendMessage', chat_id, false, 500, 'temporary Bale API failure')
 
       result = described_class.call('sendMessage', chat_id: chat_id, text: private_message)
 
+      # The caller still receives the original API response for retry/unreachable classification.
       expect(result).to eq(
         'ok' => false,
         'error_code' => 500,
-        'description' => 'simulated API failure'
+        'description' => remote_description
       )
+    end
+
+    it 'records a generic activity description for a permanent API rejection' do
+      allow(response).to receive(:body).and_return(
+        { ok: false, error_code: 400, description: 'request may contain private text' }.to_json
+      )
+      expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
+        .with('sendMessage', chat_id, false, 400, 'Bale API rejected request')
+
+      described_class.call('sendMessage', chat_id: chat_id, text: private_message)
+    end
     end
   end
 end
