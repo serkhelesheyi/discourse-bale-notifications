@@ -1819,6 +1819,6 @@ README contains a read-only preflight command block for collecting container sta
 - [x] گزارش کاربر دربارهٔ رفع مشکل زندهٔ webhook/تعامل‌ها ثبت شد، بدون ادعای تأیید مستقل SHA نصب‌شده یا پوشش همهٔ سناریوهای پذیرش.
 - [x] تصمیم دربارهٔ لاگ‌های بالادستی ثبت شد: بررسی بیشتر به خواست کاربر متوقف و ریسک پذیرفته شده است؛ A17 از نظر فنی Pass نیست و query-string secret همچنان یک محدودیت شناخته‌شده است.
 - [x] سیاست فعالیت با سقف ۵۰ رکورد و انقضای lazy برای timestamp معتبر پس از ۳۰ روز، همراه با حفظ رکوردهای timestamp مفقود/نامعتبر، مستند باقی ماند.
-- [ ] نتیجهٔ CI و smoke مربوط به همین بازبینی نهایی مستندات باید روی HEAD نهایی ثبت شود؛ اجرای موفق روی SHA قبلی جای آن را نمی‌گیرد.
+- [x] آخرین اجرای CI و smoke روی SHA کد `a5836a1205a8b154d2c3862d3ced58b5eb6b91ca` موفق بود: [CI run 39433180191](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39433180191) و [smoke run 39433180207](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39433180207). تغییرات این بازبینی فقط مستنداتی‌اند؛ workflowهای commitهای مستنداتی جدید باید جداگانه بررسی شوند و نتیجهٔ آن‌ها در گزارش جاری اعلام شود.
 
 **مرز اجرا:** این ممیزی فقط README و ROADMAP را تغییر می‌دهد. هیچ کد اجرایی، تنظیمات production، secret، webhook یا دادهٔ انجمن تغییر نکرده است.
