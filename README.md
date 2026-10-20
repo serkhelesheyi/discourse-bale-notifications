@@ -661,3 +661,8 @@ PR [#13](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/13) 
 ### Latest live acceptance report — 20 October 2026
 
 The user reports successful live tests for private-message notifications, ordinary replies, mention notifications, and chained replies sent through Bale. The detailed scenarios, scope limits, and next targeted edge case are recorded in LIVE_ACCEPTANCE_REPORT.md. These are user-reported results; the exact installed plugin SHA and Discourse version have not been independently verified. Replying to the older mention notification remains a targeted edge case, while deleted/stale-post callbacks, cross-account isolation, remaining notification types, and backup restore/rollback are still pending.
+
+
+### Acceptance status update — 20 October 2026
+
+The user confirms that the targeted reply-to-an-old-mention-notification test and cross-account isolation test were both previously run and passed. Both GitHub workflows also passed on current HEAD `afd1711847a24d13761e48339f0db6cd032da581` (Discourse Plugin run `39488076484`; Plugin smoke tests run `39488076035`). This supersedes the earlier statement that those two user-side tests were pending. Deleted/stale-post callback behavior, an actual backup restore/rollback exercise, and recording the exact installed plugin SHA and Discourse version remain separate operational checks unless already completed. No production changes were made. A17 remains an accepted risk, not a technical pass.
