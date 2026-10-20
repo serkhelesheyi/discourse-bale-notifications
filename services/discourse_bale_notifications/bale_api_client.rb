@@ -53,7 +53,7 @@ module DiscourseBaleNotifications
       http.request(request)
     rescue *DiscourseBaleNotifications::NETWORK_ERRORS => e
       Rails.logger.error(
-        'Bale API request failed before receiving a response ' \\
+        'Bale API request failed before receiving a response ' \
         "(method=#{method_name}, error=#{e.class})"
       )
       BaleActivityLog.record_activity(method_name, chat_id, false, nil, "network failure (#{e.class})")
@@ -90,7 +90,7 @@ module DiscourseBaleNotifications
 
     def self.log_non_json_response(response, method_name, chat_id)
       Rails.logger.error(
-        'Bale API returned a non-JSON response ' \\
+        'Bale API returned a non-JSON response ' \
         "(method=#{method_name}, http_status=#{response.code})"
       )
       BaleActivityLog.record_activity(method_name, chat_id, false, response.code, 'non-JSON response')
@@ -110,7 +110,7 @@ module DiscourseBaleNotifications
 
     def self.log_api_failure(method_name, response, response_data)
       Rails.logger.error(
-        "Bale API call failed (method=#{method_name}, " \\
+        "Bale API call failed (method=#{method_name}, " \
         "http_status=#{response.code}, error_code=#{response_data['error_code']})"
       )
     end
