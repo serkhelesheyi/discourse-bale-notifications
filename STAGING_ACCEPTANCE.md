@@ -220,3 +220,16 @@ The candidate changes use Bale's documented Markdown link syntax, label the priv
 
 
 The private-message notification itself now includes a short Reply hint (not only the connection/help message). Verify that the hint appears in a newly delivered notification after updating the plugin. This remains pending live verification.
+
+## A17 — لاگ‌های بالادستی وب‌هوک و query-string secret
+
+**وضعیت: Pending evidence — صرف CI یا فیلتر Rails کافی نیست.** آدرس فعلی webhook کلید احراز هویت را در query string (key) حمل می‌کند. فیلتر پارامترهای Rails از لاگ‌های CDN، reverse proxy یا Nginx محافظت نمی‌کند.
+
+- [ ] در محیط staging و بدون انتشار مقدار secret، تنظیمات لاگ آروان/CDN را بررسی و ثبت کنید: آیا query string ذخیره می‌شود؟ آیا امکان mask/redact کردن key وجود دارد؟ چه نقش‌هایی به لاگ دسترسی دارند و retention آن چیست؟
+- [ ] در صورت وجود reverse proxy/Nginx در origin، قالب access log و سیاست retention را read-only بررسی کنید؛ URL کامل یا secret را در خروجی قابل‌اشتراک چاپ نکنید.
+- [ ] نتیجه را با شواهد redacted ثبت کنید و مشخص کنید آیا key در هیچ لاگ قابل دسترس ظاهر می‌شود. اگر نمی‌توان آن را اثبات کرد، وضعیت را Blocked بگذارید، نه Pass.
+- [ ] پشتیبانی Bale از هدر/پارامتر secret مخصوص webhook فقط با مستند رسمی یا آزمون کنترل‌شدهٔ staging تأیید شود؛ در نبود شواهد، پارامتر API جدیدی فرض یا استفاده نشود.
+
+**معیار Pass:** شواهد واقعی نشان دهد secret در لاگ‌های قابل دسترس ثبت نمی‌شود یا با کنترل تأییدشده‌ای ماسک/محدود شده است؛ صرف request.filtered_path یا filtered_parameters در آزمون Rails این معیار را برآورده نمی‌کند.
+
+این بررسی فقط روی staging انجام می‌شود. تغییر تنظیمات production، چرخاندن secret یا ثبت مجدد webhook به مجوز و برنامهٔ جداگانه نیاز دارد.
