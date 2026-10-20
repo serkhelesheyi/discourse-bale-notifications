@@ -6,9 +6,18 @@ module DiscourseBaleNotifications
     RECORDABLE_METHODS = %w[sendMessage sendPhoto].freeze
     ACTIVITY_LOG_KEY = 'recent-activity'
     ACTIVITY_LOG_MAX_ENTRIES = 50
+    ACTIVITY_LOG_RETENTION_SECONDS = 30 * 24 * 60 * 60
+    ACTIVITY_LOG_MUTEX = 'bale-notifications-activity-log'
 
     def self.recent_activity
-      PluginStore.get('bale-notifications', ACTIVITY_LOG_KEY) || []
+      DistributedMutex.synchronize(ACTIVITY_LOG_MUTEX) do
+        log = PluginStore.get('bale-notifications', ACTIVITY_LOG_KEY) || []
+        next [] unless log.is_a?(Array)
+
+        retained_log = prune_expired_entries(log)
+        PluginStore.set('bale-notifications', ACTIVITY_LOG_KEY, retained_log) if retained_log != log
+        retained_log
+      end
     end
 
     def self.record_activity(method_name, chat_id, success, error_code, description)
@@ -31,10 +40,33 @@ module DiscourseBaleNotifications
       }
     end
 
+    # Keep malformed or missing timestamps rather than deleting data that
+    # cannot be safely classified. Valid timestamps strictly older than the
+    # retention cutoff expire; entries exactly at the cutoff remain available.
+    def self.prune_expired_entries(entries, now = Time.now.utc)
+      cutoff = now - ACTIVITY_LOG_RETENTION_SECONDS
+
+      entries.reject do |entry|
+        next false unless entry.is_a?(Hash)
+
+        timestamp = entry['ts']
+        next false if timestamp.blank?
+
+        begin
+          Time.iso8601(timestamp.to_s) < cutoff
+        rescue ArgumentError, TypeError
+          false
+        end
+      end
+    end
+
     def self.persist_entry(entry)
-      # DistributedMutex prevents concurrent workers from overwriting each other's updates.
-      DistributedMutex.synchronize('bale-notifications-activity-log') do
-        log = PluginStore.get('bale-notifications', ACTIVITY_LOG_KEY) || []
+      # Use the same mutex for reads and writes so pruning cannot race with
+      # another worker's update and discard a newly recorded entry.
+      DistributedMutex.synchronize(ACTIVITY_LOG_MUTEX) do
+        log = PluginStore.get('bale-notifications', ACTIVITY_LOG_KEY)
+        log = [] unless log.is_a?(Array)
+        log = prune_expired_entries(log)
         log = ([entry] + log).first(ACTIVITY_LOG_MAX_ENTRIES)
         PluginStore.set('bale-notifications', ACTIVITY_LOG_KEY, log)
       end
