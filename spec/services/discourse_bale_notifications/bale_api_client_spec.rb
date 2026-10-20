@@ -148,7 +148,6 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
 
       described_class.call('sendMessage', chat_id: chat_id, text: private_message)
     end
-    end
   end
 end
 # rubocop:enable Metrics/BlockLength
