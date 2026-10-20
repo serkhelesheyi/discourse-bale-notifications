@@ -47,19 +47,18 @@ module DiscourseBaleNotifications
     # retention cutoff expire; entries exactly at the cutoff remain available.
     def self.prune_expired_entries(entries, now = Time.now.utc)
       cutoff = now - ACTIVITY_LOG_RETENTION_SECONDS
+      entries.reject { |entry| expired_activity_entry?(entry, cutoff) }
+    end
 
-      entries.reject do |entry|
-        next false unless entry.is_a?(Hash)
+    def self.expired_activity_entry?(entry, cutoff)
+      return false unless entry.is_a?(Hash)
 
-        timestamp = entry['ts']
-        next false if timestamp.blank?
+      timestamp = entry['ts']
+      return false if timestamp.blank?
 
-        begin
-          Time.iso8601(timestamp.to_s) < cutoff
-        rescue ArgumentError, TypeError
-          false
-        end
-      end
+      Time.iso8601(timestamp.to_s) < cutoff
+    rescue ArgumentError, TypeError
+      false
     end
 
     def self.persist_entry(entry)
