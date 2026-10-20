@@ -13,6 +13,11 @@ module Jobs
       return unless SiteSetting.bale_notifications_enabled?
 
       payload = args[:payload]
+      # Jobs may outlive the event that enqueued them or be retried from
+      # malformed legacy/manual queue data. Ignore a non-hash payload instead
+      # of raising repeatedly before the delivery guards can run.
+      return unless payload.is_a?(Hash)
+
       type_name = Notification.types[payload[:notification_type]].to_s
       return unless site_notification_enabled?(type_name)
 
