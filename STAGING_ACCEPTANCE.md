@@ -223,7 +223,7 @@ The private-message notification itself now includes a short Reply hint (not onl
 
 ## A17 — لاگ‌های بالادستی وب‌هوک و query-string secret
 
-**وضعیت: Pending evidence — صرف CI یا فیلتر Rails کافی نیست.** آدرس فعلی webhook کلید احراز هویت را در query string (key) حمل می‌کند. فیلتر پارامترهای Rails از لاگ‌های CDN، reverse proxy یا Nginx محافظت نمی‌کند.
+**وضعیت جاری: ریسک پذیرفته شده و بررسی بیشتر به تصمیم کاربر متوقف است؛ این مورد Pass فنی نیست.** آدرس فعلی webhook کلید احراز هویت را در query string (`key`) حمل می‌کند. فیلتر پارامترهای Rails از لاگ‌های CDN، reverse proxy یا Nginx محافظت نمی‌کند. موارد زیر کارهای deferred برای زمانی‌اند که بررسی دوباره مجاز و مطلوب باشد؛ چک‌باکس‌های باز به معنای انجام‌شدن یا تأیید فنی نیستند.
 
 - [ ] در محیط staging و بدون انتشار مقدار secret، تنظیمات لاگ آروان/CDN را بررسی و ثبت کنید: آیا query string ذخیره می‌شود؟ آیا امکان mask/redact کردن key وجود دارد؟ چه نقش‌هایی به لاگ دسترسی دارند و retention آن چیست؟
 - [ ] در صورت وجود reverse proxy/Nginx در origin، قالب access log و سیاست retention را read-only بررسی کنید؛ URL کامل یا secret را در خروجی قابل‌اشتراک چاپ نکنید.
