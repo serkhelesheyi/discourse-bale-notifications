@@ -656,3 +656,8 @@ PR [#13](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/13) 
 افزونه فیلتر پارامترهای Rails را برای key، message، callback_query و bale فعال می‌کند و آزمون request بازنمایی فیلترشدهٔ Rails را بررسی می‌کند. با این حال، کلید احراز هویت webhook در query string آدرس ثبت‌شده قرار دارد (/bale/hook?key=...). فیلتر Rails **لاگ‌های آروان/CDN، reverse proxy یا Nginx را کنترل نمی‌کند**؛ بنابراین نباید محرمانگی سرتاسری را بدون بررسی آن لایه‌ها فرض کرد.
 
 پیش از پذیرش نهایی، بررسی read-only تنظیمات و access log لایه‌های بالادستی لازم است: آیا query string ثبت می‌شود، چه سطحی از دسترسی/نگهداری دارد، و آیا امکان حذف یا ماسک‌کردن key وجود دارد؟ هرگز مقدار واقعی کلید یا URL کامل webhook را در گزارش، issue، screenshot یا گفتگو منتشر نکنید. مستندات بررسی‌شدهٔ Bale پشتیبانی رسمی از secret header/token را در این مرحله تأیید نکرده‌اند؛ پس نباید بدون منبع رسمی یا آزمون staging فرض کرد که چنین قراردادی پشتیبانی می‌شود. وضعیت دقیق و گام‌های بعد در ROADMAP.md و STAGING_ACCEPTANCE.md ثبت شده است.
+
+
+### Latest live acceptance report — 20 October 2026
+
+The user reports successful live tests for private-message notifications, ordinary replies, mention notifications, and chained replies sent through Bale. The detailed scenarios, scope limits, and next targeted edge case are recorded in LIVE_ACCEPTANCE_REPORT.md. These are user-reported results; the exact installed plugin SHA and Discourse version have not been independently verified. Replying to the older mention notification remains a targeted edge case, while deleted/stale-post callbacks, cross-account isolation, remaining notification types, and backup restore/rollback are still pending.
