@@ -40,7 +40,7 @@ module DiscourseBaleNotifications
       end
     rescue StandardError => e
       # Activity logging is diagnostic and must never break message delivery.
-      Rails.logger.warn("Bale notifications: failed to record activity log entry: #{e.class}: #{e.message}")
+      Rails.logger.warn("Bale notifications: failed to record activity log entry (#{e.class})")
     end
   end
 end
