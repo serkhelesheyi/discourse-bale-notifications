@@ -601,7 +601,9 @@ The regression test in `spec/jobs/send_bale_notifications_spec.rb` asserts that 
 - [x] PR [#8](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/8) was squash-merged into `main` as `42744d3b80536fa2d961f1fd029c85cd35825b04`.
 - [x] CI and smoke tests passed on the pre-merge PR head `5f25687e6641daf3446286da73bb31186bbfa4c4`.
 - [x] On the merge commit, smoke tests passed: [run 39265563004](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39265563004). The CI `linting` and `check_for_tests` jobs passed; `backend_tests` was still running at the last check, so full post-merge CI must not yet be described as complete.
-- [x] Follow-up PR branch `fix/minimize-admin-activity-identifiers` removes `chat_id` from the admin status API's recent-activity response while retaining username lookup, and adds a request regression test.
-- [ ] The follow-up branch's CI and smoke tests must pass before proposing that change for merge.
+- [x] Follow-up branch `fix/minimize-admin-activity-identifiers` removes `chat_id` from the admin status API's recent-activity response while retaining username lookup, and adds a request regression test.
+- [x] PR [#9](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/9) was opened against `main`.
+- [x] Pre-PR CI passed on branch HEAD `e0466af6cfd4e9f739fb94003620bb265b8aedd5`: [run 39266350562](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39266350562) passed linting, test-presence, and backend tests.
+- [ ] PR-triggered CI and smoke tests must pass on the PR head before merge; runs [39379000298](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39379000298) and [39378999754](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39378999754) were queued when this note was written.
 
 The follow-up reduces unnecessary exposure of linked Bale chat IDs in the admin JSON response; it does not remove IDs from the internal PluginStore activity records or prove privacy across external CDN/access logs. No production server commands, configuration changes, webhook changes, restarts, or database operations were performed. CI does not establish exactly-once delivery or the live Sidekiq retry schedule.
