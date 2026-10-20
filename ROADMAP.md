@@ -1644,9 +1644,11 @@ README contains a read-only preflight command block for collecting container sta
 - [x] شاخهٔ جداگانهٔ `fix/minimize-admin-activity-identifiers` از merge commit ایجاد شد.
 - [x] در `AdminController#activity_with_usernames`، `chat_id` از هر entry پاسخ حذف می‌شود؛ نگاشت نام کاربری پیش از حذف شناسه همچنان انجام می‌شود.
 - [x] آزمون request افزوده شد تا پاسخ همچنان نام کاربری را داشته باشد و نه کلید `chat_id` و نه مقدار شناسهٔ نمونه را افشا کند.
+- [x] CI پیش از بازشدن PR موفق شد: [run 39266350562](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39266350562)؛ سه job یعنی linting، check_for_tests و backend_tests همگی موفق شدند.
+- [x] PR [#9](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/9) برای بازبینی و ادغام احتمالی ایجاد شد.
 - [x] README و ROADMAP به‌روزرسانی شدند.
-- [ ] CI کامل و smoke tests روی شاخهٔ جدید باید موفق شوند.
-- [ ] پس از موفقیت آزمون‌ها، diff نهایی بازبینی و PR جداگانه برای ادغام آماده شود.
+- [ ] آزمون‌های CI و smoke که با ایجاد PR فعال شدند، باید روی HEAD نهایی PR موفق شوند. هنگام ثبت این یادداشت، runهای [39379000298](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39379000298) و [39378999754](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39378999754) در صف بودند.
+- [ ] پس از سبز شدن تمام آزمون‌های PR، diff نهایی بازبینی شود؛ ادغام نیازمند اجازهٔ صریح کاربر است.
 
 ### مرزهای شواهد و ایمنی
 این تغییر فقط افشای غیرضروری شناسهٔ چت را از پاسخ JSON پنل مدیریت حذف می‌کند؛ شناسه هنوز در رکوردهای داخلی PluginStore نگهداری می‌شود و این تغییر به‌تنهایی محرمانگی لاگ‌های Arvan/CDN، حداقل‌سازی شرح خطای API یا رفتار زندهٔ Sidekiq را اثبات نمی‌کند. مطابق درخواست کاربر، هیچ بررسی مجددی روی سرور انجام نشده و هیچ تغییری در سرور تولیدی ایجاد نشده است.
