@@ -45,7 +45,7 @@ module DiscourseBaleNotifications
     # Preserve entries with missing or malformed timestamps; expire only older valid timestamps.
     def self.prune_expired_entries(entries, now = Time.now.utc)
       cutoff = now - ACTIVITY_LOG_RETENTION_SECONDS
-      entries.reject { |entry| expired_activity_entry?(entry, cutoff) }
+      entries.reject { |entry| expired_activity_entry?(entry, cutoff) }.first(ACTIVITY_LOG_MAX_ENTRIES)
     end
 
     def self.expired_activity_entry?(entry, cutoff)
