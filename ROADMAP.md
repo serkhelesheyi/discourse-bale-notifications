@@ -1727,3 +1727,19 @@ README contains a read-only preflight command block for collecting container sta
 4. آماده‌سازی گام استقرار تولیدی به‌صورت جداگانه؛ هیچ فرمانی روی سرور تولیدی در این مرحله اجرا نشده است.
 
 هیچ تغییری روی سرور تولیدی انجام نشده است.
+
+
+## وضعیت ادغام retention و بازسازی PR حذف پیام خام استثنا — ۲۰ اکتبر ۲۰۲۶
+
+- [x] PR [#12](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/12) پس از سبزشدن CI و smoke روی HEAD نهایی `ccb14a5e66f69aec02f8dbdc1907122a6cfe0c13` با روش squash ادغام شد؛ commit اصلی: `57c3659a0d3e3498a49482b8555de00b91def9ec`.
+- [x] CI روی HEAD نهایی PR #12 موفق بود: [run 39419683490](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39419683490). Smoke tests نیز موفق بود: [run 39419683022](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39419683022).
+- [x] شاخهٔ قدیمی PR #11 پس از ادغام #12 دیگر قابل ادغام مستقیم نبود (conflict/mergeable=false)، چون همان سرویس، spec و مستندات را تغییر می‌داد.
+- [x] شاخهٔ تازهٔ `fix/redact-activity-log-persistence-errors-after-retention` از `main` پس از ادغام #12 ساخته شد تا retention حفظ شود و فقط redaction دوباره اعمال گردد.
+- [x] تغییر سرویس و آزمون رگرسیون روی شاخهٔ جدید اعمال شد؛ متن خام `e.message` از هشدار حذف شده و کلاس استثنا حفظ می‌شود.
+- [x] README و ROADMAP این شاخه با وضعیت ادغام #12 و ترتیب بعدی همگام شدند.
+- [ ] PR جدید redaction ایجاد و CI کامل و smoke tests روی HEAD نهایی آن بررسی شوند.
+- [ ] پس از ادغام PR redaction، نتیجهٔ workflowهای commit ادغام و وضعیت `main` دوباره بررسی شود.
+- [ ] فقط پس از تکمیل این مراحل، برنامهٔ آزمون پذیرش روی سرور تولیدی تهیه شود. استقرار هنوز انجام نشده و آزمون‌های CI جای آزمون زنده را نمی‌گیرند.
+
+### مرز ایمنی
+هیچ فرمانی روی سرور تولیدی اجرا نشده و هیچ تنظیم، secret، webhook یا دادهٔ انجمن تغییر نکرده است. پاک‌سازی داده‌های قدیمی به‌صورت یک‌باره انجام نشده؛ retention lazy است و رکوردهای timestamp مفقود/نامعتبر عمداً حفظ می‌شوند.
