@@ -281,3 +281,15 @@ Next: record installed versions and close only any remaining operational checks 
 - These checks were read-only and made no production changes.
 
 The installed SHA and core SHA are now recorded. Investigate `e` with read-only metadata commands; keep deleted/stale-post callbacks and restore/rollback pending only if not already independently verified. A17 remains an accepted operational risk, not a technical pass.
+
+
+## Read-only inspection of the core untracked path and latest CI — 21 October 2026
+
+The user supplied read-only metadata for the core repository's untracked path `e`:
+
+- It is a regular, empty file (0 bytes), owned by `root:root`, mode `0644`, last modified at `2026-09-25 11:18:21 UTC`, and is not a symlink.
+- This does not establish its origin. Leave it untouched: do not stage, delete, or modify it based only on this metadata.
+- Both workflows succeeded on documentation HEAD `f18481802a65e7881f129553f8ab7cba2389d392`: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39493976023) and [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39493975015).
+- The live plugin remains at `35f34cc5e60ad2aa63b197fdd3e06ff26e85e850`; no production update is warranted solely for docs-only commits.
+
+Next, confirm whether deleted/stale-post callback handling and a safe restore/rollback exercise have already been independently verified. Do not perform a restore exercise on production. A17 remains an accepted operational risk, not a technical PASS.
