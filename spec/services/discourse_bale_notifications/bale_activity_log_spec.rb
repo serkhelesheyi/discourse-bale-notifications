@@ -40,6 +40,17 @@ RSpec.describe DiscourseBaleNotifications::BaleActivityLog do
       expect(described_class.recent_activity).to eq(entries)
     end
 
+    it 'enforces the 50-entry cap when reading a legacy oversized log' do
+      entries = 55.times.map do |index|
+        { 'ts' => (now - index).iso8601, 'index' => index }
+      end
+      retained = entries.first(described_class::ACTIVITY_LOG_MAX_ENTRIES)
+      allow(PluginStore).to receive(:get).with(store_name, store_key).and_return(entries)
+      expect(PluginStore).to receive(:set).with(store_name, store_key, retained)
+
+      expect(described_class.recent_activity).to eq(retained)
+    end
+
     it 'returns an empty list without overwriting a malformed stored value' do
       allow(PluginStore).to receive(:get).with(store_name, store_key).and_return('unexpected-value')
       expect(PluginStore).not_to receive(:set)
