@@ -1716,14 +1716,30 @@ README contains a read-only preflight command block for collecting container sta
 - [x] پس از حذف job زمان‌بندی‌شده و آزمون آن، CI کامل روی HEAD `ed0042e790d88b6683beebf600faf4a36e34199b` موفق شد: [run 39416741919](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39416741919)؛ `check_for_tests`، `linting` و `backend_tests` همگی موفق شدند.
 - [x] Smoke tests روی همان HEAD موفق شدند: [run 39416741208](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39416741208).
 - [x] Diff کد و مستندات بازبینی شد؛ job زمان‌بندی‌شده به‌علت مشکل کشف/بارگذاری کلاس در RSpec از دامنه حذف شد.
-- [ ] ادغام PR #12 پس از بازبینی نهایی و تأیید قواعد مخزن انجام شود.
-- [ ] PR #11 را پس از ادغام این PR با تغییرات `main` سازگار و آزمون‌هایش را دوباره اجرا کنیم؛ تغییرات آن روی سرویس، آزمون‌ها و مستندات هم‌پوشانی دارند.
+- [x] PR #12 پس از موفقیت CI و smoke روی HEAD نهایی ادغام شد؛ squash commit: `57c3659a0d3e3498a49482b8555de00b91def9ec`.
+- [x] به‌دلیل هم‌پوشانی و تعارض PR #11 قدیمی با تغییر retention، تغییر redaction روی شاخهٔ تازهٔ مبتنی بر `main` بازسازی شد و PR #13 جایگزین آن است.
 - [ ] پس از ادغام هر دو PR و بررسی نسخهٔ نهایی، آزمون پذیرش کنترل‌شدهٔ پنل مدیریت و ثبت فعالیت جداگانه انجام شود. آزمون‌های GitHub جایگزین تأیید رفتار سرور واقعی نیستند.
 
 ### گام بعد
-1. نهایی‌کردن بازبینی و ادغام PR #12 با شواهد CI سبز.
-2. ادغام امن تغییر redaction در PR #11 یا بازسازی شاخهٔ آن روی `main` به‌روز، سپس اجرای مجدد CI و smoke.
-3. بازبینی نتیجهٔ ادغام و به‌روزرسانی مستندات شاخهٔ اصلی.
-4. آماده‌سازی گام استقرار تولیدی به‌صورت جداگانه؛ هیچ فرمانی روی سرور تولیدی در این مرحله اجرا نشده است.
+1. تکمیل CI کامل PR #13 و تأیید smoke tests روی HEAD نهایی.
+2. بازبینی diff و ادغام PR #13 فقط پس از سبزشدن همهٔ آزمون‌های لازم.
+3. بررسی نتیجهٔ workflowهای پس از ادغام در `main` و ثبت SHA/نتایج نهایی در مستندات.
+4. پس از تأیید مخزن، آماده‌سازی آزمون پذیرش تولیدی به‌صورت جداگانه؛ هنوز هیچ فرمانی روی سرور تولیدی اجرا نشده است.
 
 هیچ تغییری روی سرور تولیدی انجام نشده است.
+
+
+## وضعیت ادغام retention و بازسازی PR حذف پیام خام استثنا — ۲۰ اکتبر ۲۰۲۶
+
+- [x] PR [#12](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/12) پس از سبزشدن CI و smoke روی HEAD نهایی `ccb14a5e66f69aec02f8dbdc1907122a6cfe0c13` با روش squash ادغام شد؛ commit اصلی: `57c3659a0d3e3498a49482b8555de00b91def9ec`.
+- [x] CI روی HEAD نهایی PR #12 موفق بود: [run 39419683490](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39419683490). Smoke tests نیز موفق بود: [run 39419683022](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39419683022).
+- [x] شاخهٔ قدیمی PR #11 پس از ادغام #12 دیگر قابل ادغام مستقیم نبود (conflict/mergeable=false)، چون همان سرویس، spec و مستندات را تغییر می‌داد.
+- [x] شاخهٔ تازهٔ `fix/redact-activity-log-persistence-errors-after-retention` از `main` پس از ادغام #12 ساخته شد تا retention حفظ شود و فقط redaction دوباره اعمال گردد.
+- [x] تغییر سرویس و آزمون رگرسیون روی شاخهٔ جدید اعمال شد؛ متن خام `e.message` از هشدار حذف شده و کلاس استثنا حفظ می‌شود.
+- [x] README و ROADMAP این شاخه با وضعیت ادغام #12 و ترتیب بعدی همگام شدند.
+- [x] PR redaction به‌صورت PR [#13](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/13) ایجاد شد؛ CI کامل روی HEAD نهایی `3c6adbce9a4ba9dc340742a008d214be6753b124` موفق است ([run 39421199370](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39421199370)) و smoke tests نیز روی همان SHA موفق‌اند ([run 39421198396](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39421198396)).
+- [ ] پس از بازبینی نهایی و ادغام PR #13، نتیجهٔ workflowهای commit ادغام و وضعیت `main` دوباره بررسی شود.
+- [ ] پس از تکمیل بررسی‌های مخزن، برنامهٔ آزمون پذیرش روی سرور تولیدی جداگانه تهیه شود. استقرار هنوز انجام نشده و آزمون‌های GitHub جای آزمون زنده را نمی‌گیرند.
+
+### مرز ایمنی
+هیچ فرمانی روی سرور تولیدی اجرا نشده و هیچ تنظیم، secret، webhook یا دادهٔ انجمن تغییر نکرده است. پاک‌سازی داده‌های قدیمی به‌صورت یک‌باره انجام نشده؛ retention lazy است و رکوردهای timestamp مفقود/نامعتبر عمداً حفظ می‌شوند.
