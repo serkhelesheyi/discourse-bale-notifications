@@ -254,3 +254,17 @@ The private-message notification itself now includes a short Reply hint (not onl
 The user reports successful live checks after updating the plugin: private-message and ordinary-reply notifications arrived; a post containing a mention generated a reply notification for the topic/post owner and a mention notification for the mentioned user; replying to the Bale mention notification created a reply under the intended Discourse post; and a subsequent reply in the chain was recorded under the preceding reply with a notification delivered to the expected recipient. Full scenario details and limits are recorded in LIVE_ACCEPTANCE_REPORT.md.
 
 **Status:** these are user-reported manual PASS results for the scenarios exercised, not an independently verified test run. The exact installed plugin SHA and Discourse version remain unrecorded. Replying to the older/original mention notification did not produce a new notification for the mentioned user; this alone does not establish a defect. Keep that edge case pending until the exact Discourse target post and notification policy are checked. Deleted/stale-post callbacks, cross-account isolation, remaining notification types, and backup restore/rollback also remain pending. No production commands or changes were performed while documenting this report.
+
+
+## Acceptance status correction — 20 October 2026
+
+This addendum supersedes earlier pending notes for the two checks below:
+
+- **PASS (user-confirmed):** the targeted reply-to-an-old-mention-notification test was already run and behaved correctly.
+- **PASS (user-confirmed):** cross-account isolation was already tested and behaved correctly.
+- **PASS (GitHub CI):** both workflows completed successfully on current HEAD `afd1711847a24d13761e48339f0db6cd032da581`: Discourse Plugin run `39488076484` and Plugin smoke tests run `39488076035`.
+- Deleted/stale-post callback handling and an actual backup restore/rollback exercise are not established by this confirmation; keep them pending only if they have not been separately tested.
+- The exact installed plugin SHA and Discourse version still need recording to independently establish production/source parity.
+- No production commands or changes were made while updating this status.
+
+Next: record installed versions and close only any remaining operational checks that have not already been performed. A17 remains an accepted operational risk, not a technical PASS.
