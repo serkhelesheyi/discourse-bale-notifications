@@ -1712,7 +1712,7 @@ README contains a read-only preflight command block for collecting container sta
 ### محدودیت و ایمنی
 - [x] هیچ migration پایگاه داده، تغییر ساختار رکورد، پاک‌سازی یک‌باره یا فرمانی روی سرور تولیدی اجرا نشده است.
 - [x] نگاشت `chat_id` داخلی برای نام کاربری حفظ شده و این شناسه همچنان از پاسخ JSON پنل مدیریت حذف می‌شود.
-- [x] CI کامل (linting، check_for_tests، backend_tests) و smoke tests روی commit اجرایی `1046196d5b1f80015751f7452449d55d46c360eb` موفق شدند ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39386633948)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39386639500)). چون پس از آن تغییرات مستندات انجام شده‌اند، اجرای مجدد workflowها روی HEAD نهایی لازم است.
+- [x] CI کامل (linting، check_for_tests، backend_tests) و smoke tests پس از اصلاح آزمون و به‌روزرسانی مستندات، روی HEAD `7328d398c494eed1b189aef9aa863ad71f4b2ef6` موفق شدند ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39387033559)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39387041032)).
 - [ ] پس از ادغام و استقرار جداگانه، آزمون پذیرش کنترل‌شدهٔ پنل مدیریت و ثبت فعالیت لازم است. آزمون‌های GitHub جایگزین تأیید رفتار سرور واقعی نیستند.
 
 ### گام بعد
