@@ -1737,9 +1737,10 @@ README contains a read-only preflight command block for collecting container sta
 - [x] شاخهٔ تازهٔ `fix/redact-activity-log-persistence-errors-after-retention` از `main` پس از ادغام #12 ساخته شد تا retention حفظ شود و فقط redaction دوباره اعمال گردد.
 - [x] تغییر سرویس و آزمون رگرسیون روی شاخهٔ جدید اعمال شد؛ متن خام `e.message` از هشدار حذف شده و کلاس استثنا حفظ می‌شود.
 - [x] README و ROADMAP این شاخه با وضعیت ادغام #12 و ترتیب بعدی همگام شدند.
-- [x] PR redaction به‌صورت PR [#13](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/13) ایجاد شد؛ CI کامل روی HEAD نهایی `3c6adbce9a4ba9dc340742a008d214be6753b124` موفق است ([run 39421199370](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39421199370)) و smoke tests نیز روی همان SHA موفق‌اند ([run 39421198396](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39421198396)).
-- [ ] پس از بازبینی نهایی و ادغام PR #13، نتیجهٔ workflowهای commit ادغام و وضعیت `main` دوباره بررسی شود.
-- [ ] پس از تکمیل بررسی‌های مخزن، برنامهٔ آزمون پذیرش روی سرور تولیدی جداگانه تهیه شود. استقرار هنوز انجام نشده و آزمون‌های GitHub جای آزمون زنده را نمی‌گیرند.
+- [x] PR [#13](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/13) پس از موفقیت CI کامل و smoke tests روی HEAD نهایی `dc5e42530dcef038d34ce865d623742ba72b9608` با روش squash ادغام شد؛ merge commit: `64e9f94099fa88718f50892fc2624289ddb60df6`.
+- [x] CI مربوط به PR و push و smoke tests روی HEAD نهایی پیش از ادغام موفق شدند: [CI PR](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39422026209)، [CI push](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39422017377)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39422025152).
+- [ ] CI و smoke tests روی merge commit `64e9f94099fa88718f50892fc2624289ddb60df6` در حال اجرا هستند؛ نتایج نهایی باید پیش از بستن این مرحله ثبت شوند: [CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39426726529)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39426726252).
+- [ ] پس از سبزشدن workflowهای پس از ادغام، برنامهٔ آزمون پذیرش سرور تولیدی جداگانه تهیه شود. آزمون‌های GitHub جای آزمون زنده را نمی‌گیرند.
 
 ### مرز ایمنی
 هیچ فرمانی روی سرور تولیدی اجرا نشده و هیچ تنظیم، secret، webhook یا دادهٔ انجمن تغییر نکرده است. پاک‌سازی داده‌های قدیمی به‌صورت یک‌باره انجام نشده؛ retention lazy است و رکوردهای timestamp مفقود/نامعتبر عمداً حفظ می‌شوند.
