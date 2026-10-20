@@ -614,3 +614,10 @@ The follow-up reduces unnecessary exposure of linked Bale chat IDs in the admin 
 در شاخهٔ پیگیری حریم خصوصی، پیام خام استثناهای شبکه و شرح دلخواه پاسخ API بله در لاگ Rails یا رکوردهای پایدار فعالیت ذخیره نمی‌شوند. برای عیب‌یابی، نام عملیات، کلاس خطای شبکه، وضعیت HTTP و کد خطای API حفظ می‌شوند؛ رکورد فعالیت از شرح‌های ثابت و دسته‌بندی‌شده استفاده می‌کند. پاسخ اصلی API همچنان به job ارسال برگردانده می‌شود تا طبقه‌بندی retry و تشخیص چت غیرقابل‌دسترسی تغییر نکند. فیلد مستقل `chat_id` در رکورد داخلی فعالیت همچنان برای نگاشت نام کاربری حفظ می‌شود؛ PR #9 آن را از پاسخ JSON مدیریتی حذف کرده است. این تغییر به‌تنهایی محرمانگی لاگ‌های CDN/پروکسی یا پاک‌سازی داده‌های قدیمی PluginStore را اثبات نمی‌کند.
 
 PR [#9](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/9) در commit `04f08155bd1b29f0ea49a3340629b66ddd6b5ebd` ادغام شده است؛ CI و smoke tests پس از ادغام موفق بودند ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39379682083)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39379681576)). مرحلهٔ جدید کاهش جزئیات خطای API در شاخهٔ `fix/redact-api-error-details` در حال اعتبارسنجی است؛ تا پایان CI نتیجهٔ آن تأییدشده محسوب نمی‌شود.
+
+
+## نتیجهٔ نهایی مرحلهٔ حداقل‌سازی خطای API — ۲۰ اکتبر ۲۰۲۶
+
+PR [#10](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/10) با روش squash ادغام شد؛ commit: `46625c33e0db275dddd54ec387f824de875e98b3`. پیش از ادغام، CI کامل و smoke tests روی HEAD نهایی PR موفق بودند ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39381233622)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39381233251)). اجرای مجدد workflowها روی commit ادغام نیز آغاز شده است و باید نتیجهٔ آن جداگانه بررسی شود.
+
+این مرحله پیام خام استثناهای شبکه و شرح دلخواه پاسخ API را از لاگ‌ها و شرح فعالیت‌های جدید حذف می‌کند؛ پاسخ اصلی API برای منطق داخلی retry و تشخیص چت غیرقابل‌دسترسی حفظ می‌شود. این تغییر، داده‌های قدیمی PluginStore یا لاگ‌های CDN/پروکسی را پاک نمی‌کند و به معنی آزمون زندهٔ سرور تولیدی نیست.
