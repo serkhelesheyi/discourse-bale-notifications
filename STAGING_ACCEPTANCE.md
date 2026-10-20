@@ -196,6 +196,14 @@ Next action: identify/prepare a non-production staging instance, record its Disc
 برای هر مورد، زمان، SHA واقعاً نصب‌شده، نسخهٔ Discourse، نتیجهٔ مورد انتظار/واقعی و شواهد redacted را ثبت کنید. تا زمانی که نتیجهٔ واقعی ثبت نشده، A16 و پذیرش زنده را **Pending** نگه دارید. این سند به‌روزرسانی افزونه را اجرا نمی‌کند و rollback را نیز انجام نداده است.
 
 
+## Current acceptance status — 20 October 2026
+
+The repository's latest `main` HEAD is `76ae9ee1344f59512e9534ea1327ee8664db4840`. Both required workflows passed on this exact SHA: [Discourse Plugin CI run 39449833056](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39449833056) and [Plugin smoke tests run 39449831969](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39449831969). The commits between the last reviewed code SHA `a5836a1205a8b154d2c3862d3ced58b5eb6b91ca` and current `main` change documentation only; no production command or configuration change was performed in this documentation pass.
+
+**Reported live evidence:** the user reports that the earlier missing webhook URL / Bale like-reply issue was resolved, and prior checks confirmed preference persistence and private-message notification suppression/delivery. The exact installed plugin SHA and Discourse version are not independently verified. This is user-reported evidence, not a complete live acceptance pass.
+
+**Still not established by the current evidence:** live verification of the updated Reply success link and instructions; individual delivery/suppression for each supported notification type; stale/deleted-post callback behavior; cross-account isolation; and backup restore/rollback. Keep these cases pending until actually exercised and record only redacted evidence. A17 remains an accepted operational risk, **not a technical Pass**; further upstream log investigation is deferred at the user's request.
+
 ## Live acceptance report — 18 October 2026
 
 After updating the plugin through the forum admin UI, the user reports these real-site checks passed: partial notification preferences remained deselected after reload; all eight preferences remained deselected after reload; an incoming message produced a Bale notification when all options were enabled; like and unlike actions from Bale worked; disabling the private-message notification preference suppressed the next private-message notification; and the admin-panel test notification was delivered.
