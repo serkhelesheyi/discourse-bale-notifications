@@ -621,3 +621,10 @@ PR [#9](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/9) د
 PR [#10](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/10) با روش squash ادغام شد؛ commit: `46625c33e0db275dddd54ec387f824de875e98b3`. پیش از ادغام، CI کامل و smoke tests روی HEAD نهایی PR موفق بودند ([CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39381233622)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39381233251)). اجرای مجدد workflowها روی commit ادغام نیز آغاز شده است و باید نتیجهٔ آن جداگانه بررسی شود.
 
 این مرحله پیام خام استثناهای شبکه و شرح دلخواه پاسخ API را از لاگ‌ها و شرح فعالیت‌های جدید حذف می‌کند؛ پاسخ اصلی API برای منطق داخلی retry و تشخیص چت غیرقابل‌دسترسی حفظ می‌شود. این تغییر، داده‌های قدیمی PluginStore یا لاگ‌های CDN/پروکسی را پاک نمی‌کند و به معنی آزمون زندهٔ سرور تولیدی نیست.
+
+
+## حداقل‌سازی پیام خام خطای ذخیرهٔ سابقهٔ فعالیت — ۲۰ اکتبر ۲۰۲۶
+
+ممیزی پس از PR [#10](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/10) یک مسیر دیگر برای درج پیام خام استثنا یافت: اگر ذخیرهٔ سابقهٔ فعالیت در PluginStore شکست بخورد، `BaleActivityLog` هشدار Rails را همراه `e.message` ثبت می‌کرد. شاخهٔ `fix/redact-activity-log-persistence-errors` این مسیر را به ثبت کلاس استثنا محدود می‌کند و آزمون رگرسیون آن را پوشش می‌دهد. این تغییر پیام‌رسانی را متوقف نمی‌کند؛ ثبت فعالیت همچنان تشخیصی و غیرمسدودکننده است.
+
+PR #10 با commit `46625c33e0db275dddd54ec387f824de875e98b3` ادغام شد. CI و smoke روی HEAD نهایی آن موفق بودند؛ اجرای پس از ادغام و آزمون‌های مستندات به‌روزشده جداگانه پیگیری می‌شوند.
