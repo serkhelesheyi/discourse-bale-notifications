@@ -268,3 +268,16 @@ This addendum supersedes earlier pending notes for the two checks below:
 - No production commands or changes were made while updating this status.
 
 Next: record installed versions and close only any remaining operational checks that have not already been performed. A17 remains an accepted operational risk, not a technical PASS.
+
+
+## ثبت نسخهٔ زنده — ۲۱ اکتبر ۲۰۲۶
+
+نسخه‌های مشاهده‌شده با فرمان‌های خواندنی در کانتینر `app`:
+
+- Plugin SHA: `35f34cc5e60ad2aa63b197fdd3e06ff26e85e850`, branch `main`; plugin working tree clean.
+- Discourse core SHA: `bab418487a463eede4c7d2f6415fe2eb966a3883`.
+- Core repository reports an untracked path `e` (`?? e`); its type and origin are unknown. Do not delete, stage, or modify it before read-only inspection.
+- Current GitHub `main` is `6eb2b7fc31eac573d93ff3b89e06cb0a75ae6617`. Comparing installed plugin SHA to this HEAD shows eight docs-only commits, so no code update/rebuild is indicated solely by this difference.
+- These checks were read-only and made no production changes.
+
+The installed SHA and core SHA are now recorded. Investigate `e` with read-only metadata commands; keep deleted/stale-post callbacks and restore/rollback pending only if not already independently verified. A17 remains an accepted operational risk, not a technical pass.
