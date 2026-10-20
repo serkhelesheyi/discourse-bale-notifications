@@ -82,6 +82,18 @@ RSpec.describe Jobs::SendBaleNotifications do
       allow(job).to receive(:delivery_context).and_return([user, '123456', post])
     end
 
+    it 'ignores missing or non-hash payloads without entering notification delivery' do
+      expect(job).not_to receive(:site_notification_enabled?)
+      expect(job).not_to receive(:delivery_context)
+      expect(job).not_to receive(:deliver_notification)
+
+      [nil, [], 'malformed-payload'].each do |malformed_payload|
+        expect do
+          job.execute(user_id: user.id, payload: malformed_payload)
+        end.not_to raise_error
+      end
+    end
+
     it 'raises for a transient API rejection so Sidekiq can retry the job' do
       allow(job).to receive(:deliver_notification)
         .and_return('ok' => false, 'error_code' => 503)
