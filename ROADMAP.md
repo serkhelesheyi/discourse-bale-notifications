@@ -1677,3 +1677,17 @@ README contains a read-only preflight command block for collecting container sta
 
 ### مرزهای شواهد
 این تغییر فقط داده‌های جدیدی را که این API client به لاگ Rails و فیلد شرح فعالیت می‌نویسد محدود می‌کند. فیلد `chat_id` در رکورد داخلی PluginStore باقی می‌ماند تا endpoint مدیریتی بتواند نام کاربری را نگاشت کند؛ PR #9 آن را از پاسخ JSON حذف کرده است. پاک‌سازی رکوردهای قدیمی PluginStore، لاگ‌های Arvan/CDN/پروکسی و آزمون رفتار زندهٔ API بله در دامنهٔ این تغییر نیستند. هیچ بررسی یا تغییری در سرور تولیدی انجام نشده است.
+
+
+## تکمیل مرحلهٔ حداقل‌سازی جزئیات خطای API — ۲۰ اکتبر ۲۰۲۶
+
+- [x] بازبینی diff نهایی PR [#10](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/10) انجام شد.
+- [x] CI کامل روی HEAD نهایی PR موفق شد: [run 39381233622](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39381233622)؛ شامل `check_for_tests`، `linting` و `backend_tests`.
+- [x] Smoke tests روی HEAD نهایی PR موفق شد: [run 39381233251](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39381233251).
+- [x] PR #10 با روش squash ادغام شد؛ commit: `46625c33e0db275dddd54ec387f824de875e98b3`.
+- [x] منطق retry حفظ شد؛ پاسخ اصلی API برای طبقه‌بندی داخلی همچنان به caller برمی‌گردد.
+- [x] README و ROADMAP پس از ادغام به‌روزرسانی شدند.
+- [ ] اجرای CI و smoke روی commit ادغام باید تمام و نتیجه‌اش بررسی شود: [CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39383714359)، [smoke](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39383713946).
+
+### مرزها و مرحلهٔ پیشنهادی بعدی
+این تغییر فقط متن خطاهای جدید در لاگ Rails و شرح فعالیت را محدود می‌کند. فیلد داخلی `chat_id` حفظ شده، داده‌های قدیمی پاک‌سازی نشده‌اند و لاگ‌های CDN/پروکسی خارج از کنترل این تغییرند. گام بعدی مناسب، ممیزی متمرکز مدیریت و نگهداری داده‌های فعالیت (به‌ویژه retention و پاک‌سازی رکوردهای قدیمی) است؛ پیش از تغییر رفتار حذف داده، ابتدا سیاست نگهداری و سازگاری آن با نیازهای پنل مدیریت باید بررسی شود. هیچ تغییری روی سرور تولیدی انجام نشده است.
