@@ -63,7 +63,7 @@ RSpec.describe DiscourseBaleNotifications::BaleActivityLog do
         expect(saved_entries.length).to eq(described_class::ACTIVITY_LOG_MAX_ENTRIES)
         expect(saved_entries.first).to eq(new_entry)
         expect(saved_entries).not_to include(expired)
-        expect(saved_entries.map { |entry| entry['index'] }).to eq((0..48).to_a)
+        expect(saved_entries.drop(1).map { |entry| entry['index'] }).to eq((0..48).to_a)
       end
 
       described_class.persist_entry(new_entry)
