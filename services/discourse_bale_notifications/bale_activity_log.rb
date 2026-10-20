@@ -42,9 +42,7 @@ module DiscourseBaleNotifications
       }
     end
 
-    # Keep malformed or missing timestamps rather than deleting data that
-    # cannot be safely classified. Valid timestamps strictly older than the
-    # retention cutoff expire; entries exactly at the cutoff remain available.
+    # Preserve entries with missing or malformed timestamps; expire only older valid timestamps.
     def self.prune_expired_entries(entries, now = Time.now.utc)
       cutoff = now - ACTIVITY_LOG_RETENTION_SECONDS
       entries.reject { |entry| expired_activity_entry?(entry, cutoff) }
