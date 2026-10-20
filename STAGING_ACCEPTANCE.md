@@ -233,3 +233,9 @@ The private-message notification itself now includes a short Reply hint (not onl
 **معیار Pass:** شواهد واقعی نشان دهد secret در لاگ‌های قابل دسترس ثبت نمی‌شود یا با کنترل تأییدشده‌ای ماسک/محدود شده است؛ صرف request.filtered_path یا filtered_parameters در آزمون Rails این معیار را برآورده نمی‌کند.
 
 این بررسی فقط روی staging انجام می‌شود. تغییر تنظیمات production، چرخاندن secret یا ثبت مجدد webhook به مجوز و برنامهٔ جداگانه نیاز دارد.
+
+### نتیجهٔ فعلی A17 — ۲۰ اکتبر ۲۰۲۶
+
+**وضعیت: Risk accepted / further investigation deferred by user; not a technical Pass.** در خروجی read-only `nginx -T`، قالب `log_discourse` از `"$request"` استفاده می‌کند؛ این متغیر می‌تواند query string را شامل شود. مقصد access log در خروجی `/var/log/nginx/access.log` بود. از این شواهد نمی‌توان نتیجه گرفت که درخواست وب‌هوک حتماً با همین قالب ثبت می‌شود یا secret واقعاً در لاگ موجود است.
+
+کاربر تصمیم گرفت فعلاً پنل آروان بررسی نشود و بررسی بیشتر لاگ‌های سرور انجام نگیرد، زیرا دسترسی دیگران به لاگ‌ها محدود است. هیچ access log واقعی جست‌وجو یا چاپ نشد و هیچ تنظیمی در production تغییر نکرد. این تصمیم پذیرش عملیاتی ریسک است، نه اثبات محرمانگی کامل؛ موارد مربوط به آروان و مشاهدهٔ لاگ‌ها برای آینده باز گذاشته می‌شوند.
