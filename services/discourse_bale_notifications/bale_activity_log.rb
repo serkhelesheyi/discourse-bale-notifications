@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'time'
+
 module DiscourseBaleNotifications
   # Stores a bounded, concurrency-safe history of notification API attempts.
   class BaleActivityLog
