@@ -355,3 +355,14 @@ No production command, configuration change, secret rotation, rebuild, or deploy
 - آزمون‌های رگرسیون جدید برای پاسخ ناموفق این دو API اضافه شده‌اند؛ آن‌ها باید در CI شاخهٔ جاری تأیید شوند. این تست‌ها جای آزمون دستی یا staging را نمی‌گیرند.
 - **Staging acceptance:** اجرای واقعی در محیط staging برای سیاست retry webhook یا callback APIها از این merge استنباط نمی‌شود؛ موارد مربوط را تا آزمون مستقل staging باز نگه دارید.
 - **Production:** هیچ rebuild، deploy، تغییر تنظیمات/secretها، تغییر webhook زنده یا فرمان سروری انجام نشده است. این یادداشت به‌تنهایی مجوز به‌روزرسانی production نیست.
+
+
+## بستن پیگیری PR #17 و PR #18 — ۲۲ اکتبر ۲۰۲۶
+
+- **PR #17: MERGED** — `7cc6c6ad0f56527a05e7fa99ab9e4693fe3de13a`; سیاست retry محدود برای `setWebhook/deleteWebhook` در `main` است.
+- **PR #18: MERGED** — `cee53a2b8c7f3cff7cee4dd0b41e359be8fff094`; تصمیم callback و آزمون‌های رگرسیون در `main` هستند.
+- **CI PR #18: PASS** — [run 39673603284](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39673603284).
+- **Smoke PR #18: PASS** — [run 39673602367](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39673602367).
+- **تصمیم callback:** برای `answerCallbackQuery` و `editMessageReplyMarkup` فعلاً retry خودکار نداریم. این تصمیم، محدودیت best-effort بودن پاسخ/ویرایش را می‌پذیرد و تضمین موفقیت callback نیست.
+- **گام بعدی واقعی:** اجرای پذیرش روی staging با ثبت SHA افزونه و نسخهٔ Discourse و آزمون کنترل‌شدهٔ سناریوهای retry وب‌هوک و callback. آزمون staging از CI نتیجه‌گیری نمی‌شود.
+- **وضعیت production:** هیچ rebuild/deploy، تغییر setting/secret، تغییر webhook زنده یا فرمان سروری انجام نشده است. تا تکمیل پذیرش staging و تصمیم صریح بعدی، production دست‌نخورده می‌ماند.
