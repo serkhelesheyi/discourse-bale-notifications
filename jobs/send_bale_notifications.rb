@@ -12,11 +12,8 @@ module Jobs
     def execute(args)
       return unless SiteSetting.bale_notifications_enabled?
 
-      payload = args[:payload]
-      # Jobs may outlive the event that enqueued them or be retried from
-      # malformed legacy/manual queue data. Ignore a non-hash payload instead
-      # of raising repeatedly before the delivery guards can run.
-      return unless payload.is_a?(Hash)
+      payload = hash_payload(args[:payload])
+      return unless payload
 
       type_name = Notification.types[payload[:notification_type]].to_s
       return unless site_notification_enabled?(type_name)
@@ -28,6 +25,11 @@ module Jobs
       response = deliver_notification(payload, type_name, user, chat_id, post)
       DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(response)
       store_message_id(response, chat_id, post)
+    end
+
+    # Ignore malformed legacy/manual queue data instead of retrying it repeatedly.
+    def hash_payload(payload)
+      payload if payload.is_a?(Hash)
     end
 
     def site_notification_enabled?(type_name)
