@@ -1936,7 +1936,7 @@ README contains a read-only preflight command block for collecting container sta
 - [x] بررسی CI نشان داد smoke tests و backend tests موفق‌اند، اما linting هنوز به‌علت `Metrics/MethodLength` در `execute` شکست می‌خورد (`11/10`). علت، طول متد پس از افزودن guard بود؛ صرف انتقال guard به متد کمکی کافی نبود.
 - [x] commit `f133cbf4aab4a5477ff564c2c73a3004c0722c0b` کوتاه‌کردن `execute` را انجام داد، اما CI همان commit شکست دیگری را نشان داد: `Metrics/ClassLength` در همان کلاس، 101/100 خط.
 - [x] در commit `dcd3d08951e76412b65bbc1c97341d20fe6790df` متد کمکیِ صرفاً اعتبارسنجی حذف و guard مستقیم `payload.is_a?(Hash)` داخل `execute` قرار گرفت؛ این کار از افزایش تعداد خطوط کلاس جلوگیری می‌کند و guard همچنان پیش از خواندن فیلدهای payload اجرا می‌شود.
-- [ ] نتیجهٔ linting و آزمون‌های commit `dcd3d08951e76412b65bbc1c97341d20fe6790df` هنوز در انتظار اجرای CI است.
+- [x] CI نهایی شاخه پس از تثبیت اصلاحات موفق شد: [Discourse Plugin CI run 39553526919](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39553526919) روی HEAD `e258a979c81951dd3658d72e2030c537c88c478c`؛ `check_for_tests`، `linting` و `backend_tests` همگی موفق شدند. [Plugin smoke tests run 39553526637](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39553526637) نیز موفق شد. این تأیید فقط مربوط به شاخهٔ PR #14 است؛ PR ادغام نشده و production تغییر نکرده است.
 - [ ] پس از مرور diff و موفقیت linting و آزمون‌های commit نهایی، تصمیم دربارهٔ ادغام PR گرفته شود. هیچ استقرار production در این مرحله انجام نشده است.
 
 ### دامنه و محدودیت
@@ -1969,7 +1969,7 @@ README contains a read-only preflight command block for collecting container sta
 - آزمون‌های request اولیه: commit `abcdf9908c805f8a43927f4b37788f9973b2038a`؛ آزمون شناسهٔ callback غیر scalar و انتظار عدم فراخوانی API برای آن در commit `be5056eabe80cf44412219efc536a7240e8d37bf` و `2dac7c20d24e9a5aa0ee7a1b59c605486152f38c` تکمیل شد.
 - اصلاح تکمیلی در `acknowledge_invalid_callback`: شناسهٔ نامعتبر دیگر به API بله ارسال نمی‌شود؛ commit `91fed63100f1d3fb77f615d030dc8eee6a11ec58`.
 - README: commit `2a060f27a1ddf05fc8a27274590a6bb8969dae22`؛ این ROADMAP نیز پیش از تأیید نهایی CI به‌روزرسانی می‌شود.
-- **وضعیت CI برای HEAD نهایی: در انتظار اجرا/بررسی.** تا پایان موفق RuboCop، backend RSpec و smoke tests، این مرحله از نظر آزمون کامل محسوب نمی‌شود.
+- **وضعیت CI: PASS روی HEAD `e258a979c81951dd3658d72e2030c537c88c478c`**؛ لینک‌های CI و smoke در بند بالا ثبت شده‌اند. معیار خروج آزمون خودکار برقرار است، اما تصمیم merge و استقرار production جداگانه باقی می‌ماند.
 - هیچ آزمون محلی در checkout اجرایی Discourse از این گفتگو اجرا نشده است؛ نتیجهٔ runtime را فقط از CI ثبت می‌کنیم.
 - تغییرات فقط روی شاخهٔ `fix/ignore-malformed-notification-jobs` و PR #14 انجام شده‌اند؛ `main) ادغام نشده و سرور production دست‌نخورده است.
 
