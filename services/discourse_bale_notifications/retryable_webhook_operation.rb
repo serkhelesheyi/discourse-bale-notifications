@@ -6,7 +6,7 @@ module DiscourseBaleNotifications
   module RetryableWebhookOperation
     class Error < StandardError; end
 
-    TRANSIENT_HTTP_STATUSES = [429, *500..599].freeze
+    TRANSIENT_HTTP_STATUSES = [429, *(500..599)].freeze
 
     def self.raise_if_retryable_api_failure!(response, operation)
       if response.is_a?(Hash) && response['_bale_transport_failure'] == true
