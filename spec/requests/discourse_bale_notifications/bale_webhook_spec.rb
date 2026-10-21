@@ -70,6 +70,28 @@ RSpec.describe 'Bale webhook', type: :request do
       expect(response.parsed_body).to eq('success' => true)
     end
 
+    it 'ignores malformed message structures and non-scalar chat identifiers' do
+      malformed_messages = [
+        'not-an-object',
+        [],
+        { chat: 'not-an-object' },
+        { chat: [] },
+        { chat: { type: 'private' } },
+        { chat: { id: [], type: 'private' } },
+        { chat: { id: {}, type: 'private' } },
+        { chat: { id: 123, type: 'group' } }
+      ]
+
+      DiscourseBaleNotifications::BaleNotifier.expects(:send_message).never
+
+      malformed_messages.each do |message|
+        post '/bale/hook?key=test-webhook-secret', params: { message: message }
+
+        expect(response).to have_http_status(:ok), "unexpected status for message: #{message.inspect}"
+        expect(response.parsed_body).to eq('success' => true)
+      end
+    end
+
     it 'logs only safe message shape details when webhook diagnostics are enabled' do
       SiteSetting.bale_notifications_webhook_diagnostics_enabled = true
       actor = Fabricate(:user)
@@ -110,6 +132,47 @@ RSpec.describe 'Bale webhook', type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq('success' => true)
+    end
+
+    it 'acknowledges malformed callback structures without performing actions' do
+      malformed_callbacks = [
+        'not-an-object',
+        [],
+        { id: 'callback-missing-message' },
+        { id: 'callback-invalid-message', data: 'like:1', message: 'not-an-object' },
+        { id: 'callback-invalid-chat', data: 'like:1', message: { chat: [] } },
+        {
+          id: 'callback-missing-message-id',
+          data: 'like:1',
+          message: { chat: { id: 123, type: 'private' } }
+        },
+        {
+          id: 'callback-invalid-chat-id',
+          data: 'like:1',
+          message: { message_id: 1, chat: { id: [], type: 'private' } }
+        },
+        {
+          id: 'callback-invalid-message-id',
+          data: 'like:1',
+          message: { message_id: {}, chat: { id: 123, type: 'private' } }
+        },
+        {
+          id: 'callback-invalid-action-type',
+          data: ['like:1'],
+          message: { message_id: 1, chat: { id: 123, type: 'private' } }
+        }
+      ]
+
+      DiscourseBaleNotifications::BaleNotifier.stubs(:answer_callback)
+      DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).never
+
+      malformed_callbacks.each do |callback_query|
+        post '/bale/hook?key=test-webhook-secret', params: { callback_query: callback_query }
+
+        expect(response).to have_http_status(:ok),
+                         "unexpected status for callback: #{callback_query.inspect}"
+        expect(response.parsed_body).to eq('success' => true)
+      end
     end
 
     it 'acknowledges a callback with malformed action data' do
