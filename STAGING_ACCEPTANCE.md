@@ -415,3 +415,17 @@ No production command, configuration change, secret rotation, rebuild, or deploy
 - CI and smoke on the post-merge `main` HEAD must be checked independently; these results are not staging evidence.
 - **Staging acceptance is still pending.** No staging credentials/session are available through this repository workflow, so no A01–A21 live staging result is claimed.
 - **Production remains unchanged by this work.** No server commands, deployment, rebuild, secret/settings change, or live webhook operation was performed.
+
+
+
+## GitHub Actions verification — 22 October 2026
+
+The user clarified that “the tests passed” referred to GitHub Actions workflows, not live staging acceptance. Accordingly, no staging pass is recorded here.
+
+- Post-merge CI on main commit `4e7136af4a2f470c43ca323ba1780802a7bdffa5`: **PASS** ([run 39676397401](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676397401)).
+- Post-merge smoke tests on the same main commit: **PASS** ([run 39676396843](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676396843)).
+- CI on documentation PR head `88c3814bf5f74716ff56b5dc767d5187ba565d13`: **PASS** ([run 39676536222](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676536222)).
+- Smoke tests on that PR head: **PASS** ([run 39676534773](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676534773)).
+- A18–A21 remain pending real staging execution. GitHub Actions success does not establish live webhook, callback, redaction, or rollback behavior.
+
+No server-side commands, deployment, rebuild, secret/settings changes, or live webhook operations were performed.

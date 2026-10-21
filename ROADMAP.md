@@ -2132,3 +2132,17 @@ README contains a read-only preflight command block for collecting container sta
 این مرحله فقط وقتی از نظر پذیرش عملیاتی بسته می‌شود که هر آزمون قابل‌اعمال نتیجه و شواهد واقعی داشته باشد، هیچ شکست بحرانی حل‌نشده‌ای باقی نماند، redaction بازبینی شود و مسیر disable/rollback در محیط غیرتولیدی آزموده شود. CI سبز به‌تنهایی کافی نیست.
 
 **مرز عملیاتی:** این تغییر صرفاً مستندات مخزن است. هیچ staging یا production endpoint از این ابزارها در دسترس/اجرا نبوده؛ بنابراین هیچ آزمون زنده، استقرار، rebuild، تغییر تنظیمات یا secret ادعا نمی‌شود.
+
+
+
+## راستی‌آزمایی GitHub Actions و گام بعدی — ۲۲ اکتبر ۲۰۲۶
+
+منظور کاربر از موفقیت آزمون‌ها، workflowهای GitHub Actions بود؛ نه پذیرش زندهٔ staging. بنابراین A18–A21 همچنان تا اجرای مستقل staging باز هستند.
+
+- [x] CI پس از ادغام PR #20 روی main با SHA `4e7136af4a2f470c43ca323ba1780802a7bdffa5` موفق شد: [run 39676397401](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676397401).
+- [x] Smoke پس از ادغام PR #20 روی همان SHA موفق شد: [run 39676396843](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676396843).
+- [x] CI و Smoke روی HEAD مستنداتی این PR نیز موفق شدند: [CI run 39676536222](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676536222)، [Smoke run 39676534773](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676534773).
+- [ ] اجرای پذیرش واقعی staging برای A18–A21 و ثبت شواهد redacted هنوز لازم است.
+- [ ] تصمیم انتشار production فقط پس از گیت مستقل پذیرش staging گرفته شود.
+
+هیچ دستور سروری، deploy، rebuild، تغییر setting/secret یا عملیات webhook زنده در این کار انجام نشده است.
