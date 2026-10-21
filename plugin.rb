@@ -32,7 +32,6 @@ services_path = File.join(plugin_root, 'services/discourse_bale_notifications')
   BaleApiClient: 'bale_api_client',
   RetryableDelivery: 'retryable_delivery',
   RetryableWebhookOperation: 'retryable_webhook_operation',
-  RetryableWebhookOperation: 'retryable_webhook_operation',
   BaleNotificationPayload: 'bale_notification_payload',
   PluginSetup: 'plugin_setup'
 }.each do |constant_name, file_name|
