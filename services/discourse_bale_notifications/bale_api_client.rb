@@ -102,8 +102,9 @@ module DiscourseBaleNotifications
       BaleActivityLog.record_activity(
         method_name, chat_id, false, response_data['error_code'], activity_error_description(response_data)
       )
-      # Return send API rejection details so the notification job can classify retryable failures.
-      return response_data if %w[sendMessage sendPhoto].include?(method_name)
+      # Preserve HTTP status for the notification job's bounded retry classification.
+      # This internal field avoids confusing HTTP gateway failures with permanent API rejections.
+      return response_data.merge('_bale_http_status' => response.code.to_i) if %w[sendMessage sendPhoto].include?(method_name)
 
       false
     end
