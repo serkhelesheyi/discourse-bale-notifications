@@ -31,7 +31,6 @@ module Jobs
       store_message_id(response, chat_id, post)
     end
 
-
     def site_notification_enabled?(type_name)
       SiteSetting.bale_enabled_notification_types.split('|').include?(type_name)
     end
