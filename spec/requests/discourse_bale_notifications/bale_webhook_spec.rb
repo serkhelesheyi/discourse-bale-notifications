@@ -168,7 +168,7 @@ RSpec.describe 'Bale webhook', type: :request do
         }
       ]
 
-      DiscourseBaleNotifications::BaleNotifier.stubs(:answer_callback)
+      DiscourseBaleNotifications::BaleNotifier.expects(:answer_callback).times(7)
       DiscourseBaleNotifications::BaleNotifier.expects(:edit_keyboard).never
 
       malformed_callbacks.each do |callback_query|
