@@ -161,6 +161,21 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       )
     end
 
+    it 'preserves transient HTTP status for a non-JSON webhook response' do
+      allow(response).to receive(:code).and_return('503')
+      allow(response).to receive(:body).and_return('<html>gateway error</html>')
+      expect(Rails.logger).to receive(:error).with(
+        'Bale API returned a non-JSON response (method=setWebhook, http_status=503)'
+      )
+      expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
+        .with('setWebhook', nil, false, '503', 'non-JSON response')
+
+      expect(described_class.call('setWebhook', url: 'https://example.com/bale/hook?key=secret')).to eq(
+        'ok' => false,
+        '_bale_http_status' => 503
+      )
+    end
+
     it 'marks webhook transport failures for the retry classifier without exposing request data' do
       allow(http).to receive(:request).and_raise(Net::ReadTimeout, 'simulated transport failure')
       expect(Rails.logger).to receive(:error) do |message|
