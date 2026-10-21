@@ -2,23 +2,19 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength -- Table-driven retry classification examples share one context.
 RSpec.describe DiscourseBaleNotifications::RetryableWebhookOperation do
   describe '.raise_if_retryable_api_failure!' do
-    [429, 500, 502, 503, 599].each do |code|
-      it "raises for transient API error code #{code}" do
-        response = { 'ok' => false, 'error_code' => code, '_bale_http_status' => 200 }
+    [{ kind: 'API error code', key: 'error_code', operation: 'registration' },
+     { kind: 'HTTP status', key: '_bale_http_status', operation: 'removal' }].each do |scenario|
+      [429, 500, 502, 503, 599].each do |code|
+        it "raises for transient #{scenario[:kind]} #{code}" do
+          response = { 'ok' => false, 'error_code' => 400, '_bale_http_status' => 200 }
+          response[scenario[:key]] = code
 
-        expect { described_class.raise_if_retryable_api_failure!(response, 'registration') }
-          .to raise_error(DiscourseBaleNotifications::RetryableWebhookOperation::Error)
-      end
-    end
-
-    [429, 500, 502, 503, 599].each do |status|
-      it "raises for transient HTTP status #{status}" do
-        response = { 'ok' => false, 'error_code' => 400, '_bale_http_status' => status }
-
-        expect { described_class.raise_if_retryable_api_failure!(response, 'removal') }
-          .to raise_error(DiscourseBaleNotifications::RetryableWebhookOperation::Error)
+          expect { described_class.raise_if_retryable_api_failure!(response, scenario[:operation]) }
+            .to raise_error(DiscourseBaleNotifications::RetryableWebhookOperation::Error)
+        end
       end
     end
 
@@ -55,3 +51,4 @@ RSpec.describe DiscourseBaleNotifications::RetryableWebhookOperation do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
