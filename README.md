@@ -673,3 +673,12 @@ The user reports successful live tests for private-message notifications, ordina
 ### Acceptance status update — 20 October 2026
 
 The user confirms that the targeted reply-to-an-old-mention-notification test and cross-account isolation test were both previously run and passed. Both GitHub workflows also passed on current HEAD `afd1711847a24d13761e48339f0db6cd032da581` (Discourse Plugin run `39488076484`; Plugin smoke tests run `39488076035`). This supersedes the earlier statement that those two user-side tests were pending. Deleted/stale-post callback behavior, an actual backup restore/rollback exercise, and recording the exact installed plugin SHA and Discourse version remain separate operational checks unless already completed. No production changes were made. A17 remains an accepted risk, not a technical pass.
+
+
+### ممیزی دفاعی payload وب‌هوک بله — ۲۱ اکتبر ۲۰۲۶
+
+در شاخهٔ ممیزی، کنترلر پیش از پردازش ساختارهای تو‌در‌تو، نوع کلی `message`، `callback_query`، `message.chat` و `callback_query.message.chat` را بررسی می‌کند. این مرحله اعتبارسنجی شناسه‌ها را نیز محدودتر می‌کند: شناسهٔ چت، شناسهٔ callback و شناسهٔ پیام باید مقدار scalar غیرخالی از نوع رشته یا عدد صحیح باشند؛ آرایه‌ها و اشیا به‌عنوان شناسه پذیرفته نمی‌شوند.
+
+آزمون‌های request ورودی‌های ناقص یا بدساخت شامل payloadهای scalar/آرایه‌ای، chat مفقود یا با نوع نادرست، شناسه‌های مفقود یا غیر scalar، message داخلی مفقود/نامعتبر و دادهٔ اقدام callback با نوع نادرست را پوشش می‌دهند. ورودی نامعتبر بدون اجرای لایک/آنلایک یا ارسال پیام پردازش نمی‌شود؛ callback دارای شناسه در صورت امکان با پیام «اقدام در دسترس نیست» پاسخ داده می‌شود و وب‌هوک پاسخ موفق عمومی برمی‌گرداند تا برای payload خراب خطای داخلی ایجاد نشود.
+
+این اصلاح فقط در شاخهٔ `fix/ignore-malformed-notification-jobs` است. تا موفقیت CI روی commit نهایی تأیید نشود، آن را تأییدشده از نظر آزمون یا آمادهٔ ادغام تلقی نکنید. هیچ تغییری روی `main` یا سرور تولید اعمال نشده است.
