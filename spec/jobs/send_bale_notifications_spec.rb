@@ -46,6 +46,30 @@ RSpec.describe Jobs::SendBaleNotifications do
       end
     end
 
+    it 'retries an HTTP 5xx response even when the API error code looks permanent' do
+      response = { 'ok' => false, 'error_code' => 400, '_bale_http_status' => 503 }
+
+      expect do
+        DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(response)
+      end.to raise_error(DiscourseBaleNotifications::RetryableDelivery::Error, /http_status=503/)
+    end
+
+    it 'retries an HTTP 429 response when the API error code is missing' do
+      response = { 'ok' => false, '_bale_http_status' => 429 }
+
+      expect do
+        DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(response)
+      end.to raise_error(DiscourseBaleNotifications::RetryableDelivery::Error, /http_status=429/)
+    end
+
+    it 'does not retry a permanent HTTP status without a transient API error code' do
+      response = { 'ok' => false, 'error_code' => 400, '_bale_http_status' => 400 }
+
+      expect do
+        DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(response)
+      end.not_to raise_error
+    end
+
     it 'does not retry a malformed API rejection without a numeric error code' do
       [nil, '503', 'invalid'].each do |error_code|
         response = { 'ok' => false, 'error_code' => error_code }

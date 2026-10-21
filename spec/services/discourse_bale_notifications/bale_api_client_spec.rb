@@ -92,6 +92,17 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
     end
 
+    it 'rejects a JSON object without a boolean API ok field' do
+      allow(response).to receive(:body).and_return({ error_code: 503 }.to_json)
+      expect(Rails.logger).to receive(:error).with(
+        'Bale API returned an invalid response (method=sendMessage, http_status=200)'
+      )
+      expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
+        .with('sendMessage', chat_id, false, '200', 'invalid response')
+
+      expect(described_class.call('sendMessage', chat_id: chat_id, text: private_message)).to be(false)
+    end
+
     it 'rejects a successful message response without a message ID' do
       allow(response).to receive(:body).and_return({ ok: true, result: {} }.to_json)
       expect(Rails.logger).to receive(:error).with(
@@ -135,8 +146,30 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       expect(result).to eq(
         'ok' => false,
         'error_code' => 500,
-        'description' => remote_description
+        'description' => remote_description,
+        '_bale_http_status' => 200
       )
+    end
+
+    it 'preserves a transient HTTP status when the API error code looks permanent' do
+      allow(response).to receive(:code).and_return('503')
+      allow(response).to receive(:body).and_return(
+        { ok: false, error_code: 400, description: 'gateway failure' }.to_json
+      )
+      expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
+        .with('sendMessage', chat_id, false, 400, 'Bale API rejected request')
+
+      result = described_class.call('sendMessage', chat_id: chat_id, text: private_message)
+
+      expect(result).to eq(
+        'ok' => false,
+        'error_code' => 400,
+        'description' => 'gateway failure',
+        '_bale_http_status' => 503
+      )
+      expect do
+        DiscourseBaleNotifications::RetryableDelivery.raise_if_retryable_api_failure!(result)
+      end.to raise_error(DiscourseBaleNotifications::RetryableDelivery::Error, /http_status=503/)
     end
 
     it 'records a generic activity description for a permanent API rejection' do
