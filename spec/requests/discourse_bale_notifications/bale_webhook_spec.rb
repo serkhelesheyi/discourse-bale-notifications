@@ -157,6 +157,11 @@ RSpec.describe 'Bale webhook', type: :request do
           message: { message_id: {}, chat: { id: 123, type: 'private' } }
         },
         {
+          id: [],
+          data: 'like:1',
+          message: { message_id: 1, chat: { id: 123, type: 'private' } }
+        },
+        {
           id: 'callback-invalid-action-type',
           data: ['like:1'],
           message: { message_id: 1, chat: { id: 123, type: 'private' } }
