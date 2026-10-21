@@ -151,7 +151,7 @@ module DiscourseBaleNotifications
     def self.parse_response(response, method_name, chat_id)
       response_data = JSON.parse(response.body)
       if response_data.is_a?(Hash) &&
-         BaleApiResponseDiagnostics.valid_success_response?(method_name, response_data, response)
+          BaleApiResponseDiagnostics.valid_success_response?(method_name, response_data, response)
         return response_data
       end
 
@@ -164,7 +164,7 @@ module DiscourseBaleNotifications
 
     def self.handle_api_failure(method_name, chat_id, response, response_data)
       record_api_failure(method_name, chat_id, response, response_data)
-      return webhook_failure_response(method_name, response, response_data) if %w[setWebhook deleteWebhook].include?(method_name)
+      return webhook_failure_response(response, response_data) if %w[setWebhook deleteWebhook].include?(method_name)
       return response_data if %w[sendMessage sendPhoto].include?(method_name)
 
       false
@@ -182,7 +182,7 @@ module DiscourseBaleNotifications
 
     # Preserve only classification metadata needed by webhook jobs; never expose
     # the response body, URL, token, or webhook secret.
-    def self.webhook_failure_response(method_name, response, response_data)
+    def self.webhook_failure_response(response, response_data)
       response_data.merge('_bale_http_status' => response.code.to_i)
     end
     private_class_method :webhook_failure_response
