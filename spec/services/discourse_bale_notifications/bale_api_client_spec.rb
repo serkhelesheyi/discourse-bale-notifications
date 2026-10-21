@@ -135,8 +135,7 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       expect(result).to eq(
         'ok' => false,
         'error_code' => 500,
-        'description' => remote_description,
-        '_bale_http_status' => 200
+        'description' => remote_description
       )
     end
 
