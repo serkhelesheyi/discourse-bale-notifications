@@ -58,8 +58,12 @@ module DiscourseBaleNotifications
       value.is_a?(Hash) || value.is_a?(ActionController::Parameters)
     end
 
+    def valid_identifier?(value)
+      (value.is_a?(String) || value.is_a?(Integer)) && value.present?
+    end
+
     def valid_private_chat?(chat)
-      webhook_object?(chat) && chat['id'].present? && chat['type'] == 'private'
+      webhook_object?(chat) && valid_identifier?(chat['id']) && chat['type'] == 'private'
     end
 
     def valid_message_payload?(message)
@@ -75,8 +79,8 @@ module DiscourseBaleNotifications
       return false unless webhook_object?(callback_message)
       return false unless valid_private_chat?(callback_message['chat'])
 
-      callback['id'].present? &&
-        callback_message['message_id'].present? &&
+      valid_identifier?(callback['id']) &&
+        valid_identifier?(callback_message['message_id']) &&
         callback['data'].is_a?(String) &&
         callback['data'].match?(/\A(?:like|unlike):[1-9]\d*\z/)
     end
