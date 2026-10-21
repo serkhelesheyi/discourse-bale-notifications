@@ -167,7 +167,9 @@ module DiscourseBaleNotifications
     def self.handle_api_failure(method_name, chat_id, response, response_data)
       record_api_failure(method_name, chat_id, response, response_data)
       return webhook_failure_response(response, response_data) if %w[setWebhook deleteWebhook].include?(method_name)
-      return response_data.merge('_bale_http_status' => response.code.to_i) if %w[sendMessage sendPhoto].include?(method_name)
+      if %w[sendMessage sendPhoto].include?(method_name)
+        return response_data.merge('_bale_http_status' => response.code.to_i)
+      end
 
       false
     end
