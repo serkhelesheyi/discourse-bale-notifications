@@ -146,9 +146,59 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       expect(result).to eq(
         'ok' => false,
         'error_code' => 500,
-        'description' => remote_description,
-        '_bale_http_status' => 200
+        'description' => remote_description
       )
+    end
+
+    it 'preserves HTTP status for webhook API rejections without logging the response body' do
+      allow(response).to receive(:code).and_return('503')
+      allow(response).to receive(:body).and_return(
+        { ok: false, error_code: 400, description: 'sensitive remote text' }.to_json
+      )
+      expect(Rails.logger).to receive(:error) do |message|
+        expect(message).to include('method=setWebhook', 'http_status=503', 'error_code=400')
+        expect(message).not_to include('sensitive remote text', access_token)
+      end
+      expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
+        .with('setWebhook', nil, false, 400, 'Bale API rejected request')
+
+      result = described_class.call('setWebhook', url: 'https://example.com/bale/hook?key=secret')
+
+      expect(result).to eq(
+        'ok' => false,
+        'error_code' => 400,
+        'description' => 'sensitive remote text',
+        '_bale_http_status' => 503
+      )
+    end
+
+    it 'preserves transient HTTP status for a non-JSON webhook response' do
+      allow(response).to receive(:code).and_return('503')
+      allow(response).to receive(:body).and_return('<html>gateway error</html>')
+      expect(Rails.logger).to receive(:error).with(
+        'Bale API returned a non-JSON response (method=setWebhook, http_status=503)'
+      )
+      expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
+        .with('setWebhook', nil, false, '503', 'non-JSON response')
+
+      expect(described_class.call('setWebhook', url: 'https://example.com/bale/hook?key=secret')).to eq(
+        'ok' => false,
+        '_bale_http_status' => 503
+      )
+    end
+
+    it 'marks webhook transport failures for the retry classifier without exposing request data' do
+      allow(http).to receive(:request).and_raise(Net::ReadTimeout, 'simulated transport failure')
+      expect(Rails.logger).to receive(:error) do |message|
+        expect(message).to include('method=setWebhook', 'Net::ReadTimeout')
+        expect(message).not_to include(access_token, 'secret', 'example.com')
+      end
+      expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
+        .with('setWebhook', nil, false, nil, 'network failure (Net::ReadTimeout)')
+
+      result = described_class.call('setWebhook', url: 'https://example.com/bale/hook?key=secret')
+
+      expect(result).to eq('ok' => false, '_bale_transport_failure' => true)
     end
 
     it 'preserves a transient HTTP status when the API error code looks permanent' do
