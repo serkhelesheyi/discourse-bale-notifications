@@ -175,7 +175,7 @@ RSpec.describe 'Bale webhook', type: :request do
         post '/bale/hook?key=test-webhook-secret', params: { callback_query: callback_query }
 
         expect(response).to have_http_status(:ok),
-                         "unexpected status for callback: #{callback_query.inspect}"
+          "unexpected status for callback: #{callback_query.inspect}"
         expect(response.parsed_body).to eq('success' => true)
       end
     end
