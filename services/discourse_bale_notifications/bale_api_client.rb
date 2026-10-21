@@ -21,6 +21,19 @@ module DiscourseBaleNotifications
     EOFError
   ].freeze
 
+  # Validates the response envelope separately so the HTTP client stays focused on transport.
+  module BaleApiResponseValidator
+    def self.valid_api_response?(method_name, response_data, response)
+      return false unless response_data.is_a?(Hash) && [true, false].include?(response_data['ok'])
+      return true if response_data['ok'] == false
+      return false unless response.code.to_i.between?(200, 299)
+      return true unless %w[sendMessage sendPhoto].include?(method_name)
+
+      result = response_data['result']
+      result.is_a?(Hash) && result['message_id'].present?
+    end
+  end
+
   # Sends requests to the Bale Bot API and normalizes responses and failures.
   class BaleApiClient
     def self.call(method_name, message)
@@ -62,22 +75,13 @@ module DiscourseBaleNotifications
 
     def self.parse_response(response, method_name, chat_id)
       response_data = JSON.parse(response.body)
-      return response_data if response_data.is_a?(Hash) && valid_success_response?(method_name, response_data, response)
+      return response_data if BaleApiResponseValidator.valid_api_response?(method_name, response_data, response)
 
       log_invalid_response_structure(response, method_name, chat_id)
       :invalid_json
     rescue JSON::ParserError
       log_non_json_response(response, method_name, chat_id)
       :invalid_json
-    end
-
-    def self.valid_success_response?(method_name, response_data, response)
-      return true unless response_data['ok'] == true
-      return false unless response.code.to_i.between?(200, 299)
-      return true unless %w[sendMessage sendPhoto].include?(method_name)
-
-      result = response_data['result']
-      result.is_a?(Hash) && result['message_id'].present?
     end
 
     def self.log_invalid_response_structure(response, method_name, chat_id)
@@ -102,8 +106,11 @@ module DiscourseBaleNotifications
       BaleActivityLog.record_activity(
         method_name, chat_id, false, response_data['error_code'], activity_error_description(response_data)
       )
-      # Return send API rejection details so the notification job can classify retryable failures.
-      return response_data if %w[sendMessage sendPhoto].include?(method_name)
+      # Preserve HTTP status for the notification job's bounded retry classification.
+      # This internal field avoids confusing HTTP gateway failures with permanent API rejections.
+      if %w[sendMessage sendPhoto].include?(method_name)
+        return response_data.merge('_bale_http_status' => response.code.to_i)
+      end
 
       false
     end
