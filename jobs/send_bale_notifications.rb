@@ -18,6 +18,10 @@ module Jobs
       type_name = Notification.types[payload[:notification_type]].to_s
       return unless site_notification_enabled?(type_name)
 
+      deliver_for_context(args, payload, type_name)
+    end
+
+    def deliver_for_context(args, payload, type_name)
       context = delivery_context(args, payload, type_name)
       return unless context
 
