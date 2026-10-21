@@ -87,7 +87,6 @@ module DiscourseBaleNotifications
         "http_status=#{response.code}, error_code=#{response_data['error_code']})"
       )
     end
-
   end
 
   # Sends requests to the Bale Bot API and normalizes responses and failures.
@@ -152,7 +151,7 @@ module DiscourseBaleNotifications
     def self.parse_response(response, method_name, chat_id)
       response_data = JSON.parse(response.body)
       if response_data.is_a?(Hash) &&
-          BaleApiResponseDiagnostics.valid_success_response?(method_name, response_data, response)
+         BaleApiResponseDiagnostics.valid_success_response?(method_name, response_data, response)
         return response_data
       end
 
@@ -164,22 +163,28 @@ module DiscourseBaleNotifications
     end
 
     def self.handle_api_failure(method_name, chat_id, response, response_data)
+      record_api_failure(method_name, chat_id, response, response_data)
+      return webhook_failure_response(method_name, response, response_data) if %w[setWebhook deleteWebhook].include?(method_name)
+      return response_data if %w[sendMessage sendPhoto].include?(method_name)
+
+      false
+    end
+
+    def self.record_api_failure(method_name, chat_id, response, response_data)
       BaleApiResponseDiagnostics.log_api_failure(method_name, response, response_data)
       BaleApiResponseDiagnostics.unlink_chat_if_unreachable(chat_id, response_data)
       BaleActivityLog.record_activity(
         method_name, chat_id, false, response_data['error_code'],
         BaleApiResponseDiagnostics.activity_error_description(response_data)
       )
-      # Preserve only the classification metadata needed by idempotent webhook jobs.
-      # Never log or persist the response body, URL, token, or webhook secret.
-      if %w[setWebhook deleteWebhook].include?(method_name)
-        return response_data.merge('_bale_http_status' => response.code.to_i)
-      end
-
-      # Notification delivery has its own retry classifier.
-      return response_data if %w[sendMessage sendPhoto].include?(method_name)
-
-      false
     end
+    private_class_method :record_api_failure
+
+    # Preserve only classification metadata needed by webhook jobs; never expose
+    # the response body, URL, token, or webhook secret.
+    def self.webhook_failure_response(method_name, response, response_data)
+      response_data.merge('_bale_http_status' => response.code.to_i)
+    end
+    private_class_method :webhook_failure_response
   end
 end
