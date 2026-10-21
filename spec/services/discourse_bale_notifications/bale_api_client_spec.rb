@@ -159,8 +159,8 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       },
       {
         method: 'editMessageReplyMarkup',
-        payload: { chat_id: chat_id, message_id: 7, reply_markup: {} },
-        chat_id: chat_id
+        payload: { chat_id: 123_456, message_id: 7, reply_markup: {} },
+        chat_id: 123_456
       }
     ].each do |scenario|
       it "does not expose retry metadata for a rejected #{scenario[:method]} call" do
