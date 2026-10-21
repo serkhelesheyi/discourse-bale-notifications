@@ -665,3 +665,17 @@ The user reports successful live tests for private-message notifications, ordina
 ### Acceptance status update — 20 October 2026
 
 The user confirms that the targeted reply-to-an-old-mention-notification test and cross-account isolation test were both previously run and passed. Both GitHub workflows also passed on current HEAD `afd1711847a24d13761e48339f0db6cd032da581` (Discourse Plugin run `39488076484`; Plugin smoke tests run `39488076035`). This supersedes the earlier statement that those two user-side tests were pending. Deleted/stale-post callback behavior, an actual backup restore/rollback exercise, and recording the exact installed plugin SHA and Discourse version remain separate operational checks unless already completed. No production changes were made. A17 remains an accepted risk, not a technical pass.
+
+
+## ممیزی retry ثبت و حذف webhook — ۲۱ اکتبر ۲۰۲۶
+
+این مرحله در شاخهٔ `fix/retry-webhook-operations` و PR جداگانه انجام می‌شود؛ تا تأیید CI و بازبینی نهایی، تغییرات در `main` یا سرور تولیدی اعمال‌شده محسوب نمی‌شوند.
+
+- job مشترک `SetupBaleWebhook` هم ثبت `setWebhook` و هم حذف `deleteWebhook` را انجام می‌دهد. پیش از این مرحله، هر پاسخ ناموفق به استثنا تبدیل می‌شد؛ در نتیجه خطای دائمی و خطای موقت از هم تفکیک نمی‌شدند و رفتار retry به‌صورت صریح در خود job محدود نشده بود.
+- سیاست پیشنهادی این شاخه: حداکثر **۵ retry پس از تلاش نخست**؛ retry فقط برای `error_code` عدد صحیح 429 یا 500–599، وضعیت HTTP عددی 429 یا 500–599، یا شکست شناخته‌شدهٔ لایهٔ انتقال انجام می‌شود. این عملیات تنظیم/حذف webhook تکرارپذیرند؛ secret موجود هنگام retry حفظ می‌شود و چرخش secret انجام نمی‌شود.
+- خطاهای دائمی مانند 400/401/403/404/422، کدهای نامعتبر/رشته‌ای و پاسخ مبهمی که metadata کافی برای طبقه‌بندی ندارد، فقط با پیام عمومی و بدون بدنهٔ پاسخ ثبت می‌شوند و وارد چرخهٔ retry نمی‌شوند. این انتخاب از retry بی‌فایده جلوگیری می‌کند؛ به معنای موفقیت عملیات یا رفع خودکار webhook نیست و در خطای دائمی باید علت در پنل/تنظیمات بررسی شود.
+- برای طبقه‌بندی داخلی، status HTTP و نشانگر شکست انتقال به‌صورت metadata داخلی به job می‌رسند؛ این metadata به پاسخ API عمومی تبدیل نمی‌شود و token، secret، URL کامل webhook یا متن خام پاسخ در لاگ جدید ثبت نمی‌شود.
+- آزمون‌های رگرسیون برای طبقه‌بندی API/HTTP، خطای انتقال، خطای دائمی، پاسخ مبهم و سقف retry افزوده شده‌اند. **نتیجهٔ نهایی فقط پس از سبزشدن lint، backend tests و smoke روی HEAD نهایی PR ثبت می‌شود.**
+- هیچ دستور سروری، تغییر setting، چرخش secret، ثبت/حذف webhook، rebuild یا استقرار در این مرحله انجام نشده است.
+
+گام بعد پس از CI سبز: بازبینی diff و آزمون‌های retry؛ سپس ممیزی جداگانهٔ APIهای جانبی `answerCallbackQuery` و `editMessageReplyMarkup`. این مرحله عمداً سیاست retry اعلان‌های `sendMessage/sendPhoto` را تغییر نمی‌دهد.
