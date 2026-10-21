@@ -2087,3 +2087,28 @@ README contains a read-only preflight command block for collecting container sta
 ### مرز عملیاتی
 
 این ادغام و ممیزی فقط در GitHub انجام شده‌اند. هیچ استقرار، rebuild، اجرای فرمان روی production، تغییر setting/secret، یا تغییر webhook زنده انجام نشده است. موفقیت CI تأیید رفتار نسخهٔ نصب‌شدهٔ production نیست.
+
+
+## بستن مرحلهٔ retry وب‌هوک و ممیزی callback — ۲۲ اکتبر ۲۰۲۶
+
+این بخش، وضعیت قطعی را برای چک‌لیست‌های قدیمی‌تر همین موضوع در بالا ثبت می‌کند؛ چک‌لیست‌های قدیمی به‌عنوان تاریخچهٔ زمان ثبت خود باقی می‌مانند و وضعیت نهایی را از این بخش بخوانید.
+
+### وضعیت ادغام
+
+- [x] PR #17، سیاست retry برای `setWebhook/deleteWebhook`، ادغام شد: `7cc6c6ad0f56527a05e7fa99ab9e4693fe3de13a`.
+- [x] PR #18، ممیزی callback و آزمون‌های رگرسیون، ادغام شد: `cee53a2b8c7f3cff7cee4dd0b41e359be8fff094`.
+- [x] CI کامل PR #18 روی HEAD نهایی موفق شد: [run 39673603284](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39673603284).
+- [x] Smoke tests PR #18 روی همان HEAD موفق شد: [run 39673602367](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39673602367).
+- [x] آزمون‌های callback تأیید می‌کنند که خطاهای `answerCallbackQuery` و `editMessageReplyMarkup` خروجی best-effort دارند و metadata retry یا متن حساس پاسخ را افشا نمی‌کنند.
+- [x] سیاست retry اعلان‌ها و سیاست retry عملیات webhook از هم جدا باقی مانده‌اند؛ retry webhook محدود به خطاهای گذرای طبقه‌بندی‌شده یا شکست شناخته‌شدهٔ انتقال است.
+
+### تصمیم callback
+
+فعلاً retry خودکار برای `answerCallbackQuery` و `editMessageReplyMarkup` اضافه نشده است. پاسخ callback زمان‌حساس است؛ برای retry ویرایش صفحه‌کلید نیز در صورت مشاهدهٔ نیاز عملیاتی باید ابتدا job مستقل، سقف retry و رفتار شکست/idempotency طراحی و آزموده شود.
+
+### گام بعدی
+
+- [ ] اجرای پذیرش در staging برای نسخهٔ نصب‌شده: ثبت SHA افزونه و نسخهٔ Discourse، آزمون تنظیم webhook با خطای گذرا/دائمی در محیط کنترل‌شده، و بررسی callbackهای معتبر/منقضی و ویرایش صفحه‌کلید.
+- [ ] فقط پس از پذیرش staging، تصمیم جداگانه دربارهٔ استقرار production؛ هیچ استقرار خودکاری از این mergeها نتیجه نمی‌شود.
+
+این مرحله در GitHub کامل شده است؛ پذیرش staging و production هنوز انجام‌شده تلقی نمی‌شوند. هیچ تنظیم، secret، webhook زنده، کانتینر یا دادهٔ production تغییر نکرده است.
