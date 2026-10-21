@@ -57,7 +57,11 @@ module DiscourseBaleNotifications
         "(method=#{method_name}, error=#{e.class})"
       )
       BaleActivityLog.record_activity(method_name, chat_id, false, nil, "network failure (#{e.class})")
-      false
+      if %w[setWebhook deleteWebhook].include?(method_name)
+        { 'ok' => false, '_bale_transport_failure' => true }
+      else
+        false
+      end
     end
 
     def self.parse_response(response, method_name, chat_id)
@@ -102,7 +106,13 @@ module DiscourseBaleNotifications
       BaleActivityLog.record_activity(
         method_name, chat_id, false, response_data['error_code'], activity_error_description(response_data)
       )
-      # Return send API rejection details so the notification job can classify retryable failures.
+      # Preserve only the classification metadata needed by idempotent webhook jobs.
+      # Never log or persist the response body, URL, token, or webhook secret.
+      if %w[setWebhook deleteWebhook].include?(method_name)
+        return response_data.merge('_bale_http_status' => response.code.to_i)
+      end
+
+      # Notification delivery has its own retry classifier.
       return response_data if %w[sendMessage sendPhoto].include?(method_name)
 
       false
