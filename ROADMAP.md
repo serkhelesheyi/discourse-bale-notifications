@@ -1965,10 +1965,11 @@ README contains a read-only preflight command block for collecting container sta
 
 ### شواهد و وضعیت اعتبارسنجی
 
-- تغییر کد اعتبارسنجی: commit `e7ddc827d71bccc6025875d37479d3aa4cb36d58`.
-- آزمون‌های request: commit `abcdf9908c805f8a43927f4b37788f9973b2038a`.
-- به‌روزرسانی README: commit `2a060f27a1ddf05fc8a27274590a6bb8969dae22`.
-- **وضعیت CI برای commit نهایی: در انتظار اجرا/بررسی.** تا پایان موفق RuboCop، backend RSpec و smoke tests، این مرحله از نظر آزمون کامل محسوب نمی‌شود.
+- تغییر اعتبارسنجی شناسه‌ها: commit `e7ddc827d71bccc6025875d37479d3aa4cb36d58`.
+- آزمون‌های request اولیه: commit `abcdf9908c805f8a43927f4b37788f9973b2038a`؛ آزمون شناسهٔ callback غیر scalar و انتظار عدم فراخوانی API برای آن در commit `be5056eabe80cf44412219efc536a7240e8d37bf` و `2dac7c20d24e9a5aa0ee7a1b59c605486152f38c` تکمیل شد.
+- اصلاح تکمیلی در `acknowledge_invalid_callback`: شناسهٔ نامعتبر دیگر به API بله ارسال نمی‌شود؛ commit `91fed63100f1d3fb77f615d030dc8eee6a11ec58`.
+- README: commit `2a060f27a1ddf05fc8a27274590a6bb8969dae22`؛ این ROADMAP نیز پیش از تأیید نهایی CI به‌روزرسانی می‌شود.
+- **وضعیت CI برای HEAD نهایی: در انتظار اجرا/بررسی.** تا پایان موفق RuboCop، backend RSpec و smoke tests، این مرحله از نظر آزمون کامل محسوب نمی‌شود.
 - هیچ آزمون محلی در checkout اجرایی Discourse از این گفتگو اجرا نشده است؛ نتیجهٔ runtime را فقط از CI ثبت می‌کنیم.
 - تغییرات فقط روی شاخهٔ `fix/ignore-malformed-notification-jobs` و PR #14 انجام شده‌اند؛ `main) ادغام نشده و سرور production دست‌نخورده است.
 
