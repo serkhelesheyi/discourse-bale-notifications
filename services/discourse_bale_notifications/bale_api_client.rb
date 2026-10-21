@@ -71,6 +71,22 @@ module DiscourseBaleNotifications
         'after Bale reported it as blocked/unreachable'
       )
     end
+    def self.valid_success_response?(method_name, response_data, response)
+      return true unless response_data['ok'] == true
+      return false unless response.code.to_i.between?(200, 299)
+      return true unless %w[sendMessage sendPhoto].include?(method_name)
+
+      result = response_data['result']
+      result.is_a?(Hash) && result['message_id'].present?
+    end
+
+    def self.log_api_failure(method_name, response, response_data)
+      Rails.logger.error(
+        "Bale API call failed (method=#{method_name}, " \
+        "http_status=#{response.code}, error_code=#{response_data['error_code']})"
+      )
+    end
+
   end
 
   # Sends requests to the Bale Bot API and normalizes responses and failures.
@@ -134,7 +150,7 @@ module DiscourseBaleNotifications
 
     def self.parse_response(response, method_name, chat_id)
       response_data = JSON.parse(response.body)
-      return response_data if response_data.is_a?(Hash) && valid_success_response?(method_name, response_data, response)
+      return response_data if response_data.is_a?(Hash) && BaleApiResponseDiagnostics.valid_success_response?(method_name, response_data, response)
 
       BaleApiResponseDiagnostics.log_invalid_response_structure(response, method_name, chat_id)
       :invalid_json
@@ -143,17 +159,8 @@ module DiscourseBaleNotifications
       :invalid_json
     end
 
-    def self.valid_success_response?(method_name, response_data, response)
-      return true unless response_data['ok'] == true
-      return false unless response.code.to_i.between?(200, 299)
-      return true unless %w[sendMessage sendPhoto].include?(method_name)
-
-      result = response_data['result']
-      result.is_a?(Hash) && result['message_id'].present?
-    end
-
     def self.handle_api_failure(method_name, chat_id, response, response_data)
-      log_api_failure(method_name, response, response_data)
+      BaleApiResponseDiagnostics.log_api_failure(method_name, response, response_data)
       BaleApiResponseDiagnostics.unlink_chat_if_unreachable(chat_id, response_data)
       BaleActivityLog.record_activity(
         method_name, chat_id, false, response_data['error_code'],
@@ -170,13 +177,5 @@ module DiscourseBaleNotifications
 
       false
     end
-
-    def self.log_api_failure(method_name, response, response_data)
-      Rails.logger.error(
-        "Bale API call failed (method=#{method_name}, " \
-        "http_status=#{response.code}, error_code=#{response_data['error_code']})"
-      )
-    end
-
   end
 end
