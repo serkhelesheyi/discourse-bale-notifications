@@ -46,10 +46,10 @@ Record the date/time and timezone, staging URL (do not publish secrets), Discour
 | A14 | Disable plugin | New plugin activity stops as expected; no recurring job/error storm remains | Pending staging run |
 | A15 | Regression and resource health | Core forum actions still work; web and Sidekiq remain healthy; no growing queue or repeated errors | Pending staging run |
 | A16 | Bale preference persistence | Toggle preferences, save/reload; all-off state suppresses a supported event and enabled state delivers it | **Partial pass on live forum**: persistence and private-message suppression/delivery confirmed by user report; other types not individually tested |
-| A18 | Webhook setup/delete retry policy | Successful setup/delete completes; only controlled transient failures are retried (maximum five retries after initial attempt); permanent/ambiguous failures do not loop | Pending controlled staging run |
-| A19 | Callback API behavior | Valid callback receives timely feedback; expired/invalid callback is handled safely; keyboard edit failure does not falsely report the action as successful | Pending staging run |
-| A20 | Retry and callback diagnostics | Logs/activity contain useful status/classification without token, secret, full webhook URL, raw API description, or private content | Pending redacted log review |
-| A21 | Release rollback gate | Candidate can be disabled/reverted on staging and web/Sidekiq/Redis remain healthy afterward | Pending staging evidence |
+| A18 | Webhook setup/delete retry policy | Successful setup/delete completes; only controlled transient failures are retried (maximum five retries after initial attempt); permanent/ambiguous failures do not loop | **User-reported PASS**; environment, candidate SHA, Discourse version, and redacted evidence not yet recorded |
+| A19 | Callback API behavior | Valid callback receives timely feedback; expired/invalid callback is handled safely; keyboard edit failure does not falsely report the action as successful | **User-reported PASS**; environment, candidate SHA, Discourse version, and redacted evidence not yet recorded |
+| A20 | Retry and callback diagnostics | Logs/activity contain useful status/classification without token, secret, full webhook URL, raw API description, or private content | **User-reported PASS**; environment and redacted evidence not independently reviewed |
+| A21 | Release rollback gate | Candidate can be disabled/reverted on staging and web/Sidekiq/Redis remain healthy afterward | **User-reported PASS**; environment, restored SHA/snapshot, and health evidence not yet recorded |
 
 For each row record **Pass / Fail / Blocked / Not applicable**, test account(s), timestamp, concise observations, and links to redacted logs. Never mark a row Pass solely because a unit test or GitHub Actions workflow passed.
 
@@ -415,3 +415,12 @@ No production command, configuration change, secret rotation, rebuild, or deploy
 - CI and smoke on the post-merge `main` HEAD must be checked independently; these results are not staging evidence.
 - **Staging acceptance is still pending.** No staging credentials/session are available through this repository workflow, so no A01–A21 live staging result is claimed.
 - **Production remains unchanged by this work.** No server commands, deployment, rebuild, secret/settings change, or live webhook operation was performed.
+
+
+## User-reported acceptance result — 22 October 2026
+
+The user reports that the focused tests described in the preceding conversation completed successfully. This report is recorded as **user-reported PASS**, not as an independently verified result. The message did not specify whether the target was a dedicated staging instance or the live production forum, nor provide the exact installed plugin SHA, Discourse version, test timestamps, retry attempt counts, restored revision/snapshot, or redacted evidence. Therefore this note does not label the execution as staging.
+
+Before treating the operational release gate as fully auditable, append those non-secret details and clarify the environment. Do not share bot tokens, webhook secrets, full secret-bearing URLs, private message contents, or raw sensitive logs. If tests were run on production, do not repeat fault-injection or rollback tests there; use a dedicated staging/test double for any further destructive or fault-inducing validation.
+
+This report does not itself authorize a deployment or imply that the plugin was updated by GitHub. No server-side change was made by this documentation update.
