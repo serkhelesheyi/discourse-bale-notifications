@@ -29,7 +29,14 @@ module DiscourseBaleNotifications
       return false unless response
 
       response_data = parse_response(response, method_name, chat_id)
-      return false if response_data == :invalid_json
+      if response_data == :invalid_json
+        status = response.code.to_i
+        if %w[setWebhook deleteWebhook].include?(method_name) &&
+            (status == 429 || status.between?(500, 599))
+          return { 'ok' => false, '_bale_http_status' => status }
+        end
+        return false
+      end
 
       return handle_api_failure(method_name, chat_id, response, response_data) unless response_data['ok'] == true
 
