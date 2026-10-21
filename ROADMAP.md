@@ -2134,13 +2134,15 @@ README contains a read-only preflight command block for collecting container sta
 **مرز عملیاتی:** این تغییر صرفاً مستندات مخزن است. هیچ staging یا production endpoint از این ابزارها در دسترس/اجرا نبوده؛ بنابراین هیچ آزمون زنده، استقرار، rebuild، تغییر تنظیمات یا secret ادعا نمی‌شود.
 
 
-## گزارش نتیجهٔ آزمون‌های retry و callback — ۲۲ اکتبر ۲۰۲۶
 
-کاربر گزارش کرده است که آزمون‌های متمرکز مربوط به A18 تا A21 در گفت‌وگوی جاری با موفقیت اجرا شده‌اند. این گزارش به‌عنوان **PASS بر اساس اعلام کاربر** ثبت می‌شود؛ هنوز مستقلاً راستی‌آزمایی نشده است.
+## راستی‌آزمایی GitHub Actions و گام بعدی — ۲۲ اکتبر ۲۰۲۶
 
-- [x] طبق گزارش کاربر، آزمون‌های مربوط به retry ثبت/حذف webhook، callback و صفحه‌کلید، بازبینی اطلاعات حساس و سلامت/rollback با موفقیت اجرا شده‌اند.
-- [ ] محیط اجرا (staging مستقل یا production)، SHA دقیق افزونهٔ نصب‌شده، نسخهٔ Discourse، زمان اجرا و شواهد redacted هنوز در این گزارش مشخص نشده‌اند.
-- [ ] برای ثبت قابل ممیزی، فقط همین فرادادهٔ غیرمحرمانه و نتیجهٔ هر زیرآزمون تکمیل شود؛ token، secret، URL کامل webhook یا محتوای خصوصی نباید ارسال شود.
-- [ ] اگر این آزمون‌ها روی production انجام شده‌اند، fault injection یا آزمون rollback مخرب را روی production تکرار نکنید؛ در صورت نیاز از staging مستقل یا test double استفاده شود.
+منظور کاربر از موفقیت آزمون‌ها، workflowهای GitHub Actions بود؛ نه پذیرش زندهٔ staging. بنابراین A18–A21 همچنان تا اجرای مستقل staging باز هستند.
 
-این نتیجهٔ گزارش‌شده، به‌خودی‌خود مجوز انتشار یا اثبات SHA نصب‌شده نیست. هیچ دستور سروری، deploy، rebuild، تغییر setting/secret یا عملیات webhook زنده از طریق این تغییر مستندات انجام نشده است.
+- [x] CI پس از ادغام PR #20 روی main با SHA `4e7136af4a2f470c43ca323ba1780802a7bdffa5` موفق شد: [run 39676397401](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676397401).
+- [x] Smoke پس از ادغام PR #20 روی همان SHA موفق شد: [run 39676396843](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676396843).
+- [x] CI و Smoke روی HEAD مستنداتی این PR نیز موفق شدند: [CI run 39676536222](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676536222)، [Smoke run 39676534773](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39676534773).
+- [ ] اجرای پذیرش واقعی staging برای A18–A21 و ثبت شواهد redacted هنوز لازم است.
+- [ ] تصمیم انتشار production فقط پس از گیت مستقل پذیرش staging گرفته شود.
+
+هیچ دستور سروری، deploy، rebuild، تغییر setting/secret یا عملیات webhook زنده در این کار انجام نشده است.
