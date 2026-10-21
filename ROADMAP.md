@@ -1921,3 +1921,65 @@ README contains a read-only preflight command block for collecting container sta
 ### نتیجهٔ ممیزی محدود بعدی — فیلترهای اعلان
 
 بررسی سورس افزونه در SHA `a5836a1205a8b154d2c3862d3ced58b5eb6b91ca` و هستهٔ Discourse در SHA `bab418487a463eede4c7d2f6415fe2eb966a3883` نشان داد که `PostAlerter.push_notification` رویداد را پیش از فیلترهای push منتشر می‌کند، اما افزونه در `PluginSetup.register_notification_event` همهٔ `DiscoursePluginRegistry.push_notification_filters` را خودش ارزیابی می‌کند و تنها در صورت اجازهٔ همگی job را enqueue می‌کند. آزمون‌های موجود در `spec/services/discourse_bale_notifications/plugin_setup_spec.rb` هر دو نتیجهٔ allow/block را بررسی می‌کنند. بنابراین شکاف مطرح‌شده در توضیح قدیمی، شکاف مستندات بود نه نقص اثبات‌شدهٔ کد؛ `NOTIFICATION_COVERAGE.md` اصلاح شد و کد اجرایی تغییر نکرد. اجرای مستقل آزمون‌ها در این نوبت انجام نشده است.
+
+
+## زیرمرحلهٔ پایداری job — payload نامعتبر در صف — ۲۱ اکتبر ۲۰۲۶
+
+### یافته
+
+در `Jobs::SendBaleNotifications#execute`، مقدار `args[:payload]` پیش از هر اعتبارسنجی به‌صورت hash فرض می‌شد. اگر job قدیمی/دستی یا دادهٔ خراب صف مقدار `nil` یا نوعی غیر از Hash داشته باشد، دسترسی به `payload[:notification_type]` exception ایجاد می‌کند و job ممکن است بی‌دلیل وارد چرخهٔ retry شود؛ درحالی‌که payload نامعتبر با retry اصلاح نمی‌شود.
+
+### تغییر محدود پیشنهادی/پیاده‌سازی‌شده روی شاخه
+
+- [x] پیش از خواندن نوع اعلان، بررسی می‌شود که payload یک Hash باشد؛ payload غیر Hash بدون ارسال پیام و بدون ورود به مسیر delivery نادیده گرفته می‌شود.
+- [x] آزمون رگرسیون برای payloadهای `nil`، آرایه و رشته افزوده شد و بررسی می‌کند که خطایی رخ ندهد و هیچ مرحلهٔ delivery فراخوانی نشود.
+- [x] بررسی CI نشان داد smoke tests و backend tests موفق‌اند، اما linting هنوز به‌علت `Metrics/MethodLength` در `execute` شکست می‌خورد (`11/10`). علت، طول متد پس از افزودن guard بود؛ صرف انتقال guard به متد کمکی کافی نبود.
+- [x] commit `f133cbf4aab4a5477ff564c2c73a3004c0722c0b` کوتاه‌کردن `execute` را انجام داد، اما CI همان commit شکست دیگری را نشان داد: `Metrics/ClassLength` در همان کلاس، 101/100 خط.
+- [x] در commit `dcd3d08951e76412b65bbc1c97341d20fe6790df` متد کمکیِ صرفاً اعتبارسنجی حذف و guard مستقیم `payload.is_a?(Hash)` داخل `execute` قرار گرفت؛ این کار از افزایش تعداد خطوط کلاس جلوگیری می‌کند و guard همچنان پیش از خواندن فیلدهای payload اجرا می‌شود.
+- [x] CI نهایی شاخه پس از تثبیت اصلاحات موفق شد: [Discourse Plugin CI run 39553526919](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39553526919) روی HEAD `e258a979c81951dd3658d72e2030c537c88c478c`؛ `check_for_tests`، `linting` و `backend_tests` همگی موفق شدند. [Plugin smoke tests run 39553526637](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39553526637) نیز موفق شد. این تأیید فقط مربوط به شاخهٔ PR #14 است؛ PR ادغام نشده و production تغییر نکرده است.
+- [ ] پس از مرور diff و موفقیت linting و آزمون‌های commit نهایی، تصمیم دربارهٔ ادغام PR گرفته شود. هیچ استقرار production در این مرحله انجام نشده است.
+
+### دامنه و محدودیت
+
+این guard فقط شکل کلی payload را بررسی می‌کند و قرارداد payload معتبر را تغییر نمی‌دهد. payloadهای Hash با کلیدهای ناقص همچنان از allowlist نوع اعلان عبور نمی‌کنند یا در بررسی‌های موجودِ user/post متوقف می‌شوند؛ این تغییر تضمین نمی‌کند هر دادهٔ دلخواهی در صف معتبر است. تغییر فقط در شاخهٔ `fix/ignore-malformed-notification-jobs` انجام شده و روی `main` یا سرور تولیدی اعمال نشده است.
+
+
+## ممیزی دفاعی payload وب‌هوک بله — ۲۱ اکتبر ۲۰۲۶
+
+**دامنه:** ورودی‌های بیرونی endpoint وب‌هوک `POST /bale/hook?key=…`، به‌ویژه `message` و `callback_query`. این مرحله محدود به جلوگیری از exception ناشی از ساختار ناقص/نامعتبر است و جایگزین بررسی احراز هویت، rate limiting یا کنترل مجوزهای کاربر نیست.
+
+### یافته‌ها
+
+- پیش‌تر کنترلر helperهایی برای تشخیص Hash/`ActionController::Parameters` و اعتبارسنجی ساختار message/chat داشت؛ handler پاسخ callback نامعتبر را نیز مدیریت می‌کرد.
+- بررسی دقیق‌تر نشان داد که `present?` به‌تنهایی نوع شناسه را محدود نمی‌کند؛ مقدار آرایه یا Hash برای شناسهٔ چت/پیام/callback می‌توانست از guard عبور کند و به مسیرهای بعدی برسد.
+- ورودی‌های تو‌در‌توی ناقص، مانند نبودن `message.chat`، نبودن `chat.id`، نبودن `callback_query.message` یا `message_id`، و `data` با نوع یا قالب نادرست باید پیش از هر عملیات جانبی متوقف شوند.
+
+### تغییرات روی شاخهٔ کاری
+
+- [x] در `BaleController` helper به نام `valid_identifier?` اضافه شد؛ شناسه باید رشته یا عدد صحیح غیرخالی باشد.
+- [x] اعتبارسنجی `chat.id`، `callback_query.id` و `callback_query.message.message_id` از این helper استفاده می‌کند. شناسه‌های آرایه‌ای/Hash رد می‌شوند؛ شناسه‌های معتبر رشته‌ای/عددی همچنان پذیرفته می‌شوند.
+- [x] آزمون‌های request برای payloadهای message از نوع scalar/آرایه، chat مفقود یا بدساخت، chat غیرخصوصی و شناسهٔ غیر scalar افزوده شد. آزمون‌ها انتظار دارند پاسخ JSON موفق کنترل‌شده برگردد و `send_message` اجرا نشود.
+- [x] آزمون‌های request برای callbackهای scalar/آرایه، message/chat مفقود یا بدساخت، شناسه‌های message/callback مفقود یا غیر scalar و `data` غیررشته‌ای افزوده شد. آزمون‌ها انتظار دارند پاسخ کنترل‌شده برگردد و صفحه‌کلید یا عمل لایک/آنلایک اجرا نشود.
+- [x] رفتارهای معتبر موجود—لایک، آنلایک، پاسخ از بله، callback حساب متصل و callback پست حذف‌شده—در همان فایل آزمون باقی مانده‌اند تا رگرسیون رفتار معتبر بررسی شود.
+- [x] README برای توضیح دامنهٔ دفاعی، رفتار payload نامعتبر و مرز عدم استقرار به‌روزرسانی شد.
+
+### شواهد و وضعیت اعتبارسنجی
+
+- تغییر اعتبارسنجی شناسه‌ها: commit `e7ddc827d71bccc6025875d37479d3aa4cb36d58`.
+- آزمون‌های request اولیه: commit `abcdf9908c805f8a43927f4b37788f9973b2038a`؛ آزمون شناسهٔ callback غیر scalar و انتظار عدم فراخوانی API برای آن در commit `be5056eabe80cf44412219efc536a7240e8d37bf` و `2dac7c20d24e9a5aa0ee7a1b59c605486152f38c` تکمیل شد.
+- اصلاح تکمیلی در `acknowledge_invalid_callback`: شناسهٔ نامعتبر دیگر به API بله ارسال نمی‌شود؛ commit `91fed63100f1d3fb77f615d030dc8eee6a11ec58`.
+- README: commit `2a060f27a1ddf05fc8a27274590a6bb8969dae22`؛ این ROADMAP نیز پیش از تأیید نهایی CI به‌روزرسانی می‌شود.
+- **وضعیت CI: PASS روی HEAD `e258a979c81951dd3658d72e2030c537c88c478c`**؛ لینک‌های CI و smoke در بند بالا ثبت شده‌اند. معیار خروج آزمون خودکار برقرار است، اما تصمیم merge و استقرار production جداگانه باقی می‌ماند.
+- هیچ آزمون محلی در checkout اجرایی Discourse از این گفتگو اجرا نشده است؛ نتیجهٔ runtime را فقط از CI ثبت می‌کنیم.
+- تغییرات فقط روی شاخهٔ `fix/ignore-malformed-notification-jobs` و PR #14 انجام شده‌اند؛ `main) ادغام نشده و سرور production دست‌نخورده است.
+
+### معیار خروج
+
+1. RuboCop و backend tests روی HEAD نهایی موفق باشند؛ smoke tests نیز موفق باشند.
+2. آزمون‌های malformed payload بدون exception و بدون side effect خطرناک بگذرند.
+3. آزمون‌های مثبت موجود برای message reply و like/unlike همچنان موفق باشند.
+4. PR پس از مرور diff باز بماند تا تصمیم جداگانه دربارهٔ ادغام گرفته شود؛ CI موفق به‌تنهایی مجوز استقرار production نیست.
+
+### گام بعدی پس از موفقیت CI
+
+اگر CI سبز شد، مرحلهٔ بعدی ممیزی مستقل رفتار پاسخ‌های API بله و مرز retry است: کدهای HTTP ناموفق، JSON نامعتبر، timeout و خطاهای شبکه باید در برابر سیاست retry موجود بررسی شوند. این بررسی نباید با استقرار هم‌زمان شود.

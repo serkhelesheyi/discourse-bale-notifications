@@ -20,7 +20,7 @@ module DiscourseBaleNotifications
     end
 
     def acknowledge_invalid_callback(payload)
-      callback_id = payload['id'] if webhook_object?(payload)
+      callback_id = payload['id'] if webhook_object?(payload) && valid_identifier?(payload['id'])
       if callback_id.present?
         DiscourseBaleNotifications::BaleNotifier.answer_callback(callback_id, unavailable_action_text)
       end

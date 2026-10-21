@@ -18,6 +18,9 @@
 
 سیاست retry ارسال اعلان بله برای پاسخ‌های صریح و موقت API محدود شده است: فقط پاسخ ناموفق با `error_code` از نوع عدد صحیح و برابر `429` یا در بازهٔ `500–599` از مسیر job استثنای retryable ایجاد می‌کند و Sidekiq حداکثر پنج بار retry می‌کند. کد خطای مفقود، رشته‌ای یا نامعتبر باعث استثنا و retry از این سیاست نمی‌شود. خطاهای دائمی و خطاهایی که نتیجهٔ ارسال در آن‌ها نامعلوم است (از جمله timeout/پاسخ نامعتبر) عمداً از این مسیر retry نمی‌شوند تا احتمال ارسال تکراری افزایش نیابد. آزمون‌های رگرسیون این دسته‌ها را پوشش می‌دهند. CI کد روی HEAD `97f495b4f32d2d74025c92604775fcb04cc8828b` موفق شد ([Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39253636213)، [smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39253635917)). پس از ادغام PR شمارهٔ [#7](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/7)، CI روی merge commit `b91835d8368223408dd0c8ecbc754478712553b4` نیز اجرا شد ([Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39256838373)، [smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39256837919)). این شواهد صحت آزمون‌های خودکار را نشان می‌دهند، نه تضمین تحویل دقیقاً یک‌بار یا موفقیت ارسال زنده. PR ادغام شده و `main` شامل تغییرات است؛ سرور تولیدی هنوز تغییر نکرده است. جزئیات و محدودیت‌ها در [ROADMAP.md](ROADMAP.md) آمده است.
 
+
+**بهبود پایداری صف — شاخهٔ در دست بررسی:** job ارسال اعلان اکنون پیش از دسترسی به فیلدهای payload بررسی می‌کند که payload از نوع Hash باشد؛ payloadهای `nil`، آرایه یا رشته به‌جای ایجاد exception و retry بی‌فایده، بدون ارسال نادیده گرفته می‌شوند. آزمون رگرسیون افزوده شده است؛ تا پیش از موفقیت CI روی شاخه و ادغام، این تغییر را بخشی از نسخهٔ منتشرشدهٔ `main` یا نصب production تلقی نکنید.
+
 ## حفاظت از لاگ وب‌هوک
 
 **به‌روزرسانی ۱۹ اکتبر ۲۰۲۶:** اصلاحیهٔ [PR #5](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/5) ادغام شده است (merge commit: `37bbda8faaa48f38bc4747582a8e8cb9ade36a79`). CI کامل روی HEAD اصلاحیه موفق شد: linting، کشف آزمون‌ها و آزمون‌های backend؛ smoke tests نیز روی همان HEAD موفق شدند. آزمون‌های رگرسیون مسیر فیلترشده، پارامترهای فیلترشده و ساخت URL جدید webhook را بررسی می‌کنند.
@@ -657,6 +660,11 @@ PR [#13](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/13) 
 پیش از پذیرش نهایی، بررسی read-only تنظیمات و access log لایه‌های بالادستی لازم است: آیا query string ثبت می‌شود، چه سطحی از دسترسی/نگهداری دارد، و آیا امکان حذف یا ماسک‌کردن key وجود دارد؟ هرگز مقدار واقعی کلید یا URL کامل webhook را در گزارش، issue، screenshot یا گفتگو منتشر نکنید. مستندات بررسی‌شدهٔ Bale پشتیبانی رسمی از secret header/token را در این مرحله تأیید نکرده‌اند؛ پس نباید بدون منبع رسمی یا آزمون staging فرض کرد که چنین قراردادی پشتیبانی می‌شود. وضعیت دقیق و گام‌های بعد در ROADMAP.md و STAGING_ACCEPTANCE.md ثبت شده است.
 
 
+### پایداری jobهای اعلان — payload نامعتبر
+
+در شاخهٔ کاری PR #14، job ارسال اعلان پیش از دسترسی به فیلدهای payload بررسی می‌کند که مقدار یک Hash باشد؛ دادهٔ صف با نوع نامعتبر بدون تلاش برای ارسال نادیده گرفته می‌شود. این guard برای payloadهای `nil`، آرایه و رشته آزمون رگرسیون دارد. CI روی HEAD شاخه `e258a979c81951dd3658d72e2030c537c88c478c` موفق شده است: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39553526919) و [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39553526637). این اصلاح هنوز فقط در PR #14 است؛ ادغام یا استقرار production انجام نشده است.
+
+
 ### Latest live acceptance report — 20 October 2026
 
 The user reports successful live tests for private-message notifications, ordinary replies, mention notifications, and chained replies sent through Bale. The detailed scenarios, scope limits, and next targeted edge case are recorded in LIVE_ACCEPTANCE_REPORT.md. These are user-reported results; the exact installed plugin SHA and Discourse version have not been independently verified. Replying to the older mention notification remains a targeted edge case, while deleted/stale-post callbacks, cross-account isolation, remaining notification types, and backup restore/rollback are still pending.
@@ -665,3 +673,12 @@ The user reports successful live tests for private-message notifications, ordina
 ### Acceptance status update — 20 October 2026
 
 The user confirms that the targeted reply-to-an-old-mention-notification test and cross-account isolation test were both previously run and passed. Both GitHub workflows also passed on current HEAD `afd1711847a24d13761e48339f0db6cd032da581` (Discourse Plugin run `39488076484`; Plugin smoke tests run `39488076035`). This supersedes the earlier statement that those two user-side tests were pending. Deleted/stale-post callback behavior, an actual backup restore/rollback exercise, and recording the exact installed plugin SHA and Discourse version remain separate operational checks unless already completed. No production changes were made. A17 remains an accepted risk, not a technical pass.
+
+
+### ممیزی دفاعی payload وب‌هوک بله — ۲۱ اکتبر ۲۰۲۶
+
+در شاخهٔ ممیزی، کنترلر پیش از پردازش ساختارهای تو‌در‌تو، نوع کلی `message`، `callback_query`، `message.chat` و `callback_query.message.chat` را بررسی می‌کند. این مرحله اعتبارسنجی شناسه‌ها را نیز محدودتر می‌کند: شناسهٔ چت، شناسهٔ callback و شناسهٔ پیام باید مقدار scalar غیرخالی از نوع رشته یا عدد صحیح باشند؛ آرایه‌ها و اشیا به‌عنوان شناسه پذیرفته نمی‌شوند.
+
+آزمون‌های request ورودی‌های ناقص یا بدساخت شامل payloadهای scalar/آرایه‌ای، chat مفقود یا با نوع نادرست، شناسه‌های مفقود یا غیر scalar، message داخلی مفقود/نامعتبر و دادهٔ اقدام callback با نوع نادرست را پوشش می‌دهند. ورودی نامعتبر بدون اجرای لایک/آنلایک یا ارسال پیام پردازش نمی‌شود؛ callback دارای شناسه در صورت امکان با پیام «اقدام در دسترس نیست» پاسخ داده می‌شود و وب‌هوک پاسخ موفق عمومی برمی‌گرداند تا برای payload خراب خطای داخلی ایجاد نشود.
+
+این اصلاح فقط در شاخهٔ `fix/ignore-malformed-notification-jobs` است. تا موفقیت CI روی commit نهایی تأیید نشود، آن را تأییدشده از نظر آزمون یا آمادهٔ ادغام تلقی نکنید. هیچ تغییری روی `main` یا سرور تولید اعمال نشده است.
