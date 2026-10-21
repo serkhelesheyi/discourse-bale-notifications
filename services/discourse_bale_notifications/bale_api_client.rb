@@ -95,6 +95,7 @@ module DiscourseBaleNotifications
       http, request, chat_id = build_request(method_name, message)
       response = perform_request(http, request, method_name, chat_id)
       return false unless response
+      return response if response.is_a?(Hash) && response['_bale_transport_failure'] == true
 
       response_data = parse_response(response, method_name, chat_id)
       return handle_invalid_json(response, method_name) if response_data == :invalid_json
