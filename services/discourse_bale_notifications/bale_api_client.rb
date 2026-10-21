@@ -71,6 +71,7 @@ module DiscourseBaleNotifications
         'after Bale reported it as blocked/unreachable'
       )
     end
+
     def self.valid_success_response?(method_name, response_data, response)
       return true unless response_data['ok'] == true
       return false unless response.code.to_i.between?(200, 299)
@@ -150,7 +151,10 @@ module DiscourseBaleNotifications
 
     def self.parse_response(response, method_name, chat_id)
       response_data = JSON.parse(response.body)
-      return response_data if response_data.is_a?(Hash) && BaleApiResponseDiagnostics.valid_success_response?(method_name, response_data, response)
+      if response_data.is_a?(Hash) &&
+          BaleApiResponseDiagnostics.valid_success_response?(method_name, response_data, response)
+        return response_data
+      end
 
       BaleApiResponseDiagnostics.log_invalid_response_structure(response, method_name, chat_id)
       :invalid_json
