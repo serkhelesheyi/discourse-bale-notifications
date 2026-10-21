@@ -319,3 +319,19 @@ This section supersedes the earlier historical status notes above where they con
 - The empty untracked core file `e` remains untouched because its origin is unknown.
 
 No production command, configuration change, secret rotation, rebuild, or deployment was performed while reconciling this document.
+
+## کنترل‌های خودکار retry webhook — ۲۱ اکتبر ۲۰۲۶
+
+این فهرست، پوشش خودکار روی شاخهٔ `fix/retry-webhook-operations` را مشخص می‌کند؛ هیچ‌یک جای آزمون زندهٔ نسخهٔ نصب‌شده را نمی‌گیرد.
+
+- [x] موفقیت ثبت و حذف با پاسخ `ok: true`.
+- [x] retry برای `error_code` عددی 429 و 500–599.
+- [x] retry برای HTTP status عددی 429 و 500–599، حتی وقتی کد API پاسخ دائمی به نظر می‌رسد.
+- [x] retry برای شکست شناخته‌شدهٔ لایهٔ انتقال.
+- [x] عدم retry برای خطاهای دائمی، کدهای رشته‌ای/نامعتبر، پاسخ موفق و پاسخ مبهم فاقد metadata.
+- [x] سقف retry صریح برابر ۵ تلاش مجدد پس از تلاش اولیه.
+- [x] بررسی اینکه پیام‌های جدید لاگ شامل token، secret، URL کامل webhook یا متن خام پاسخ API نیستند.
+- [ ] lint، backend tests و smoke روی HEAD نهایی PR موفق شوند.
+- [ ] پس از هر ادغام/استقرار آتی، نسخهٔ نصب‌شده و رفتار واقعی webhook جداگانه تأیید شود؛ این شاخه به‌تنهایی تأیید زنده نیست.
+
+**وضعیت عملیاتی:** در این مرحله هیچ فرمانی روی سرور اجرا نشده و هیچ تنظیم، secret، webhook، داده یا کانتینری تغییر نکرده است.
