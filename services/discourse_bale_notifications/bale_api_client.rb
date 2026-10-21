@@ -151,7 +151,7 @@ module DiscourseBaleNotifications
     def self.parse_response(response, method_name, chat_id)
       response_data = JSON.parse(response.body)
       if response_data.is_a?(Hash) &&
-          BaleApiResponseDiagnostics.valid_success_response?(method_name, response_data, response)
+         BaleApiResponseDiagnostics.valid_success_response?(method_name, response_data, response)
         return response_data
       end
 
