@@ -2112,3 +2112,23 @@ README contains a read-only preflight command block for collecting container sta
 - [ ] فقط پس از پذیرش staging، تصمیم جداگانه دربارهٔ استقرار production؛ هیچ استقرار خودکاری از این mergeها نتیجه نمی‌شود.
 
 این مرحله در GitHub کامل شده است؛ پذیرش staging و production هنوز انجام‌شده تلقی نمی‌شوند. هیچ تنظیم، secret، webhook زنده، کانتینر یا دادهٔ production تغییر نکرده است.
+
+
+## گام بعد پس از ادغام PR #19 — پذیرش retry وب‌هوک و callback در staging
+
+### وضعیت مخزن در ۲۲ اکتبر ۲۰۲۶
+
+- [x] PR #17، سیاست retry محدود `setWebhook/deleteWebhook`، ادغام شده است: `7cc6c6ad0f56527a05e7fa99ab9e4693fe3de13a`.
+- [x] PR #18، ممیزی callback و آزمون‌های رگرسیون، ادغام شده است: `cee53a2b8c7f3cff7cee4dd0b41e359be8fff094`.
+- [x] PR #19، جمع‌بندی نقشه‌راه و معیارهای پذیرش، ادغام شده است: `8953cd20d326a1110d24e82ed5c9ecf0f2116ce0`.
+- [x] CI و Smoke روی HEAD نهایی PR #19 موفق شدند: [CI run 39674807365](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39674807365)، [Smoke run 39674806921](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39674806921).
+- [ ] CI و Smoke روی HEAD پس از merge در `main` باید مستقل تأیید شوند؛ سبز بودن شاخهٔ PR به‌تنهایی نتیجهٔ post-merge را ثابت نمی‌کند.
+- [ ] پذیرش واقعی staging برای موارد A18–A21 در `STAGING_ACCEPTANCE.md`: سیاست retry ثبت/حذف webhook، رفتار callback و ویرایش keyboard، redaction لاگ‌ها و rollback/سلامت سرویس.
+- [ ] اگر staging یا fault injection امن در دسترس نیست، مورد مربوط را `Blocked` ثبت کنید؛ هرگز برای آزمایش خطا، webhook یا credentialهای production را دست‌کاری نکنید.
+- [ ] پس از تکمیل آزمون‌ها، شواهد redacted و SHA واقعی نصب‌شده ثبت شود و تصمیم انتشار production در یک گیت جداگانه گرفته شود.
+
+### معیار خروج
+
+این مرحله فقط وقتی از نظر پذیرش عملیاتی بسته می‌شود که هر آزمون قابل‌اعمال نتیجه و شواهد واقعی داشته باشد، هیچ شکست بحرانی حل‌نشده‌ای باقی نماند، redaction بازبینی شود و مسیر disable/rollback در محیط غیرتولیدی آزموده شود. CI سبز به‌تنهایی کافی نیست.
+
+**مرز عملیاتی:** این تغییر صرفاً مستندات مخزن است. هیچ staging یا production endpoint از این ابزارها در دسترس/اجرا نبوده؛ بنابراین هیچ آزمون زنده، استقرار، rebuild، تغییر تنظیمات یا secret ادعا نمی‌شود.
