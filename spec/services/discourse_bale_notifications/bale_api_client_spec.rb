@@ -151,6 +151,37 @@ RSpec.describe DiscourseBaleNotifications::BaleApiClient do
       )
     end
 
+    [
+      {
+        method: 'answerCallbackQuery',
+        payload: { callback_query_id: 'callback-id', text: 'callback response' },
+        chat_id: nil
+      },
+      {
+        method: 'editMessageReplyMarkup',
+        payload: { chat_id: chat_id, message_id: 7, reply_markup: {} },
+        chat_id: chat_id
+      }
+    ].each do |scenario|
+      it "does not expose retry metadata for a rejected #{scenario[:method]} call" do
+        remote_description = "simulated callback failure #{access_token} #{private_message}"
+        allow(response).to receive(:body).and_return(
+          { ok: false, error_code: 500, description: remote_description }.to_json
+        )
+        expect(Rails.logger).to receive(:error) do |message|
+          expect(message).to include("method=#{scenario[:method]}", 'http_status=200', 'error_code=500')
+          expect(message).not_to include(remote_description, access_token, private_message)
+        end
+        expect(DiscourseBaleNotifications::BaleActivityLog).to receive(:record_activity)
+          .with(scenario[:method], scenario[:chat_id], false, 500, 'temporary Bale API failure')
+
+        result = described_class.call(scenario[:method], scenario[:payload])
+
+        # Callback API failures remain best-effort; no retry classification is returned.
+        expect(result).to be(false)
+      end
+    end
+
     it 'preserves HTTP status for webhook API rejections without logging the response body' do
       allow(response).to receive(:code).and_return('503')
       allow(response).to receive(:body).and_return(
