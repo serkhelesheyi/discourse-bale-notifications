@@ -662,7 +662,7 @@ PR [#13](https://github.com/serkhelesheyi/discourse-bale-notifications/pull/13) 
 
 ### پایداری jobهای اعلان — payload نامعتبر
 
-در شاخهٔ کاری PR #14، job ارسال اعلان پیش از دسترسی به فیلدهای payload بررسی می‌کند که مقدار یک Hash باشد؛ دادهٔ صف با نوع نامعتبر بدون تلاش برای ارسال نادیده گرفته می‌شود. این guard برای payloadهای `nil`، آرایه و رشته آزمون رگرسیون دارد. نتیجهٔ linting و CI commit نهایی باید از Actions تأیید شود؛ تا آن زمان این اصلاح ادغام‌شده یا مستقر تلقی نمی‌شود.
+در شاخهٔ کاری PR #14، job ارسال اعلان پیش از دسترسی به فیلدهای payload بررسی می‌کند که مقدار یک Hash باشد؛ دادهٔ صف با نوع نامعتبر بدون تلاش برای ارسال نادیده گرفته می‌شود. این guard برای payloadهای `nil`، آرایه و رشته آزمون رگرسیون دارد. CI روی HEAD شاخه `e258a979c81951dd3658d72e2030c537c88c478c` موفق شده است: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39553526919) و [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39553526637). این اصلاح هنوز فقط در PR #14 است؛ ادغام یا استقرار production انجام نشده است.
 
 
 ### Latest live acceptance report — 20 October 2026
