@@ -343,3 +343,15 @@ No production command, configuration change, secret rotation, rebuild, or deploy
 - **PR مربوط به retry webhook:** بازپایه‌گذاری‌شده روی `main` پس از PR #15؛ اجرای کامل CI روی نسخهٔ جدید هنوز لازم است.
 - این وضعیت خودکار به معنای آزمون staging یا تأیید webhook زنده نیست.
 - هیچ تغییر production، secret، setting، webhook، rebuild یا deployment در این مرحله انجام نشده است.
+
+
+## وضعیت پس از ادغام PR #17 و ممیزی callback API — ۲۲ اکتبر ۲۰۲۶
+
+- **PR #17: MERGED** — commit `7cc6c6ad0f56527a05e7fa99ab9e4693fe3de13a`.
+- **GitHub CI: PASS** روی HEAD نهایی پیش از ادغام، commit `93488de080b4b6609d57702979780b13dc35ee6c`: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39672731844).
+- **Smoke tests: PASS** روی همان HEAD: [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39672731155).
+- سیاست retry ثبت/حذف webhook اکنون در `main` است؛ سقف ۵ تلاش مجدد پس از تلاش اولیه و فقط برای خطاهای گذرا/انتقالی که صریحاً قابل طبقه‌بندی هستند.
+- ممیزی callbackها تصمیم گرفت فعلاً برای `answerCallbackQuery` و `editMessageReplyMarkup` retry خودکار اضافه نشود. پاسخ callback زمان‌حساس است؛ ویرایش صفحه‌کلید best-effort باقی می‌ماند تا زمانی که طراحی job مستقل و سیاست شکست آزمون‌پذیر تعریف شود.
+- آزمون‌های رگرسیون جدید برای پاسخ ناموفق این دو API اضافه شده‌اند؛ آن‌ها باید در CI شاخهٔ جاری تأیید شوند. این تست‌ها جای آزمون دستی یا staging را نمی‌گیرند.
+- **Staging acceptance:** اجرای واقعی در محیط staging برای سیاست retry webhook یا callback APIها از این merge استنباط نمی‌شود؛ موارد مربوط را تا آزمون مستقل staging باز نگه دارید.
+- **Production:** هیچ rebuild، deploy، تغییر تنظیمات/secretها، تغییر webhook زنده یا فرمان سروری انجام نشده است. این یادداشت به‌تنهایی مجوز به‌روزرسانی production نیست.

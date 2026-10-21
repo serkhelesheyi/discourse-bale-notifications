@@ -2060,3 +2060,30 @@ README contains a read-only preflight command block for collecting container sta
 - [ ] سپس ممیزی callback APIها (`answerCallbackQuery` و `editMessageReplyMarkup`) با تصمیم مستقل دربارهٔ retry و آزمون‌های هدفمند.
 
 این مرحله هیچ تغییری در سرور تولید، تنظیمات، secretها یا webhook واقعی انجام نمی‌دهد.
+
+
+## وضعیت پس از ادغام retry وب‌هوک و ممیزی callback API — ۲۲ اکتبر ۲۰۲۶
+
+### نتیجهٔ PR #17
+
+- [x] PR #17 با عنوان `Add bounded retries for webhook setup and removal` پس از موفقیت CI و Smoke ادغام شد.
+- [x] commit ادغام: `7cc6c6ad0f56527a05e7fa99ab9e4693fe3de13a`.
+- [x] اجرای CI روی HEAD نهایی پیش از ادغام موفق بود: [Discourse Plugin CI](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39672731844).
+- [x] Smoke روی همان HEAD موفق بود: [Plugin smoke tests](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39672731155).
+- [x] سیاست retry برای `setWebhook` و `deleteWebhook` اکنون با سقف ۵ تلاش مجدد، و تنها برای خطاهای گذرای مشخص یا شکست شناخته‌شدهٔ انتقال، در `main` قرار دارد.
+- [x] اصلاح آزمون پاسخ خطای `sendMessage/sendPhoto` نیز پیش از اجرای موفق CI در commit نهایی شاخه گنجانده شد.
+
+### ممیزی مستقل `answerCallbackQuery` و `editMessageReplyMarkup`
+
+**تصمیم فعلی: عدم افزودن retry خودکار در این مرحله.**
+
+- `answerCallbackQuery` پاسخ تعاملی و زمان‌حساس به callback کاربر است؛ retry دیرهنگام ممکن است پس از پایان اعتبار callback انجام شود و لزوماً تجربهٔ کاربر را اصلاح نکند.
+- `editMessageReplyMarkup` یک به‌روزرسانی رابط کاربری است که در مسیر رسیدگی هم‌زمان webhook اجرا می‌شود. افزودن retry زمان‌دار در همین درخواست، بدون job مستقل و قرارداد شکست مشخص، می‌تواند تأخیر و پیچیدگی تحویل webhook را افزایش دهد.
+- کلاینت فعلی برای خطای API در این دو متد مقدار `false` برمی‌گرداند؛ metadata داخلی retry مربوط به اعلان‌ها یا عملیات webhook را به آن‌ها تعمیم نمی‌دهد. این دو متد نیز در سیاست retry جدید `SetupBaleWebhook` قرار ندارند.
+- این تصمیم به معنی تضمین موفقیت callback یا ویرایش صفحه‌کلید نیست؛ خطای API در این دو عملیات همچنان می‌تواند باعث از دست رفتن پاسخ/به‌روزرسانی شود. اگر شواهد عملیاتی بعداً نیاز به retry را نشان دهد، راهکار مناسب، طراحی job مستقل با سیاست محدود و آزمون idempotency/انقضای callback است، نه تعمیم خام سیاست فعلی.
+- [x] آزمون رگرسیون برای پاسخ ناموفق هر دو API اضافه شد تا خروجی best-effort و عدم برگرداندن metadata retry را تثبیت کند و متن حساس پاسخ در لاگ/فعالیت ذخیره‌شده افشا نشود.
+- [ ] CI شامل RuboCop، backend tests و smoke برای PR مستندات/آزمون این ممیزی باید موفق شود.
+
+### مرز عملیاتی
+
+این ادغام و ممیزی فقط در GitHub انجام شده‌اند. هیچ استقرار، rebuild، اجرای فرمان روی production، تغییر setting/secret، یا تغییر webhook زنده انجام نشده است. موفقیت CI تأیید رفتار نسخهٔ نصب‌شدهٔ production نیست.
