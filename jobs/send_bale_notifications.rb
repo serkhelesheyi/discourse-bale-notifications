@@ -12,8 +12,8 @@ module Jobs
     def execute(args)
       return unless SiteSetting.bale_notifications_enabled?
 
-      payload = hash_payload(args[:payload])
-      return unless payload
+      payload = args[:payload]
+      return unless payload.is_a?(Hash)
 
       type_name = Notification.types[payload[:notification_type]].to_s
       return unless site_notification_enabled?(type_name)
@@ -31,10 +31,6 @@ module Jobs
       store_message_id(response, chat_id, post)
     end
 
-    # Ignore malformed legacy/manual queue data instead of retrying it repeatedly.
-    def hash_payload(payload)
-      payload if payload.is_a?(Hash)
-    end
 
     def site_notification_enabled?(type_name)
       SiteSetting.bale_enabled_notification_types.split('|').include?(type_name)
