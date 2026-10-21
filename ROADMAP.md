@@ -1934,7 +1934,9 @@ README contains a read-only preflight command block for collecting container sta
 - [x] پیش از خواندن نوع اعلان، بررسی می‌شود که payload یک Hash باشد؛ payload غیر Hash بدون ارسال پیام و بدون ورود به مسیر delivery نادیده گرفته می‌شود.
 - [x] آزمون رگرسیون برای payloadهای `nil`، آرایه و رشته افزوده شد و بررسی می‌کند که خطایی رخ ندهد و هیچ مرحلهٔ delivery فراخوانی نشود.
 - [x] بررسی CI نشان داد smoke tests و backend tests موفق‌اند، اما linting هنوز به‌علت `Metrics/MethodLength` در `execute` شکست می‌خورد (`11/10`). علت، طول متد پس از افزودن guard بود؛ صرف انتقال guard به متد کمکی کافی نبود.
-- [x] در commit `f133cbf4aab4a5477ff564c2c73a3004c0722c0b` مسیر ادامهٔ delivery به متد `deliver_for_context` منتقل شد تا `execute` زیر سقف RuboCop بماند؛ smoke و CI باید برای همین commit دوباره بررسی شوند.
+- [x] commit `f133cbf4aab4a5477ff564c2c73a3004c0722c0b` کوتاه‌کردن `execute` را انجام داد، اما CI همان commit شکست دیگری را نشان داد: `Metrics/ClassLength` در همان کلاس، 101/100 خط.
+- [x] در commit `dcd3d08951e76412b65bbc1c97341d20fe6790df` متد کمکیِ صرفاً اعتبارسنجی حذف و guard مستقیم `payload.is_a?(Hash)` داخل `execute` قرار گرفت؛ این کار از افزایش تعداد خطوط کلاس جلوگیری می‌کند و guard همچنان پیش از خواندن فیلدهای payload اجرا می‌شود.
+- [ ] نتیجهٔ linting و آزمون‌های commit `dcd3d08951e76412b65bbc1c97341d20fe6790df` هنوز در انتظار اجرای CI است.
 - [ ] پس از مرور diff و موفقیت linting و آزمون‌های commit نهایی، تصمیم دربارهٔ ادغام PR گرفته شود. هیچ استقرار production در این مرحله انجام نشده است.
 
 ### دامنه و محدودیت
