@@ -2146,3 +2146,15 @@ README contains a read-only preflight command block for collecting container sta
 - [ ] تصمیم انتشار production فقط پس از گیت مستقل پذیرش staging گرفته شود.
 
 هیچ دستور سروری، deploy، rebuild، تغییر setting/secret یا عملیات webhook زنده در این کار انجام نشده است.
+
+
+## راستی‌آزمایی پس از ادغام PR #21 — ۲۲ اکتبر ۲۰۲۶
+
+- [x] PR #21 با عنوان `Record verified GitHub Actions results and staging gate` با روش Squash ادغام شد.
+- [x] commit نهایی `main`: `22dff3050b920b1824e6bd8cccf14fca39a58171`.
+- [x] CI پس از ادغام روی همین SHA موفق شد: [Discourse Plugin CI run 39680609622](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39680609622).
+- [x] Smoke tests پس از ادغام روی همین SHA موفق شد: [Plugin smoke tests run 39680609105](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39680609105).
+- [ ] پذیرش واقعی staging، به‌ویژه A18–A21، همچنان باز است و باید با SHA نصب‌شده، نسخهٔ Discourse و شواهد پالایش‌شده ثبت شود.
+- [ ] تصمیم انتشار production مستقل است و از موفقیت CI یا ادغام PR نتیجه نمی‌شود.
+
+این راستی‌آزمایی فقط GitHub Actions را پوشش می‌دهد. هیچ فرمان سروری، استقرار، rebuild، تغییر تنظیمات/secret یا عملیات webhook زنده در این مرحله انجام نشده است.
