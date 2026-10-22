@@ -429,3 +429,15 @@ The user clarified that “the tests passed” referred to GitHub Actions workfl
 - A18–A21 remain pending real staging execution. GitHub Actions success does not establish live webhook, callback, redaction, or rollback behavior.
 
 No server-side commands, deployment, rebuild, secret/settings changes, or live webhook operations were performed.
+
+
+## Post-merge verification for PR #21 — 22 October 2026
+
+- PR #21, **Record verified GitHub Actions results and staging gate**, was squash-merged.
+- Verified `main` commit: `22dff3050b920b1824e6bd8cccf14fca39a58171`.
+- [x] Post-merge Discourse Plugin CI completed successfully on that exact SHA: [run 39680609622](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39680609622).
+- [x] Post-merge plugin smoke tests completed successfully on that exact SHA: [run 39680609105](https://github.com/serkhelesheyi/discourse-bale-notifications/actions/runs/39680609105).
+- [ ] Real staging acceptance, including A18–A21, remains pending. Record the actual installed plugin SHA, Discourse version, outcomes, and redacted evidence.
+- [ ] Production release remains a separate decision; neither a green CI run nor a merged PR authorizes deployment.
+
+These results establish GitHub Actions status only. No server command, deployment, rebuild, settings/secret change, or live webhook operation was performed for this verification.
