@@ -2158,3 +2158,25 @@ README contains a read-only preflight command block for collecting container sta
 - [ ] تصمیم انتشار production مستقل است و از موفقیت CI یا ادغام PR نتیجه نمی‌شود.
 
 این راستی‌آزمایی فقط GitHub Actions را پوشش می‌دهد. هیچ فرمان سروری، استقرار، rebuild، تغییر تنظیمات/secret یا عملیات webhook زنده در این مرحله انجام نشده است.
+
+
+## User decision: defer four operational checks and overall roadmap — 25 October 2026
+
+The user reports that the live operational checks they did perform appear successful. This is a user-reported observation, not an independently reproduced result. The following four checks were explicitly **not performed** and are deferred by the user's decision; they must not be represented as PASS or FAIL:
+
+- [ ] **A19 — Callback and inline keyboard:** inspect a normal valid callback, expected response, and keyboard update if the feature is present. No deliberate expired-callback/fault injection on production.
+- [ ] **A18 — Normal webhook path:** verify the ordinary registered-webhook path without deleting the active webhook or forcing a failure.
+- [ ] **A20 — Log and privacy review:** inspect application and reverse-proxy/CDN logs separately using redacted evidence; check for bot token, webhook secret or secret-bearing full URL, raw API descriptions, and private message bodies. Existing concern about request query strings in Nginx logs remains unresolved; do not claim end-to-end redaction without evidence.
+- [ ] **A21 — Recovery/rollback procedure:** document the exact known-good plugin revision and safe panel-based recovery path. The procedure has not been demonstrated by a restore drill; do not test rollback by intentionally breaking production.
+
+The user reports that the other live checks they performed appeared successful. Keep their result labelled **user-reported operational PASS** only for the scenarios actually exercised. Do not infer that these four deferred checks passed. GitHub Actions CI/smoke results remain separate evidence and do not prove these operational behaviors.
+
+### Overall remaining roadmap
+
+1. **Record current evidence and boundaries:** retain successful CI/smoke runs on main and the user's reported normal live tests; distinguish both from unperformed checks.
+2. **Keep the four operational checks deferred:** no production fault injection, active-webhook deletion, forced rollback, or broad log dump is required now.
+3. **Continue repository-only maintenance:** respond to concrete bugs, compatibility changes, dependency/security findings, or user-requested features; for each change use a focused branch/PR, tests and lint, CI plus smoke, and update README/ROADMAP/acceptance notes.
+4. **When the user chooses to resume operational review:** handle A18/A19/A20/A21 individually with low-risk, explicit steps and redacted evidence. Do not mark a check complete until evidence is supplied.
+5. **Release discipline:** documentation-only commits do not require production plugin updates. Any future executable-code change gets its own review and green CI/smoke; production update remains a separate user decision.
+
+No production commands, deployment, rebuild, settings/secret changes, or live webhook operations were performed for this documentation update.
