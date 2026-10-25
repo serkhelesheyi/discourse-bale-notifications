@@ -441,3 +441,21 @@ No server-side commands, deployment, rebuild, secret/settings changes, or live w
 - [ ] Production release remains a separate decision; neither a green CI run nor a merged PR authorizes deployment.
 
 These results establish GitHub Actions status only. No server command, deployment, rebuild, settings/secret change, or live webhook operation was performed for this verification.
+
+
+## User-reported operational checks and deferred items — 25 October 2026
+
+The user reports that the live operational tests they performed appeared successful. This is a report of the user's observations, not an independent verification. The following checks were **not performed** and are deliberately deferred. They are neither PASS nor FAIL:
+
+| Check | Current status | Safe future scope |
+|---|---|---|
+| A19 — callback and inline keyboard, if present | **Deferred / not tested** | Check a normal valid callback and keyboard update; do not deliberately inject an expired callback or failure on production. |
+| A18 — ordinary webhook registration/path without deleting the active webhook | **Deferred / not tested** | Observe/verify the normal path only; do not delete the live webhook or induce transient errors on production. |
+| A20 — log privacy/redaction | **Deferred / not reviewed** | Review application and reverse-proxy/CDN logs separately, using redacted evidence only. Check tokens, secrets, full secret-bearing webhook URLs, raw API descriptions, and private message bodies. Rails parameter filtering alone does not establish Nginx/CDN log redaction. |
+| A21 — recovery/rollback procedure | **Deferred / procedure not demonstrated** | Identify the exact known-good revision and panel-based recovery steps. Do not intentionally break production or claim a restore drill occurred. |
+
+The user has no separate staging environment and has chosen to set these four checks aside for now. Do not ask them to run hazardous production fault injection merely to close the matrix. If resumed, give explicit low-risk steps for one check at a time and record only the evidence actually observed.
+
+Other live scenarios exercised by the user may be recorded as **user-reported PASS** only for those specific scenarios. Successful GitHub Actions workflows establish automated repository checks; they do not prove callback/keyboard behavior, webhook retries in the live environment, end-to-end log redaction, or a demonstrated rollback.
+
+No production command, deployment, rebuild, settings/secret change, or live webhook operation was performed for this documentation update.
